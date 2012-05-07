@@ -16,12 +16,6 @@ License: GPL 2
 	the Free Software Foundation; either version 2 of the License, or
 	(at your option) any later version.
 	
-	ATTENTION: you cannot make any modification to this plugin that
-	affects the way a search is handled and the users being redirected
-	to travel providers without prior written permission from
-	Travelgrove, INC. To gain a permission like that contact Travelgrove
-	at info@travelgrove.com or contact@travelgrove.com.
-
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS PARTICULAR PURPOSE.
