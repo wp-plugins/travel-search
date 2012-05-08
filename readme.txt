@@ -94,7 +94,7 @@ For more information, find step-by-step details and descriptions about full func
 == Frequently Asked Questions ==
 
 = How much money can a Travelgrove Affiliate earn =
-The commission earned by an affiliate in a month varies from one affiliate to the other and is a factor of volume, traffic quality, conversion rate and booking rate. In March 2012 the maximum pay-out was $2,000.
+The commission earned by an affiliate in a month varies from one affiliate to the other and is a factor of volume, traffic quality, conversion rate and booking rate. In the past, we have had affiliates generating anywhere from a few dollars to many thousand dollars a month.
 
 == Screenshots ==
 
@@ -107,6 +107,9 @@ The commission earned by an affiliate in a month varies from one affiliate to th
 7. `Travel Search` box inside the post in Wordpress visual editor
 
 == Changelog ==
+
+= 1.0.1 =
+* Changes only in plugin source header (PHP comments) and readme.txt file; correcting conflicts with GNU General Public Licence, V2.
 
 = 1.0 =
 * Initial public release.
