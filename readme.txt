@@ -12,17 +12,17 @@ Search and Compare major travel websites for cheapest flights, hotels, car renta
 
 Travel Search by &copy;Travelgrove provides a one-step travel search engine, that allows your users to search and compare flights, hotels, car rentals and vacation packages from a large scale of providers, including the biggest US travel companies, travel agents, aggregators and special negotiators.
 
-By this plugin, you can create, customize and add travel searchboxes anywhere on your sites, thus generating commissions with Travelgrove's Affiliate program (registration needed).
+Using this Wordpress Travel plugin, you can create, customize and add travel search boxes anywhere on your sites, thus generating commissions with Travelgrove's Affiliate program (registration needed).
 
 What the "Travel Search" plugin can offer:
 
-* **to the visitors of your site**: a searchbox helping them find the best rates for their travel needs.
+* **to the visitors of your site**: a travel search box helping them find the best rates for their travel needs.
 * **to you**: a new source of income and added value to your travel-related website.
-* **to Travelgrove affiliates**: an easy way to implement Travel Search boxes.
+* **to Travelgrove affiliates**: an easy way to implement a travel search box.
 * **to us (Travelgrove)**: to guarantee more visibility to our travel partners.
 
 = Online Demo =
-See the searchboxes in action on the [plugin's official page here](http://labs.travelgrove.com/wordpress-plugins/travel-search/#inline-demo).
+See the Travel Search boxes in action on the [plugin's official page here](http://labs.travelgrove.com/wordpress-plugins/travel-search/#inline-demo).
 
 = Start earning money with Travelgrove today =
 
