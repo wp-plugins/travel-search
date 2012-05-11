@@ -4,7 +4,7 @@ Donate link: http://www.travelgrove.com/
 Tags: travel, search, flights, airfares, hotel, hotel rooms, car rentals, vacations, holiday, vacation packages, deals, airfare tickets, plugin, affiliate
 Requires at least: 3.0
 Tested up to: 3.3
-Stable tag: 1.0.1
+Stable tag: 1.1
 
 Search and Compare major travel websites for cheapest flights, hotels, car rentals and vacation packages in this one-step travel search engine.
 
@@ -12,17 +12,17 @@ Search and Compare major travel websites for cheapest flights, hotels, car renta
 
 Travel Search by &copy;Travelgrove provides a one-step travel search engine, that allows your users to search and compare flights, hotels, car rentals and vacation packages from a large scale of providers, including the biggest US travel companies, travel agents, aggregators and special negotiators.
 
-By this plugin, you can create, customize and add travel searchboxes anywhere on your sites, thus generating commissions with Travelgrove's Affiliate program (registration needed).
+Using this Wordpress Travel plugin, you can create, customize and add travel search boxes anywhere on your sites, thus generating commissions with Travelgrove's Affiliate program (registration needed).
 
 What the "Travel Search" plugin can offer:
 
-* **to the visitors of your site**: a searchbox helping them find the best rates for their travel needs.
+* **to the visitors of your site**: a travel search box helping them find the best rates for their travel needs.
 * **to you**: a new source of income and added value to your travel-related website.
-* **to Travelgrove affiliates**: an easy way to implement Travel Search boxes.
+* **to Travelgrove affiliates**: an easy way to implement a travel search box.
 * **to us (Travelgrove)**: to guarantee more visibility to our travel partners.
 
 = Online Demo =
-See the searchboxes in action on the [plugin's official page here](http://labs.travelgrove.com/wordpress-plugins/travel-search/#inline-demo).
+See the Travel Search boxes in action on the [plugin's official page here](http://labs.travelgrove.com/wordpress-plugins/travel-search/#inline-demo).
 
 = Start earning money with Travelgrove today =
 
@@ -88,7 +88,7 @@ For more information, find step-by-step details and descriptions about full func
 7. [Support](http://labs.travelgrove.com/wordpress-plugins/travel-search/#support)
 8. [Feedback](http://labs.travelgrove.com/wordpress-plugins/travel-search/#feedback)
 9. [Further Improvements / Following releases](http://labs.travelgrove.com/wordpress-plugins/travel-search/#improvements)
-10. [Inline demo box – see the searchbox in action](http://labs.travelgrove.com/wordpress-plugins/travel-search/#inline-demo)
+10. [Inline demo box â€“ see the searchbox in action](http://labs.travelgrove.com/wordpress-plugins/travel-search/#inline-demo)
 11. [Start earning money with Travelgrove](http://labs.travelgrove.com/wordpress-plugins/travel-search/#start-earning-with-Travelgrove)
 
 == Frequently Asked Questions ==
@@ -107,6 +107,16 @@ The commission earned by an affiliate in a month varies from one affiliate to th
 7. `Travel Search` box inside the post in Wordpress visual editor
 
 == Changelog ==
+
+= 1.1 =
+* CSS file update switched to WP Filesystem API. If the PHP user has no permission to write the customization file, the user is asked to enter their FTP access in order to write the file via FTP.
+* Shortcode Generator has been added to the settings page; thus the required shortcode for a box can be copy-pasted into any theme template file much easier.
+* Flags has fixed for Hotels tab -> dynamic city dropdown; so now the flag of the United Kingdom will appear before "London" in the list, just like for the airports.
+* Autosuggestion dropdown JS position bug has been fixed.
+* Background color and border color CSS conflicts for the tabs have been fixed by adding "!important" to the CSS rules.
+* A new rule for label colors has been introduced, thus now that's also customizable.
+* Shortcode Generation JS bug in IE7 has been fixed.
+* Ajax URL for the thickbox that appears when the editor button is clicked has been normalized; bug appeared in Wordpress 3.0.
 
 = 1.0.1 =
 * Changes only in plugin source header (PHP comments) and readme.txt file; correcting conflicts with GNU General Public Licence, V2.
