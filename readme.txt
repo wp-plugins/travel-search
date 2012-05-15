@@ -1,7 +1,7 @@
 === Travel Search ===
 Contributors: travelgrove
 Donate link: http://www.travelgrove.com/
-Tags: travel, search, flights, airfares, hotel, hotel rooms, car rentals, vacations, holiday, vacation packages, deals, airfare tickets, plugin, affiliate
+Tags: travel, search, flights, airfares, hotel, hotel rooms, car rentals, vacations, holiday, vacation packages, deals, airfare tickets, plugin, affiliate, travel widget
 Requires at least: 3.0
 Tested up to: 3.3
 Stable tag: 1.2
