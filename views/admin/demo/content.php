@@ -28,7 +28,7 @@ Shortcode:<input type="text" size="100" value="[tg_searchboxes options='{&quot;s
 	echo $tgSearchboxesRenderer->renderSearchboxes();
 ?>
 <br />
-Shortcode:<input type="text" size="35" value="[tg_searchboxes options='{&quot;size&quot;:&quot;160x600&quot;}']" onclick="this.select();" /><br />
+Shortcode:<input type="text" size="100" value="[tg_searchboxes options='{&quot;size&quot;:&quot;160x600&quot;}']" onclick="this.select();" /><br />
 <br />
 
 <h2>300x250 Searchbox:</h2>
@@ -38,7 +38,7 @@ Shortcode:<input type="text" size="35" value="[tg_searchboxes options='{&quot;si
 	echo $tgSearchboxesRenderer->renderSearchboxes();
 ?>
 <br />
-Shortcode:<input type="text" size="35" value="[tg_searchboxes options='{&quot;size&quot;:&quot;300x250&quot;}']" onclick="this.select();" /><br />
+Shortcode:<input type="text" size="100" value="[tg_searchboxes options='{&quot;size&quot;:&quot;300x250&quot;}']" onclick="this.select();" /><br />
 <br />
 <h2>300x533 Searchbox:</h2>
 <?php
@@ -47,7 +47,7 @@ Shortcode:<input type="text" size="35" value="[tg_searchboxes options='{&quot;si
 	echo $tgSearchboxesRenderer->renderSearchboxes();
 ?>
 <br />
-Shortcode:<input type="text" size="35" value="[tg_searchboxes options='{&quot;size&quot;:&quot;300x533&quot;}']" onclick="this.select();" /><br />
+Shortcode:<input type="text" size="100" value="[tg_searchboxes options='{&quot;size&quot;:&quot;300x533&quot;}']" onclick="this.select();" /><br />
 <br />
 <h2>Banner-sized Searchbox (728x90):</h2>
 <?php
@@ -56,4 +56,4 @@ Shortcode:<input type="text" size="35" value="[tg_searchboxes options='{&quot;si
 	echo $tgSearchboxesRenderer->renderSearchboxes();
 ?>
 <br />
-Shortcode:<input type="text" size="35" value="[tg_searchboxes options='{&quot;size&quot;:&quot;728x90&quot;}']" onclick="this.select();" /><br />
+Shortcode:<input type="text" size="100" value="[tg_searchboxes options='{&quot;size&quot;:&quot;728x90&quot;}']" onclick="this.select();" /><br />

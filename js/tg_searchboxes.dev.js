@@ -630,8 +630,10 @@ function createImpressionTrackingQueryString(frmObj) {
 	};
 	// setting the idReferral to the impression query string, if it's not defined then set the idReferral value to 999
 	var tgsbIdReferral = (typeof(frmObj.find('input[name=idReferral]').val()) != 'undefined') ? 'idReferral='+frmObj.find('input[name=idReferral]').val() : 999;
+	// setting the subID to the impression query string, if it's not defined then set the subID to 106
+	var tgsbSubID = (typeof(frmObj.find('input[name=subID]').val()) != 'undefined') ? 'subID='+frmObj.find('input[name=subID]').val() : 106;
 			
-	return tgsbFrom+tgsbTo+tgsbDepDate+tgsbRetDate+tgsbIdReferral;
+	return tgsbFrom+tgsbTo+tgsbDepDate+tgsbRetDate+tgsbIdReferral+'&'+tgsbSubID;
 };
 
 
@@ -681,8 +683,6 @@ function createDatepicker(i1,i2,rtowInputs){
 				};
 			}
 		});
-		// from the input value we set the date for the datepicker
-		inp.datepicker('setDate',inp.val());
 	});
 	// we need to check the oneway inputs because regarding this we'll enable or disable the return date input
 	if(typeof(rtowInputs) == 'object' && rtowInputs.length > 0) {

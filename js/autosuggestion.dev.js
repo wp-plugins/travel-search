@@ -13,21 +13,13 @@ function cloneObject(src) {
 	return dest;
 };
 
-
-function gP(e) {
-	var left=-8, top=0;
-	while (e.offsetParent) {
-		// left+=e.offsetLeft-e.scrollLeft;
-		// removed bacause doesn't worked with Opera
-		left+=e.offsetLeft;
-		top+=e.offsetTop;
-		e=e.offsetParent;
-	}
-	left+=e.offsetLeft-e.scrollLeft;
-	top+=e.offsetTop;
-	return {x:left, y:top};
+parentObject.getPos = function(e){
+        var o = jQuery(e).offset();
+        return {
+                'x' : o.left,
+                'y' : o.top
+        }
 };
-parentObject.getPos = gP;
 
 var defaultParams = {
 	script:"ajax/suggestions/airports.php",
@@ -130,7 +122,7 @@ parentObject.AutoSuggest = function(fldID, pObj) {
 		/*	using it for determinating if normal results was returned or not	*/
 		complete:	function(reqObj, tos) {
 			// console.log("Object: "+reqObj+", The type of success:"+tos);
-		},
+		}
 		//type of success
 	};
 	this.coords = getPos(this.fld);
@@ -398,7 +390,9 @@ parentObject.AutoSuggest.prototype.createList = function(rsp, jsonObj) {
 	// the autosuggestion object
 	var pointer = this;
 	// variables for hightlighting
-	pointer.aSuggestions = jQuery(rsp).attr({"class":pointer.opt.className, "id":"as"+pointer.fld.id}).css({left:pointer.coords.x, top:pointer.coords.y, display:'block'}).appendTo('body');
+	pointer.aSuggestions = jQuery(rsp).attr({"class":pointer.opt.className, "id":"as"+pointer.fld.id}).css({left:pointer.coords.x, top:pointer.coords.y}).appendTo('body').css({'display':'block'});
+	pointer.aSuggestions.hide();
+	pointer.aSuggestions.show();
 	internal_cnt = 0;
 	pointer.aSuggestions.find('li').each(function(){
 		internal_cnt++;

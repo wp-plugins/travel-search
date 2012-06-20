@@ -13,6 +13,8 @@ class tgSearchboxesRenderer {
 	private $controller;
 	private $defaultSize		= '300x250';
 	private $defaultSelectedTab	= 'flights';
+	private $subID			= '106';
+	private $defaultAlignment	= 'alignnone';
 
 	private static $nrOfBoxes;
 	private $valuesToBeSet;
@@ -29,6 +31,8 @@ class tgSearchboxesRenderer {
 	function __construct($controller, $atts) {
 		$this->controller	= $controller;
 		$this->atts		= $atts;
+		/**	make the subID hookable - only for internal uses	*/
+		$this->subID		= apply_filters('tg_searchboxes_subID', $this->subID);
 		/**	current number of boxes needed for incremental IDs for inputs / labels	*/
 		self::$nrOfBoxes++;
 		return;
@@ -40,19 +44,24 @@ class tgSearchboxesRenderer {
 			foreach($this->controller->options as $option => $optionValue) {
 				$this->atts[$option] = $optionValue;
 			}
-			$this->atts['size'] = $this->defaultSize;
+			$this->atts['size']		= $this->defaultSize;
+			$this->atts['alignment']	= $this->defaultAlignment;
 		}
 		
 		if(!empty($this->atts['options'])) {
-			$this->atts = json_decode($this->atts['options'], true);
+			$this->atts			= json_decode($this->atts['options'], true);
 		}
 		
 		if(empty($this->atts['size'])) {
-			$this->atts['size'] = $this->defaultSize;
+			$this->atts['size']		= $this->defaultSize;
 		}
 		
 		if(empty($this->atts['selectedTab'])) {
-			$this->atts['selectedTab'] = $this->defaultSelectedTab;
+			$this->atts['selectedTab']	= $this->defaultSelectedTab;
+		}
+		
+		if(empty($this->atts['alignment'])) {
+			$this->atts['alignment']	= $this->defaultAlignment;
 		}
 
 		$departureDateTimestamp = strtotime('+'.$this->controller->options['departure_date']);
@@ -60,6 +69,7 @@ class tgSearchboxesRenderer {
 		$returnDate = date($this->controller->options['date_format'], strtotime($this->controller->options['return_date'], $departureDateTimestamp));
 		
 		if(!empty($this->atts['departure_date']) || !empty($this->atts['return_date'])) {
+
 			// default departure timestamp and return timestamp were set if one of those attributes are present in the shortcode
 			$setDepartureDateTimestamp = 0;
 			$setReturnDateTimestamp = 0;
@@ -126,9 +136,8 @@ class tgSearchboxesRenderer {
 						$this->atts['rtow']
 					)
 		);
-	 
 		
-		$output .=	'<div class="tg_searchbox m'.$this->atts['size'].'" id="tgsb_'.self::$nrOfBoxes.'">';
+		$output .=	'<div class="tg_searchbox '.$this->atts['alignment'].' m'.$this->atts['size'].'" id="tgsb_'.self::$nrOfBoxes.'">';
 		$output .=		'<ul class="tg_tabs">';
 		$output .=			'<li><span class="flights'.(($this->atts['selectedTab'] == 'flights') ? ' sel' : '').'">'.(($this->atts['size']=='160x600') ? 'Air' : 'Flights').'</span></li>';
 		$output .=			'<li><span class="hotels'.(($this->atts['selectedTab'] == 'hotels') ? ' sel' : '').'">'.(($this->atts['size']=='160x600') ? 'Hotel' : 'Hotels').'</span></li>';
@@ -232,7 +241,7 @@ class tgSearchboxesRenderer {
 private function renderFlightsSearchbox160x600() {
 			$output = 
 			'<input type="radio" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[flights_oneway]' : 'oneway').'" id="tgsb_'.self::$nrOfBoxes.'_rt" value=""'.((empty($this->valuesToBeSet['rtow'])) ? ' checked="checked"' : '').' /><label class="radio" for="tgsb_'.self::$nrOfBoxes.'_rt">Roundtrip</label>
-			<input type="radio" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[flights_oneway]' : 'oneway').'" id="tgsb_'.self::$nrOfBoxes.'_ow" value="on"'.((!empty($this->valuesToBeSet['rtow'])) ? ' checked="checked"' : '').' /><label class="radio" for="tgsb_'.self::$nrOfBoxes.'_ow">One Way</label>
+			<input class="oneway" type="radio" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[flights_oneway]' : 'oneway').'" id="tgsb_'.self::$nrOfBoxes.'_ow" value="on"'.((!empty($this->valuesToBeSet['rtow'])) ? ' checked="checked"' : '').' /><label class="radio" for="tgsb_'.self::$nrOfBoxes.'_ow">One Way</label>
 			<div class="hr"></div>
 			<label for="tgsb_'.self::$nrOfBoxes.'_from_f">From:</label>
 			<input type="text" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[flights_from_air]' : (($this->atts['ajaxSettings']) ? 'tgsbFromAir' : 'inp_dep_arp_cd_1')).'" id="tgsb_'.self::$nrOfBoxes.'_from_f" value="'.esc_attr($this->valuesToBeSet['from_air']).'" class="tgsb_addAS asFrom" />
@@ -241,8 +250,7 @@ private function renderFlightsSearchbox160x600() {
 			<label for="tgsb_'.self::$nrOfBoxes.'_dep_cal_f">Depart:</label>';
 			$output .= (($this->atts['defaultSettings']) ? $this->date_input('flights_departure_date', 'tgsb_'.self::$nrOfBoxes.'_dep_cal_f') :
 			'<input type="text" readonly="readonly" name="'.(($this->atts['ajaxSettings']) ? 'tgsbDepartureDate' : 'dep_date').'" id="tgsb_'.self::$nrOfBoxes.'_dep_cal_f" value="'.esc_attr($this->valuesToBeSet['departure_date']).'" class="tgsb_addDP depDate" />');
-			$output .= '</span>
-			<label for="tgsb_'.self::$nrOfBoxes.'_arr_cal_f">Return:</label>';
+			$output .= '<label for="tgsb_'.self::$nrOfBoxes.'_arr_cal_f">Return:</label>';
 			$output .= (($this->atts['defaultSettings']) ? $this->date_input('flights_return_date', 'tgsb_'.self::$nrOfBoxes.'_arr_cal_f', false) : 
 			'<input type="text" readonly="readonly" name="'.(($this->atts['ajaxSettings']) ? 'tgsbReturnDate' : 'arr_date').'" id="tgsb_'.self::$nrOfBoxes.'_arr_cal_f" value="'.esc_attr($this->valuesToBeSet['return_date']).'" class="tgsb_addDP retDate" '.((!empty($this->valuesToBeSet['rtow'])) ? ' disabled="disabled"' : '').' />');
 			$output .= '<br />
@@ -257,6 +265,7 @@ private function renderFlightsSearchbox160x600() {
 				$output .= '<div class="mrcList nod"></div>';
 				$output .= '<div class="help">&nbsp;</div>';
 				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 				$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 			$output .= $this->renderSubmitButton();
 			// removing the spaces between the tags
@@ -299,6 +308,7 @@ private function renderFlightsSearchbox160x600() {
 				$output .= $this->createSelectTag((($this->atts['defaultSettings']) ? 'tg_searchboxes_options[flights_seniors]' : (($this->atts['ajaxSettings']) ? 'tgsbSeniors' : 'inp_senior_pax_cnt')), 'tgsb_'.self::$nrOfBoxes.'_seniors_f', 'seniors', $this->seniors, $this->valuesToBeSet['seniors']);
 				$output .= '</span>';
 				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 				$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 				$output .= '</div>';
 				$output .= $this->atts['defaultSettings'] ? '' : '<div class="mrcList nod"></div>';
@@ -347,6 +357,7 @@ private function renderFlightsSearchbox160x600() {
 				$output .= '<div class="mrcList nod"></div>';
 				$output .= '<div class="help">&nbsp;</div>';
 				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 				$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 			$output .= $this->renderSubmitButton();
 			// removing the spaces between the tags
@@ -379,7 +390,6 @@ private function renderFlightsSearchbox160x600() {
 				<label for="tgsb_'.self::$nrOfBoxes.'_children_f">Kids:</label>';
 				$output .= $this->createSelectTag((($this->atts['defaultSettings']) ? 'tg_searchboxes_options[flights_kids]' : (($this->atts['ajaxSettings']) ? 'tgsbKids' : 'inp_child_pax_cnt')), 'tgsb_'.self::$nrOfBoxes.'_children_f', 'kids', $this->kids, $this->valuesToBeSet['kids']);
 			$output .= '</span>
-			<br />
 			<span class="s">
 				<label for="tgsb_'.self::$nrOfBoxes.'_seniors_f">Seniors:</label>';
 				$output .= $this->createSelectTag((($this->atts['defaultSettings']) ? 'tg_searchboxes_options[flights_seniors]' : (($this->atts['ajaxSettings']) ? 'tgsbSeniors' : 'inp_senior_pax_cnt')), 'tgsb_'.self::$nrOfBoxes.'_seniors_f', 'seniors', $this->seniors, $this->valuesToBeSet['seniors']);
@@ -387,12 +397,13 @@ private function renderFlightsSearchbox160x600() {
 			<span class="s">	
 				<label for="tgsb_'.self::$nrOfBoxes.'_rtow">Trip type:</label>';	
 				$output .= '<select class="tt" name="oneway" id="tgsb_'.self::$nrOfBoxes.'_rtow">';
-					$output .= '<option value=""'.((empty($this->valuesToBeSet['rtow'])) ? ' checked="checked"' : '').'>round-trip</option>';
-					$output .= '<option value="on" '.((!empty($this->valuesToBeSet['rtow'])) ? ' checked="checked"' : '').'>oneway</option>';			
+					$output .= '<option value=""'.((empty($this->valuesToBeSet['rtow'])) ? ' selected="selected"' : '').'>round-trip</option>';
+					$output .= '<option value="on" '.((!empty($this->valuesToBeSet['rtow'])) ? ' selected="selected"' : '').'>oneway</option>';			
 				$output .= '</select>
 			</span>
 			</span>';
 			$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+			$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 			$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 			$output .= '</div>';
 			$output .= '<div class="mrcList nod"></div>';
@@ -442,10 +453,12 @@ private function renderFlightsSearchbox160x600() {
 				$output .='</span>';
 				
 				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 				$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';				
 				$output .= '</div>';
 				$output .= $this->atts['defaultSettings'] ? '' : '<div class="mrcList nod"></div>';
 			$output .= $this->renderSubmitButton();
+			$output .= '<div class="spcr"></div>';
 			$output = preg_replace('/>[\s\t\r\n]+</','><',$output);
 			return $output;
 	}	
@@ -473,6 +486,7 @@ private function renderHotelsSearchbox160x600() {
 		$output .= '<div class="mrcList nod"></div>';
 		$output .= '<div class="help">&nbsp;</div>';
 		$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+		$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 		$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 		$output .= $this->renderSubmitButton();
 		// removing the spaces between the tags
@@ -509,6 +523,7 @@ private function renderHotelsSearchbox160x600() {
 		$output .= $this->createSelectTag((($this->atts['defaultSettings']) ? 'tg_searchboxes_options[hotels_kids]' : (($this->atts['ajaxSettings']) ? 'tgsbKids' : 'no_child')), 'tgsb_'.self::$nrOfBoxes.'_children_h', 'kids', $this->kids, $this->valuesToBeSet['kids']);
 		$output .= '</span>';
 		$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+		$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 		$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 		$output .= '</div>';
 		$output .= $this->atts['defaultSettings'] ? '' : '<div class="mrcList nod"></div>';
@@ -551,6 +566,7 @@ private function renderHotelsSearchbox160x600() {
 		$output .= '<div class="mrcList nod"></div>';
 		$output .= '<div class="help">&nbsp;</div>';
 		$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+		$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 		$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 		$output .= $this->renderSubmitButton();
 		// removing the spaces between the tags
@@ -589,6 +605,7 @@ private function renderHotelsSearchbox160x600() {
 			$output .= '</span></span>';
 
 		$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+		$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 		$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 		$output .= '<div class="spcr">&nbsp;</div>';
 		$output .= '</div>';
@@ -627,6 +644,7 @@ private function renderHotelsSearchbox160x600() {
 		$output .= $this->createSelectTag((($this->atts['defaultSettings']) ? 'tg_searchboxes_options[hotels_kids]' : (($this->atts['ajaxSettings']) ? 'tgsbKids' : 'no_child')), 'tgsb_'.self::$nrOfBoxes.'_children_h', 'kids', $this->kids, $this->valuesToBeSet['kids']);
 		$output .= '</span>';
 		$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+		$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 		$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 		$output .= '</div>';
 		$output .= $this->atts['defaultSettings'] ? '' : '<div class="mrcList nod"></div>';
@@ -678,6 +696,7 @@ private function renderHotelsSearchbox160x600() {
 				$output .= $this->createSelectTag((($this->atts['defaultSettings']) ? 'tg_searchboxes_options[packages_seniors]' : (($this->atts['ajaxSettings']) ? 'tgsbSeniors' : 'seniors')), 'tgsb_'.self::$nrOfBoxes.'_seniors_p', 'seniors', $this->seniors, $this->valuesToBeSet['seniors']);
 				$output .= '</span>';
 				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 				$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 				$output .= '</div>';
 				$output .= $this->atts['defaultSettings'] ? '' : '<div class="mrcList nod"></div>';
@@ -728,8 +747,9 @@ private function renderHotelsSearchbox160x600() {
 				$output .= '<div class="mrcList nod"></div>';
 				$output .= '<div class="help">&nbsp;</div>';
 				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 				$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
-				$output .= $this->renderSubmitButton();	
+				$output .= $this->renderSubmitButton();
 		// removing the spaces between the tags
 		$output = preg_replace('/>[\s\t\r\n]+</','><',$output);
 		return $output;
@@ -770,7 +790,8 @@ private function renderHotelsSearchbox160x600() {
 				<label for="tgsb_'.self::$nrOfBoxes.'_seniors_p">Seniors:</label>';
 				$output .= $this->createSelectTag((($this->atts['defaultSettings']) ? 'tg_searchboxes_options[packages_seniors]' : (($this->atts['ajaxSettings']) ? 'tgsbSeniors' : 'seniors')), 'tgsb_'.self::$nrOfBoxes.'_seniors_p', 'seniors', $this->seniors, $this->valuesToBeSet['seniors']);
 				$output .= '</span></span>';
-			$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 			$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 		$output .= '</div>';
 		$output .= '<div class="mrcList nod"></div>';
@@ -817,6 +838,7 @@ private function renderHotelsSearchbox160x600() {
 				$output .= $this->createSelectTag((($this->atts['defaultSettings']) ? 'tg_searchboxes_options[packages_seniors]' : (($this->atts['ajaxSettings']) ? 'tgsbSeniors' : 'seniors')), 'tgsb_'.self::$nrOfBoxes.'_seniors_p', 'seniors', $this->seniors, $this->valuesToBeSet['seniors']);
 				$output .= '</span>';
 				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 				$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 				$output .= '</div>';
 				$output .= $this->atts['defaultSettings'] ? '' : '<div class="mrcList nod"></div>';
@@ -844,6 +866,7 @@ private function renderHotelsSearchbox160x600() {
 			$output .= '<div class="mrcList nod"></div>';
 			$output .= '<div class="help">&nbsp;</div>';
 			$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+			$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 			$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 		$output .= $this->renderSubmitButton();
 		// removing the spaces between the tags
@@ -873,6 +896,7 @@ private function renderHotelsSearchbox160x600() {
 			</span>
 			';
 			$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+			$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 			$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 			$output .= '</div>';
 			$output .= $this->atts['defaultSettings'] ? '' : '<div class="mrcList nod"></div>';
@@ -906,6 +930,7 @@ private function renderHotelsSearchbox160x600() {
 			$output .= '<div class="mrcList nod"></div>';
 			$output .= '<div class="help">&nbsp;</div>';
 			$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+			$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 			$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 		$output .= $this->renderSubmitButton();
 		// removing the spaces between the tags
@@ -932,6 +957,7 @@ private function renderHotelsSearchbox160x600() {
 				$output .= '<br />
 			</span>';
 				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+				$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 				$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 		$output .= '</div>';
 		$output .= '<div class="mrcList nod"></div>';		
@@ -962,6 +988,7 @@ private function renderHotelsSearchbox160x600() {
 			</span>
 			';
 			$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+			$output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
 			$output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
 			$output .= '</div>';
 			$output .= $this->atts['defaultSettings'] ? '' : '<div class="mrcList nod"></div>';
@@ -1032,7 +1059,6 @@ private function renderHotelsSearchbox160x600() {
 			return false;
 		return array((int)$match[3],(int)$match[2],(int)$match[1],"$match[1]/$match[2]/$match[3]");
 	} 
-	
 
 	function __destruct() {
 		unset($this->atts);

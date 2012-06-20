@@ -1,10 +1,10 @@
 === Travel Search ===
 Contributors: travelgrove
 Donate link: http://www.travelgrove.com/
-Tags: travel, search, flights, airfares, hotel, hotel rooms, car rentals, vacations, holiday, vacation packages, deals, airfare tickets, plugin, affiliate
-Requires at least: 3.0
-Tested up to: 3.3
-Stable tag: 1.2
+Tags: travel, search, flights, airfares, hotel, hotel rooms, car rentals, vacations, holiday, vacation packages, deals, airfare tickets, plugin, affiliate, travel widget
+Requires at least: 3.1
+Tested up to: 3.3.2
+Stable tag: 1.2.1
 
 Search and Compare major travel websites for cheapest flights, hotels, car rentals and vacation packages in this one-step travel search engine.
 
@@ -108,6 +108,22 @@ The commission earned by an affiliate in a month varies from one affiliate to th
 
 == Changelog ==
 
+= 1.2.1 =
+* Minor bug fixed while saving the settings via FTP - no error message were shown if no password was given.
+* Internal tracking variable made hookable.
+* Edit/Delete buttons' minor bug inside the editorial interface has been fixed.
+* Auto-suggestion airport dropdown visual bug has been fixed.
+* Alignment option added to the boxes so they can be aligned to the left, to the right, to the center or not aligned inside a post content.
+* On the popup div, on the editor page, the bug regarding the click event has been fixed.
+* Minor CSS conflicts has been fixed.
+* Facebook Like Button and Google Plus One Button for travelgrove.com added on the plugin settings page.
+
+= 1.2 =
+* Widget Implementation has been added via "tgsbWidget.class.php"
+* Minor CSS conflicts have been fixed
+* Min-width for dynamic box has been added
+* Cache-buster timestamp has been added to custom CSS; last saving time appears now as a parameter for the given CSS file.
+
 = 1.1 =
 * CSS file update switched to WP Filesystem API. If the PHP user has no permission to write the customization file, the user is asked to enter their FTP access in order to write the file via FTP.
 * Shortcode Generator has been added to the settings page; thus the required shortcode for a box can be copy-pasted into any theme template file much easier.
@@ -126,4 +142,4 @@ The commission earned by an affiliate in a month varies from one affiliate to th
 
 == Upgrade Notice ==
 
-No update notices yet since the current release is the first one.
+For full functionality update to version 1.2.

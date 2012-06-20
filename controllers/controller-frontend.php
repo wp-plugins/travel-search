@@ -7,7 +7,6 @@
  * @author Travelgrove Labs (http://labs.travelgrove.com/)
  * @since 1.0
  */
-
 /**	Include file with the Base Controller Class	*/
 require_once ( TG_SEARCHBOXES_ABSPATH.'controllers/controller-base.php' );
 /**	Include SearchBox Renderer Class	*/
@@ -24,11 +23,11 @@ function Tg_Searchboxes_Controller_Frontend() {
 function __construct() {
 	/**	call parent's constructor for reading the options from WP options table	*/
 	parent::__construct();
+//	add_action('wp_enqueue_scripts', array(&$this, 'jquery_ui'), 0);
 	/**	adding to the dom the css files needed by the plugin in the frontend	*/
 	$this->enqueue_tg_searchboxes_css();
 	/**	adding to the dom the js files and variables needed by the plugin in the frontend	*/
 	$this->enqueue_tg_searchboxes_js();
-	
 	/**	adding a hook for the shortcode "tg_searchboxes";
 	* WP will automatically pass the found arguments: [shortcode argument1=value1 argument2=value2]	*/
 	add_shortcode($this->shortcode_tg_searchboxes, array(&$this, 'tg_searchboxes_handle_tg_shortcode'));
@@ -47,9 +46,11 @@ function tg_searchboxes_handle_tg_shortcode($attr) {
 /**	enque the required CSS files	*/
 function enqueue_tg_searchboxes_css() {
 	/**	CSS of customized options	*/
-	wp_enqueue_style('tg_searchboxes_color_style', plugins_url('/css/tg_searchboxes_color.css', TG_SEARCHBOXES__FILE__));
+	// added the filemtime because the values of the color are changing in the css file when a user decide to change them and so we want to do a cache refresh for that file
+	// adding the timestamp that was saved when new colors where saved for the css color file
+	wp_enqueue_style('tg_searchboxes_color_style', plugins_url('/css/tg_searchboxes_color.css', TG_SEARCHBOXES__FILE__).'?'.$this->options['cssfiletimestamp']);
 	/**	basic/main CSS rules for the boxes	*/
-	wp_enqueue_style('tg_searchboxes_style', plugins_url('/css/tg_searchboxes.min.css', TG_SEARCHBOXES__FILE__));
+	wp_enqueue_style('tg_searchboxes_style', plugins_url('/css/tg_searchboxes.min.css', TG_SEARCHBOXES__FILE__).'?v=20120606');
 	/**	CSS rules for the datepicker calendars	*/
 	wp_enqueue_style('tgsb_datepicker_style', plugins_url('/css/ui-lightness/datepicker.min.css', TG_SEARCHBOXES__FILE__));
 	return true;
@@ -60,7 +61,7 @@ function enqueue_tg_searchboxes_js() {
 	/**	AutoSuggestion drop-down for aiports+cities; (name, path, dependencies) - dependent on jQuery	*/
 	wp_enqueue_script('tgsb_autosuggestion', plugins_url('/js/autosuggestion.min.js', TG_SEARCHBOXES__FILE__), array('jquery'));
 	/**	jQuery DatePicker; dependent on jQuery and jQuery UI	*/
-	wp_enqueue_script('tgsb_datepicker_script', plugins_url('/js/jquery-ui-datepicker.min.js', TG_SEARCHBOXES__FILE__), array('jquery'));
+	wp_enqueue_script('tgsb_datepicker_script', plugins_url('/js/jquery-ui-datepicker.min.js', TG_SEARCHBOXES__FILE__), array('jquery', 'jquery-ui-core'));
 	/**	dynamic functionalities of the searchboxes; main JS file	*/
 	wp_enqueue_script('tgsb_main_script',
 			plugins_url( '/js/tg_searchboxes.min.js', TG_SEARCHBOXES__FILE__ ),
@@ -85,5 +86,6 @@ function enqueue_tg_searchboxes_js() {
 	);
 	return true;
 }
+
 }
 ?>

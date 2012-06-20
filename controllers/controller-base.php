@@ -44,6 +44,13 @@ class Tg_Searchboxes_Controller_Base {
 		return;
 	}
 	
+	function jquery_ui() {
+		wp_deregister_script( 'jquery-ui-core' );
+		wp_register_script( 'jquery-ui-core', plugins_url('/js/jquery-ui.min.js', TG_SEARCHBOXES__FILE__));
+		wp_enqueue_script( 'jquery-ui-core' );
+	}
+
+	
 	function __destruct() {}
 }
 ?>

@@ -22,6 +22,11 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		* @var string
 	*/
 	private $page_slug	= 'tg_searchboxes';
+	/**
+	 *	* this variable will contain the searchboxesSettingsFormRenderer object.
+		* the class earchboxesSettingsFormRenderer is initialized in the constructor and it's also used in the tg_searchboxes_load_view method
+	*/
+	private $searchboxesSettingsFormRenderer;
 
 	/**	Searchboxs default values, needed at installation only; later on defaults will be read from DB options	*/
  	private $default_options	= array(
@@ -42,7 +47,8 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		'tbscolor'		=> '#f9ffed',
 		'tbstxtcolor'		=> '#53667b',
 		'tbsbrdcolor'		=> '#d9d9d9',
-		'links'			=> true
+		'links'			=> true,
+		'cssfiletimestamp'	=> '0'
 		);
 
 	/**
@@ -71,9 +77,9 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		add_action( 'admin_menu', array(&$this, 'tg_searchboxes_create_menu'));
 
 		// initializing the class needed to display the html for the searchboxes settings page
-		$searchboxesSettingsFormRenderer = new searchboxesSettingsFormRenderer(&$this);
-		add_action('admin_init', array(&$searchboxesSettingsFormRenderer, 'admin_init'));
-	
+		$this->searchboxesSettingsFormRenderer = new searchboxesSettingsFormRenderer(&$this);
+		add_action('admin_init', array(&$this->searchboxesSettingsFormRenderer, 'admin_init'));
+//		add_action('admin_init', array(&$this, 'jquery_ui'), 0);
 		//	is an AJAX request or not; DOING_AJAX is set by WP automatically; AJAX req. is triggered on Add-TG-Box button click
 		$doing_ajax	= defined('DOING_AJAX') ? DOING_AJAX : false;
 		//	accepting AJAX req.s as valid only from the post editing interface; page-slug is assigned to the button
@@ -126,7 +132,7 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		// $searchboxesSettingsPage will contain the WP-internal slug for the TG-S.boxes admin page
 		$searchboxesSettingsPage	= add_menu_page(
 			// page title
-			'Travelgrove Searchboxes &rsaquo; Settings',
+			'Travel Search &rsaquo; Default Settings',
 			// menu title
 			'Travel Search',
 			// this menu will be displayed for users w/ rights to manage options
@@ -179,7 +185,7 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		/**	headlines/titles	*/
 		$headlines	= array(
 			/*	settings page	*/
-			'settings'	=> 'Travelgrove Searchboxes &rsaquo; Default Settings',
+			'settings'	=> 'Travel Search &rsaquo; Default Settings',
 			/*	box loaded via AJAX into thickbox	*/
 			'tg_searchboxes'=> 'Travelgrove Searchboxes',
 			/*	demo page	*/
@@ -189,6 +195,16 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 
 		/**	top part of admin pages, currently containing only an h1 title;	*/
 		$tg_sb_header	= TG_SEARCHBOXES_ABSPATH. 'views/admin/header.php';
+		/** after updating the options we check if the css file containg the rules for the colors of the searchboxes can be written */
+		if($_GET['page'] == 'tg_searchboxes' && ($_GET['updated'] == 'true' || $_GET['settings-updated'] == 'true')) {
+			/** if we don't have the rights to write directly to the css file then ask the user to add the ftp credentials in a form */
+			if(!$this->searchboxesSettingsFormRenderer->checkFTPCredentials())
+				return false;
+			/** if we have the rights to write directly to the css file or if we have the right ftp credentials then we try to write in the css file */
+			if(!$this->searchboxesSettingsFormRenderer->writeToFile($_POST))
+				/** if we couldn't write to the css file then display the error message */
+				settings_errors('tg_searchboxes_options_writable_css_file_error');
+		}
 		/**	content of the pages	*/
 		$tg_sb_content	= TG_SEARCHBOXES_ABSPATH. 'views/admin/'.$page_type.'/'.'content.php';
 		/**	main view that includes the other views	*/
@@ -211,7 +227,7 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		// retrieve URL with nonce added to URL query
 		$ajax_url	= wp_nonce_url( $ajax_url, $this->get_nonce( $params['action'], false ) );
 		// sanitizing the URL using esc_url
-		$ajax_url	= esc_url( $ajax_url );
+		$ajax_url	= esc_url( $ajax_url);
 		
 		// setting the jsfile that needs to be included
 		$jsfile		= "admin/admin-editor-buttons-script.min.js";
@@ -219,7 +235,7 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		add_action('wp_print_scripts', array(&$this, 'tg_searchboxes_admin_scripts'));
 
 		// HTML editor integration
-		wp_register_script( 'tg_searchboxes-editor-button-js', plugins_url( $jsfile, TG_SEARCHBOXES__FILE__ ), array( 'jquery', 'thickbox'/*, 'media-upload', 'quicktags'*/), $this->options['installed_version'], true );
+		wp_register_script( 'tg_searchboxes-editor-button-js', plugins_url( $jsfile, TG_SEARCHBOXES__FILE__ ).'?v=20120605', array( 'jquery', 'thickbox'/*, 'media-upload', 'quicktags'*/), '1.0', true );
 		wp_localize_script( 'tg_searchboxes-editor-button-js', 'TG_Searchboxes_Editor_Button', 
 			array(
 				'str_EditorButtonCaption'	=> __( 'Travelgrove Searchboxes'),
@@ -236,11 +252,11 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 
 		// TinyMCE integration
 		if ( user_can_richedit() ) {
-			add_filter( 'mce_external_plugins', array( &$this, 'add_tinymce_plugin' ) );
-			add_filter( 'mce_buttons', array( &$this, 'add_tinymce_button' ), 0 );
+			add_filter( 'mce_external_plugins', array( &$this, 'add_tinymce_plugin' ));
+			add_filter( 'mce_buttons', array( &$this, 'add_tinymce_button' ), 0);
 		}
-        
-		add_action( 'admin_print_footer_scripts', array( &$this, '_print_editor_button' ), 100 );
+		
+		add_action( 'admin_print_footer_scripts', array( &$this, '_print_editor_button' ), 51);
 	}
 	
 	function _print_editor_button() {
@@ -268,7 +284,7 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 	function add_tinymce_plugin( $plugins ) {
 //        $suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.dev' : '';
 		$jsfile = "admin/admin-tinymce-buttons-script.min.js";
-		$plugins['TGSearchboxes']	= plugins_url( $jsfile, TG_SEARCHBOXES__FILE__ );
+		$plugins['TGSearchboxes']	= plugins_url( $jsfile, TG_SEARCHBOXES__FILE__ ).'?v=20120605';
 			return $plugins;
 	}
 	
@@ -305,7 +321,7 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		/**	jQuery DatePicker calendar for date inputs	*/
 		wp_enqueue_script(	'tgsb_datepicker_script',
 					plugins_url('/js/jquery-ui-datepicker.min.js', TG_SEARCHBOXES__FILE__),
-					array('jquery'));
+					array('jquery', 'jquery-ui-core'));
 		return true;
 	}
 
@@ -321,7 +337,7 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		// adding JS for the datepicker (for depart, return, check-in, check-out, pick-up, drop-off dates)
 		wp_enqueue_script(	'tgsb_datepicker_script',
 					plugins_url('/js/jquery-ui-datepicker.min.js', TG_SEARCHBOXES__FILE__),
-					array('jquery'));
+					array('jquery', 'jquery-ui-core'));
 		// enqueuing the farbtastic color-picker css file
 		wp_enqueue_style( 'farbtastic' );
 		// enqueuing the farbtastic color-picker js file
@@ -329,9 +345,15 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		// main CSS rules used on the TG searchbox Settings Page of the plugin
 		wp_enqueue_style('tgsb_searchboxes_settings_style', plugins_url('/css/tg_searchboxes_settings.min.css', TG_SEARCHBOXES__FILE__));
 		// including customized settings, set by the user
-		wp_enqueue_style('tgsb_searchboxes_color_style', plugins_url('/css/tg_searchboxes_color.css', TG_SEARCHBOXES__FILE__));
+		// added the filemtime because the values of the color are changing in the css file when a user decide to change them and so we want to do a cache refresh for that file
+		wp_enqueue_style('tgsb_searchboxes_color_style', plugins_url('/css/tg_searchboxes_color.css', TG_SEARCHBOXES__FILE__).'?'.$this->options['cssfiletimestamp']);
+		// adding the js file used for the google plus one button
+		// it was added like that because we want to be print between the head tags and because it has also inline js "{parsetags:'explicit'}" that has to be present
+		?>
+		<script type="text/javascript" src="https://apis.google.com/js/plusone.js">{parsetags:'explicit'}</script>
+		<?php
 		// adding the JS file used for settings /js/tg_searchboxes_settings.js to the DOM
-		// the JS file used on the Setting Page of the plugin		
+		// the JS file used on the Setting Page of the plugin
 		wp_enqueue_script(
 				'tgsb_searchboxes_settings_script',
 				// path
@@ -350,17 +372,52 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
       			'TG_Searchboxes_Settings',
 			array(	'str_CalendarURL'	=> plugins_url('/images/tg_searchboxes/calendarnew.png', TG_SEARCHBOXES__FILE__),
 				'str_ASAjaxURL'		=> plugins_url('/ajax/autosuggestion.php', TG_SEARCHBOXES__FILE__),
-				'str_dateFormat'	=> $this->options['date_format_js'])
+				'str_dateFormat'	=> $this->options['date_format_js'],
+				'tgsbDefaultSettings'	=> json_encode($this->options)
+			)
       		);
+		/**	main CSS rules for the searchboxes	*/
+		wp_enqueue_style('tg_searchboxes_css', plugins_url('/css/tg_searchboxes.min.css', TG_SEARCHBOXES__FILE__).'?v=20120606');
+		// adding the JS file used for the shortcodes generation on the settings page /js/tg_searchboxes_shortcodes.js
+		wp_enqueue_script(
+				'tgsb_searchboxes_shortcodes_script',
+				// path
+				plugins_url('/js/tg_searchboxes_shortcodes.min.js', TG_SEARCHBOXES__FILE__),
+				// dependencies
+				array('tgsb_datepicker_script', 'jquery'),
+				'1.0',
+				// add script to footer because on it are attached some js variables
+				true);
+		// options needed for the default settings variables
+		$options			= $this->options;
+		// the dates should be present in the date format set
+		$depDateTimestamp		= strtotime('+'.$options['departure_date']);
+		$retDateTimestamp		= strtotime($options['return_date'], $depDateTimestamp);
+		$options['departure_date']	= date($options['date_format'], $depDateTimestamp);
+		$options['return_date']		= date($options['date_format'], $retDateTimestamp);
+		unset($depDateTimestamp, $retDateTimestamp);
+		// adding to the DOM the js variables needed in the shortcodes JS file
+		wp_localize_script(
+			'tgsb_searchboxes_shortcodes_script',
+			'TG_Searchboxes_Variables',
+			array(	'str_CalendarURL'	=> plugins_url('/images/tg_searchboxes/calendarnew.png', TG_SEARCHBOXES__FILE__),
+				'str_ASAjaxURL'		=> plugins_url('/ajax/autosuggestion.php', TG_SEARCHBOXES__FILE__),
+				'str_dateFormat'	=> $this->options['date_format_js'],
+				'tgsbDefaultSettings'	=> json_encode($options),
+				'demoPage'		=> admin_url().'admin.php?page=tg_searchboxes_demo'
+			)
+		);
+		unset($options);
 		return true;
 	}
 
 	/**	enque JS/CSS used on Demo page, inside admin interface	*/
 	function tg_searchboxes_frontend_head() {
 		/**	customized CSS rules of the searchbox	*/
-		wp_enqueue_style('tg_searchboxes_color_css', plugins_url('/css/tg_searchboxes_color.css', TG_SEARCHBOXES__FILE__));
+				// added the filemtime because the values of the color are changing in the css file when a user decide to change them and so we want to do a cache refresh for that file
+		wp_enqueue_style('tg_searchboxes_color_css', plugins_url('/css/tg_searchboxes_color.css', TG_SEARCHBOXES__FILE__).'?'.$this->options['cssfiletimestamp']);
 		/**	main CSS rules for the searchboxes	*/
-		wp_enqueue_style('tg_searchboxes_css', plugins_url('/css/tg_searchboxes.min.css', TG_SEARCHBOXES__FILE__));
+		wp_enqueue_style('tg_searchboxes_css', plugins_url('/css/tg_searchboxes.min.css', TG_SEARCHBOXES__FILE__).'?v=20120606');
 		/**	jQuery datepicker CSS rules for Calendars	*/
 		wp_enqueue_style('datepicker_stylesheet', plugins_url('/css/ui-lightness/datepicker.min.css', TG_SEARCHBOXES__FILE__));
 		
@@ -371,7 +428,7 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		/**	jQuery DatePicker calendar for date inputs	*/
 		wp_enqueue_script(	'tgsb_datepicker_script',
 					plugins_url('/js/jquery-ui-datepicker.min.js', TG_SEARCHBOXES__FILE__),
-					array('jquery'));
+					array('jquery', 'jquery-ui-core'));
 		/**	main JS for dynamic functionalities of the searchboxes	*/
 		wp_enqueue_script(	'tgsb_main_script',
 					plugins_url( '/js/tg_searchboxes.min.js', TG_SEARCHBOXES__FILE__ ),

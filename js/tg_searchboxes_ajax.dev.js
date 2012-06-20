@@ -10,11 +10,28 @@ function setParamsToBoxes(obj) {
 		// the set the selectedTab to the default value of 'flights'
 		obj.selectedTab = 'flights';
 	};
+	
+	// if the selectedTab of the box is not defined in the object
+	if(typeof(obj.alignment) == 'undefined' || !obj.alignment) {
+		// the set the selectedTab to the default value of 'flights'
+		obj.alignment = 'alignnone';
+	};
+	// getting the radio buttons used for the alignment of the box
+	var alignRadioButtons = jQuery('#TB_ajaxContent').find('input[name=img_align]');
+	// iterating the radion buttons
+
+	for(var i=0; i<alignRadioButtons.length; i++) {
+		// if the value from the radio button is equal to the value of the given object
+		if(alignRadioButtons[i].value == obj.alignment) {
+			// set that radio button as checked
+			alignRadioButtons[i].checked = true;
+			break;
+		};
+	};
 
 	// finding the menu with the searchboxes measures in the popup div
 	var tgsb_popupMenu			= jQuery('#TB_ajaxContent').find('ul.measuresChooser');
 	var tgsb_popupCurrentSelectedBoxSize	= '300x250';
-
 	// getting the size of a box from the current selected option in the menu
 	tgsb_popupCurrentSelectedBoxSize	= tgsb_popupMenu.find('a.current').html();
 	// removing the current class from the current selected option in the menu
@@ -86,7 +103,7 @@ function setParamsToBoxes(obj) {
 			currentForm.find('select.rooms').val(obj.rooms);
 		// if on the object we got the rooms variable is set
 		if(typeof(obj.rtow) != 'undefined') {
-			var rtowInputs = currentForm.hasClass('flights') ? currentForm.find('input[name=oneway], select[name=oneway]') : false;
+			var rtowInputs = currentForm.hasClass('flights') ? currentForm.find('input[name=oneway], select[name=oneway], label.radio') : false;
 			var rtowValue = (obj.rtow == false) ? '' : 'on';
 			// select element
 			if(rtowInputs.length == 1) {
@@ -111,6 +128,12 @@ function setParamsToBoxes(obj) {
 if(typeof(tgsb_selBoxParam) != 'undefined' && tgsb_selBoxParam) {
 	setParamsToBoxes(tgsb_selBoxParam);
 };
+
+jQuery('input[name=img_align], #basic .align .field label').click(function(event){
+	event.stopPropagation();
+	return true;
+});
+
 jQuery('ul.measuresChooser li a').click(function(){
 	// setting the measure from the anchor text
 	measureChoosed = jQuery(this).text();
@@ -212,22 +235,19 @@ jQuery('#'+i1+', #'+i2).each(function(){
 			return;
 		}
 	});
-	// from the input value we set the date for the datepicker
-	inp.datepicker('setDate',inp.val());
 });
 // we need to check the oneway inputs because regarding this we'll enable or disable the return date input
 if(typeof(rtowInputs) == 'object' && rtowInputs.length > 0) {
 	var rt = rtowInputs.get(0).id;
 	var ow = rtowInputs.get(1).id;
-	// if oneway radio button is checked then the return date input is disabled
-	jQuery('#'+ow).change(function(){
-		if(this.checked)
+	rtowInputs.click(function(event){
+		event.stopPropagation();
+		if(this.id == ow && this.checked){
 			jQuery('#'+i2).attr('disabled',true);
-	});
-	// if the roundtrip input is checked then the return date input is enabled
-	jQuery('#'+rt).change(function(){
-		if(this.checked)
+		};
+		if(this.id == rt && this.checked){
 			jQuery('#'+i2).attr('disabled',false);
+		};
 	});
 };
 };
@@ -285,6 +305,6 @@ jQuery('.tg_searchbox form').each(function(){
 	var i2 = inputs.get(1).id;
 	var currentForm = jQuery(this);
 	var rtowInputs = false;
-	var rtowInputs = currentForm.hasClass('flights') ? jQuery(this).find('input[name=oneway]') : false;
+	var rtowInputs = currentForm.hasClass('flights') ? jQuery(this).find('input[name=oneway], label.radio') : false;
 	createDatepicker(i1,i2,rtowInputs);
 });

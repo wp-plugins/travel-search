@@ -53,7 +53,10 @@ function inputBlur(ev){
 // @param String i1 the content of the departure date input
 // @param String i2 the content of the return date input
 // @param object rtowInputs the object for the RT/OW radio buttons
-function createDatepicker(i1,i2,rtowInputs){
+// @param function callback used when changing the dates to call the function to generate a shortcode
+function createDatepicker(i1,i2,rtowInputs,callback){
+	if(typeof(callback) != 'function')
+		callback = function(){};
 	jQuery('#'+i1+', #'+i2).each(function(){
 		var inp = jQuery(this);
 		inp.datepicker({
@@ -86,11 +89,10 @@ function createDatepicker(i1,i2,rtowInputs){
 				var cont = jQuery(this).parents("div.tg_searchbox:eq(0)");
 				// the same date value is set to all inputs with the same name
 				cont.find('input[name="'+inputName+'"]').val(date);
+				callback();
 				return;
 			}
 		});
-		// from the input value we set the date for the datepicker
-		inp.datepicker('setDate',inp.val());
 	});
 	// we need to check the oneway inputs because regarding this we'll enable or disable the return date input
 	if(typeof(rtowInputs) == 'object' && rtowInputs.length > 0) {
@@ -98,13 +100,17 @@ function createDatepicker(i1,i2,rtowInputs){
 		var ow = rtowInputs.get(1).id;
 		// if oneway radio button is checked then the return date input is disabled
 		jQuery('#'+ow).change(function(){
-			if(this.checked)
+			if(this.checked) {
 				jQuery('#'+i2).attr('disabled',true);
+				callback();
+			};
 		});
 		// if the roundtrip input is checked then the return date input is enabled
 		jQuery('#'+rt).change(function(){
-			if(this.checked)
+			if(this.checked) {
 				jQuery('#'+i2).attr('disabled',false);
+				callback();
+			};
 		});
 	};
 };
@@ -380,6 +386,18 @@ jQuery(function(){
 		setDepartureDateToForm();
 		setReturnDateToForm(this.value);
 	});
+	// switching between the 2 tabs (Default settings and Shortcode Generator)
+	jQuery('ul.tgsb_settings li a, a.tgsb_shortcodeGenerator, input.tgsb_shortcodeGenerator').click(function(){
+		var tgsb_settingsSelectedTab = this.className.match(/^[a-zA-Z_]+/);
+		jQuery('ul.tgsb_settings li a, ul.tgsb_settings li').removeClass('current');
+		jQuery('ul.tgsb_settings li a.'+tgsb_settingsSelectedTab).addClass('current');
+		jQuery('ul.tgsb_settings li a.'+tgsb_settingsSelectedTab).parents('li').addClass('current');
+		jQuery('#tgsb_settings').addClass('nod');
+		jQuery('#tgsb_shortcodeGenerator').addClass('nod');
+		jQuery('#'+tgsb_settingsSelectedTab).removeClass('nod');
+		scrollTo(0,0);
+		return false;
+	});
 	
 });
 
@@ -403,7 +421,7 @@ function setSearchboxColor(input, colorCode) {
 	};
 	if(jQuery(input).hasClass('i2')) {
 		// setting the color for the text of the box
-		jQuery('.tg_searchbox .tg_container, .tg_searchbox .tg_tabs li span.sel').css('color', colorCode);
+		jQuery('.tg_searchbox .tg_container, .tg_searchbox .tg_tabs li span.sel, .tg_searchbox .tg_container label').css('color', colorCode);
 	};
 	if(jQuery(input).hasClass('i3')) {
 		// setting the color for the background of the box

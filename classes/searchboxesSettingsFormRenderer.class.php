@@ -69,15 +69,7 @@ class searchboxesSettingsFormRenderer {
 		@return array	contains an array with the valid values
 	*/
 	function validate_options($input) {
-		
-/*		print('TG_SEARCHBOXES_ABSPATH: '.TG_SEARCHBOXES_ABSPATH."<br>\n");
-		
-		// I don't want to save anything in this moment
-		print('<pre>');
-		print_r($input);
-		print('</pre>');
-		exit();
-*/		if(empty($this->options))
+		if(empty($this->options))
 			return false;
 		$valid			= array();
 		$valid			= $this->options;
@@ -216,7 +208,7 @@ class searchboxesSettingsFormRenderer {
 		$valid['rtow'] = (empty($input['flights_oneway'])) ? false : true;
 		
 		// checking if the value of the border color field matches the pattern
-		if(empty($input['brdcolor']) || !preg_match('/^\#[0-9a-f]{6}$/i', $input['brdcolor'])) {
+		if(empty($input['brdcolor']) || !preg_match('/^\#([0-9a-f]{3}|[0-9a-f]{6})$/i', $input['brdcolor'])) {
 		// if the value of the border color doesn't match the pattern then set an error message
 			add_settings_error( 'tg_searchboxes_options_brd_color', 'tg_searchboxes_options_brd_color_error','That was not a valid color code you have set for the border color!','error');
 		} else {
@@ -227,7 +219,7 @@ class searchboxesSettingsFormRenderer {
 		}
 		
 		// checking if the value of the text color field matches the pattern
-		if(empty($input['txtcolor']) || !preg_match('/^\#[0-9a-f]{6}$/i', $input['txtcolor'])) {
+		if(empty($input['txtcolor']) || !preg_match('/^\#([0-9a-f]{3}|[0-9a-f]{6})$/i', $input['txtcolor'])) {
 		// if the value of the border color doesn't match the pattern then set an error message
 			add_settings_error( 'tg_searchboxes_options_txt_color', 'tg_searchboxes_options_txt_color_error','That was not a valid color code you have set for the color of the text!','error');
 		} else {
@@ -238,7 +230,7 @@ class searchboxesSettingsFormRenderer {
 		}
 		
 		// checking if the value of the background color field matches the pattern
-		if(empty($input['bgdcolor']) || !preg_match('/^\#[0-9a-f]{6}$/i', $input['bgdcolor'])) {
+		if(empty($input['bgdcolor']) || !preg_match('/^\#([0-9a-f]{3}|[0-9a-f]{6})$/i', $input['bgdcolor'])) {
 		// if the value of the border color doesn't match the pattern then set an error message
 			add_settings_error( 'tg_searchboxes_options_bgd_color', 'tg_searchboxes_options_bgd_color_error','That was not a valid color code you have set for the color of the background!','error');
 		} else {
@@ -248,7 +240,7 @@ class searchboxesSettingsFormRenderer {
 			$valid['bgdcolor']	= $input['bgdcolor'];
 		}
 		// checking if the value of the background color of the tabs field matches the pattern
-		if(empty($input['tbscolor']) || !preg_match('/^\#[0-9a-f]{6}$/i', $input['tbscolor'])) {
+		if(empty($input['tbscolor']) || !preg_match('/^\#([0-9a-f]{3}|[0-9a-f]{6})$/i', $input['tbscolor'])) {
 		// if the value of the border color doesn't match the pattern then set an error message
 			add_settings_error( 'tg_searchboxes_options_tbs_color', 'tg_searchboxes_options_tbs_color_error','That was not a valid color code you have set for the color of the background of the tabs!','error');
 		} else {
@@ -259,7 +251,7 @@ class searchboxesSettingsFormRenderer {
 		}
 		
 		// checking if the value of the text color of the tabs field matches the pattern
-		if(empty($input['tbstxtcolor']) || !preg_match('/^\#[0-9a-f]{6}$/i', $input['tbstxtcolor'])) {
+		if(empty($input['tbstxtcolor']) || !preg_match('/^\#([0-9a-f]{3}|[0-9a-f]{6})$/i', $input['tbstxtcolor'])) {
 		// if the value of the border color doesn't match the pattern then set an error message
 			add_settings_error( 'tg_searchboxes_options_tbstxt_color', 'tg_searchboxes_options_tbstxt_color_error','That was not a valid color code you have set for the color of the text of the tabs!','error');
 		} else {
@@ -270,7 +262,7 @@ class searchboxesSettingsFormRenderer {
 		}
 		
 		// checking if the value of the borders color of the tabs field matches the pattern
-		if(empty($input['tbsbrdcolor']) || !preg_match('/^\#[0-9a-f]{6}$/i', $input['tbsbrdcolor'])) {
+		if(empty($input['tbsbrdcolor']) || !preg_match('/^\#([0-9a-f]{3}|[0-9a-f]{6})$/i', $input['tbsbrdcolor'])) {
 		// if the value of the border color doesn't match the pattern then set an error message
 			add_settings_error( 'tg_searchboxes_options_tbsbrd_color', 'tg_searchboxes_options_tbsbrd_color_error','That was not a valid color code you have set for the color of the borders of the tabs!','error');
 		} else {
@@ -283,20 +275,8 @@ class searchboxesSettingsFormRenderer {
 		// checking the links option value
 		$valid['links'] = (empty($input['links'])) ? false : true;
 		
-		// checking if the css file used for setting the colors of the searchboxes is writable
-		list($writableFileStatus, $cssFile) = $this->checkWritableCSSFile();
-		if(!$writableFileStatus) {
-			$valid = $this->setColorsValuesBack($valid);
-			add_settings_error( 'tg_searchboxes_options_writable_css_file', 'tg_searchboxes_options_writable_css_file_error','The file <strong>'.$cssFile.'</strong> is not writable!','error');
-		}
-
-		// if all the flags for valid colors were set and at least one color value is different from the one already set in the defaults values then regenerate the CSS file containing the rules for colors
-		if($validBorderColor && $validTextColor && $validBackgroundColor && $validTabsColor && $validTabsTextColor && $validTabsBordersColor && $writableFileStatus /* && ($valid['brdcolor'] != $this->options['brdcolor'] || $valid['bgdcolor'] != $this->options['bgdcolor'] || $valid['txtcolor'] != $this->options['txtcolor'] || $valid['tbscolor'] != $this->options['tbscolor'] || $valid['tbstxtcolor'] != $this->options['tbstxtcolor'] || $valid['tbsbrdcolor'] != $this->options['tbsbrdcolor']) */) {
-
-			// I'm not sure regarding the clause that at least one color value because it might happen that the values of the colors will be changed in the database but the file will not be regenerated because of the permissions set over it
-			$valid = $this->regenerateCSSColorFile($valid);
-		}
-
+		// this value is used to avoid caching for the color file after new values are saved
+		$valid['cssfiletimestamp'] = time();
 		return $valid;
 	}
 	
@@ -500,6 +480,95 @@ class searchboxesSettingsFormRenderer {
 		$output .= "<option value='0'".(!$this->controller->options['links'] ? ' selected="selected"' : '').">no</option>";		
 		$output .= "</select>";
 		echo $output;
+	}
+	
+		/*
+		WHAT & WHY: method used to verify the ftp credentials and if they are needed then display the form where a user will add them
+	*/
+	function checkFTPCredentials() {
+		// an array with the inputs we are interested into
+		$inputArrayKeys = array('brdcolor', 'txtcolor', 'bgdcolor', 'tbscolor', 'tbstxtcolor', 'tbsbrdcolor');
+		// setting the $_POST variable from the plugin's options
+		// from the $_POST variables are created the hidden inputs that will be set in the form where the user needs to add the ftp credentials
+		foreach($this->controller->options as $key => $value) {
+			if(!in_array($key, $inputArrayKeys))
+				continue;
+			$_POST[$key] = $this->controller->options[$key];
+
+		}
+		
+		$url = wp_nonce_url('admin.php?page=tg_searchboxes&updated=true');
+		if (false === ($creds = request_filesystem_credentials($url, '', false, false, $inputArrayKeys) ) ) {
+			/*	check if the password was sent but empty => show error msg.	*/
+			if(isset($_POST['password']) && empty($_POST['password']))
+				print('<div id="message" class="error"><p><strong>Error:</strong> No password given.</p></div>');
+
+			// if we get here, then we don't have credentials yet,
+			// but have just produced a form for the user to fill in, 
+			// so stop processing for now
+			return false; // stop the normal page form from displaying
+		}
+	
+		// now we have some credentials, try to get the wp_filesystem running
+		if ( ! WP_Filesystem($creds) ) {
+			// our credentials were no good, ask the user for them again
+			request_filesystem_credentials($url, '', true, false, $inputArrayKeys);
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/*
+	  WHAT & WHY: writting the contents of the $_POST-ed data to the file
+	*/
+	function writeToFile($input) {
+		if(empty($input))
+			return false;
+		// verifying the values of the inputs because we don't want to allow posting some malicious data
+		if(empty($input['brdcolor']) || !preg_match('/^\#([0-9a-f]{3}|[0-9a-f]{6})$/i', $input['brdcolor']))
+			$input['brdcolor'] = $this->controller->options['brdcolor'];
+		if(empty($input['txtcolor']) || !preg_match('/^\#([0-9a-f]{3}|[0-9a-f]{6})$/i', $input['txtcolor']))
+			$input['txtcolor'] = $this->controller->options['txtcolor'];
+		if(empty($input['bgdcolor']) || !preg_match('/^\#([0-9a-f]{3}|[0-9a-f]{6})$/i', $input['bgdcolor']))
+			$input['bgdcolor'] = $this->controller->options['bgdcolor'];
+		if(empty($input['tbscolor']) || !preg_match('/^\#([0-9a-f]{3}|[0-9a-f]{6})$/i', $input['tbscolor']))
+			$input['tbscolor'] = $this->controller->options['tbscolor'];
+		if(empty($input['tbstxtcolor']) || !preg_match('/^\#([0-9a-f]{3}|[0-9a-f]{6})$/i', $input['tbstxtcolor']))
+			$input['tbstxtcolor'] = $this->controller->options['tbstxtcolor'];
+		if(empty($input['tbsbrdcolor']) || !preg_match('/^\#([0-9a-f]{3}|[0-9a-f]{6})$/i', $input['tbsbrdcolor']))
+			$input['tbsbrdcolor'] = $this->controller->options['tbsbrdcolor'];
+
+		global $wp_filesystem;
+		
+		// setting the absolute path of the folder where the css file is located
+		$upload_dir	= TG_SEARCHBOXES_ABSPATH.'css';
+		// filename path according to the upload folder:
+		// /var/www/vhosts/alpha.travelgrove.com/httpdocs/blog/wp-content/plugins/.../css/tg_searchboxes_color.css
+		$filename	= trailingslashit($upload_dir).'tg_searchboxes_color.css';
+		// if we are not able to write directly to the file but using the ftp
+		if($wp_filesystem->method != 'direct') {
+			// setting the relative path and removing the document root from the filename path string
+			// /blog/wp-content/plugins/.../css/tg_searchboxes_color.css
+			// on ftp the target file should be set begining from the directory that contains the files on the webserver
+			// so for example it should look like this /public_html/example.txt or /httpdocs/example.txt
+			// that's why we want the basename of the $_SERVER['DOCUMENT_ROOT']
+			// /httpdocs/blog/wp-content/plugins/.../css/tg_searchboxes_color.css
+			$filename = '/'.preg_replace('@^'.$_SERVER['DOCUMENT_ROOT'].'@i',basename($_SERVER['DOCUMENT_ROOT']),$filename);
+		}
+
+		// creating the content that follows to be written in the file
+		$fileContent = '.tg_searchbox .tg_container label{color:'.$input['txtcolor'].'}  .tg_searchbox .tg_container{border-color:'.$input['brdcolor'].';background-color:'.$input['bgdcolor'].';color:'.$input['txtcolor'].'}
+	.tg_searchbox .tg_tabs li span{color:'.$input['tbstxtcolor'].';background-color:'.$input['tbscolor'].' !important;border-color:'.$input['tbsbrdcolor'].' !important}
+	.tg_searchbox .tg_tabs li span.sel, .tg_searchbox .tg_tabs li span:hover{background-color:'.$input['bgdcolor'].' !important;border-color:'.$input['brdcolor'].' !important;color:'.$input['txtcolor'].'}';
+		$fileContent = preg_replace('/[\r\t\n\s]+/', ' ', $fileContent);
+
+		// writting the content to the css file
+		if ( ! $wp_filesystem->put_contents( $filename, $fileContent, FS_CHMOD_FILE) ) {
+			add_settings_error( 'tg_searchboxes_options_writable_css_file', 'tg_searchboxes_options_writable_css_file_error','Error saving the file <strong>'.$filename.'</strong>.','error');
+			return false;
+		}
+		return true;
 	}
 
 	

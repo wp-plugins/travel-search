@@ -3,11 +3,11 @@ var tgsb_selBoxParam = false;
 /* javascript file used when clicking the button on the tinyMCE editor */
 /* tgsb_images is used fo the images that are replacing the shortcode in the tinymce editor */
 var tgsb_images = {
-	'160x600':{'url':TG_Searchboxes_Editor_Button.str_tgsb160x600,'width':160,'height':600},
-	'300x250':{'url':TG_Searchboxes_Editor_Button.str_tgsb300x250,'width':300,'height':250},
-	'300x533':{'url':TG_Searchboxes_Editor_Button.str_tgsb300x533,'width':300,'height':533},
-	'728x90':{'url':TG_Searchboxes_Editor_Button.str_tgsb728x90,'width':728,'height':90},
-	'dynamic':{'url':TG_Searchboxes_Editor_Button.str_tgsbdynamic,'width':628,'height':250}
+	'160x600':{'url':TG_Searchboxes_Editor_Button.str_tgsb160x600,'width':160,'height':600,'alignment':'alignnone'},
+	'300x250':{'url':TG_Searchboxes_Editor_Button.str_tgsb300x250,'width':300,'height':250,'alignment':'alignnone'},
+	'300x533':{'url':TG_Searchboxes_Editor_Button.str_tgsb300x533,'width':300,'height':533,'alignment':'alignnone'},
+	'728x90':{'url':TG_Searchboxes_Editor_Button.str_tgsb728x90,'width':728,'height':90,'alignment':'alignnone'},
+	'dynamic':{'url':TG_Searchboxes_Editor_Button.str_tgsbdynamic,'width':628,'height':250,'alignment':'alignnone'}
 };
 // getting the "from" field form the serialized array
 function tgsbFromAir(serializedFieldsArray) {
@@ -179,6 +179,24 @@ function tgsbRTOW(serializedFieldsArray) {
    });
    return returnValue;
 };
+// getting the value from the radio buttons used for the alignment of the box
+function setAlignment() {
+	// default value is alignnone
+	var algn = 'alignnone';
+	// finding the alignment radio buttons on the popup div
+	var alignment = jQuery("#TB_ajaxContent").find('input[name=img_align]');
+	// iterating the radio buttons
+	for(i in alignment){
+		// if the radio button is checked
+		if(alignment[i].checked == true) {
+			// then set it's value to the variable that holds the default value
+			algn = alignment[i].value;
+			break;
+		};
+	};
+	// return the value
+	return algn;
+};
 
 /********************** the object used on tinymce.create **********************************/
 
@@ -201,7 +219,7 @@ var tgsb_popupInitOpt = {
 		});
 		
 		ed.onMouseDown.add(function(ed, e) {
-			if(e.target.nodeName == 'IMG' && ed.dom.hasClass(e.target, 'TGSearchboxes')) {
+			if((e.target && e.target.nodeName == 'IMG' && ed.dom.hasClass(e.target, 'TGSearchboxes')) || (e.target && e.target.firstChild && e.target.firstChild.nodeName == 'IMG' && ed.dom.hasClass(e.target.firstChild, 'TGSearchboxes'))) {
 				// the value of this variable is used on the popup div when a user wants to edit a shortcode from the tinymce editor
 				tgsb_selBoxParam = t.getAttr(e.target.title,'options');
 				// catching the error in case the user mistypes the shortcode
@@ -281,8 +299,9 @@ var tgsb_popupInitOpt = {
 			tgsbImageUrl = tgsb_images[tgSearchboxSize].url;
 			tgsbImageWidth = tgsb_images[tgSearchboxSize].width;
 			tgsbImageHeight = tgsb_images[tgSearchboxSize].height;
+			tgsbImageAlign = (typeof(options.alignment) == 'undefined') ? tgsb_images[tgSearchboxSize].alignment : options.alignment;
 			// we use the inline style because in this case it's not needed to add some css rules into the file editor-style.css from the current theme folder
-			return '<img src="'+tinymce.baseURL+'/plugins/wpgallery/img/t.gif" class="TGSearchboxes mceItem" style="background-image:url('+tgsbImageUrl+');background-repeat:no-repeat;width:'+tgsbImageWidth+'px;height:'+tgsbImageHeight+'px;padding:0" title="tg_searchboxes'+tinymce.DOM.encode(b)+'"/>';
+			return '<img src="'+tinymce.baseURL+'/plugins/wpgallery/img/t.gif" class="TGSearchboxes mceItem '+tgsbImageAlign+'" style="background-image:url('+tgsbImageUrl+');background-repeat:no-repeat;width:'+tgsbImageWidth+'px;height:'+tgsbImageHeight+'px;padding:0" title="tg_searchboxes'+tinymce.DOM.encode(b)+'"/>';
 		});
 	},
 	_createButtons : function() {
@@ -349,7 +368,7 @@ var tgsb_popupInitOpt = {
 function tg_searchboxes_tinymce_button_click(tinyMCE_obj){
 	var title="Travelgrove Searchboxes";
 	
-	var url=TG_Searchboxes_Editor_Button.str_EditorButtonAjaxURL;
+	var url=TG_Searchboxes_Editor_Button.str_EditorButtonAjaxURL.replace(/\&amp\;/ig, '&');
 	
 	tb_show(title,url,false);
 			
@@ -403,10 +422,15 @@ function tg_searchboxes_tinymce_button_click(tinyMCE_obj){
 			optionsString += (tgSearchboxMeasures == '300x250') ? '' : '"size":"'+tgSearchboxMeasures+'",';
 			// if the selected tab is null the set the selected tab to flights
 			
-			optionsString += (selectedTab == null) ? '"selectedTab":"flights"' : 
+			optionsString += (selectedTab == null) ? '"selectedTab":"flights",' : 
 			// if the selectedTab is set and it's flights then do not set it in the options because the flights selected tab is considered by default
-						((selectedTab[1] == 'flights' ) ? '' : 									'"selectedTab":"'+selectedTab[1]+'"'
+						((selectedTab[1] == 'flights' ) ? '' : 	'"selectedTab":"'+selectedTab[1]+'",'
 						);
+			// setting the alignment
+			alignment = setAlignment();
+			// if the alignment is set to the default value the set an empty string
+			optionsString += (alignment == 'alignnone') ? '' : '"alignment":"'+alignment+'"';
+			
 			if(optionsString.match(/\,$/)) {
 				// if a comma is found on the end of the string then remove it
 				optionsString = optionsString.replace(/\,$/, '');

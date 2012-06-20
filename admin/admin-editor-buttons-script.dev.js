@@ -170,6 +170,26 @@ function tgsbRTOW(serializedFieldsArray) {
    return returnValue;
 };
 
+// getting the value from the radio buttons used for the alignment of the box
+function setAlignment() {
+	// default value is alignnone
+	var algn = 'alignnone';
+	// finding the alignment radio buttons on the popup div
+	var alignment = jQuery("#TB_ajaxContent").find('input[name=img_align]');
+	// iterating the radio buttons
+	for(i in alignment){
+		// if the radio button is checked
+		if(alignment[i].checked == true) {
+			// then set it's value to the variable that holds the default value
+			algn = alignment[i].value;
+			break;
+		};
+	};
+	// return the value
+	return algn;
+};
+
+
 jQuery(document).ready(function(jQuery){
 	var editor_toolbar=jQuery("#ed_toolbar");
 	if(editor_toolbar){
@@ -184,7 +204,7 @@ jQuery(document).ready(function(jQuery){
 	};
 	function tg_searchboxes_button_click(){
 		var title = "Travelgrove Searchboxes";
-		var url = TG_Searchboxes_Editor_Button.str_EditorButtonAjaxURL;
+		var url = TG_Searchboxes_Editor_Button.str_EditorButtonAjaxURL.replace(/\&amp\;/ig, '&');
 		tb_show(title,url,false);
 		jQuery("#TB_ajaxContent").width("auto").height("94.5%").click(function(event){
 			var $target=jQuery(event.target);
@@ -236,8 +256,13 @@ jQuery(document).ready(function(jQuery){
 				
 				optionsString += (selectedTab == null) ? '"selectedTab":"flights"' : 
 				// if the selectedTab is set and it's flights then do not set it in the options because the flights selected tab is considered by default
-							((selectedTab[1] == 'flights' ) ? '' : 									'"selectedTab":"'+selectedTab[1]+'"'
+							((selectedTab[1] == 'flights' ) ? '' : 	'"selectedTab":"'+selectedTab[1]+'"'
 							);
+				// setting the alignment
+				alignment = setAlignment();
+				// if the alignment is set to the default value the set an empty string
+				optionsString += (alignment == 'alignnone') ? '' : '"alignment":"'+alignment+'"';
+				
 				if(optionsString.match(/\,$/)) {
 					// if a comma is found on the end of the string then remove it
 					optionsString = optionsString.replace(/\,$/, '');
