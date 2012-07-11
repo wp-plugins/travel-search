@@ -11,7 +11,7 @@
 .tg_searchbox .tg_container form label{display:block !important;margin-right:3px}
 .tg_searchbox .tg_container form label.radio{display:inline-block !important;font-size:10px}
 .tg_searchbox .tg_container form input{font-family:Tahoma}
-.tg_searchbox .tg_container form input.tgsb_submit_button{background-color:#fec344;background-image:url(../images/tg_searchboxes/buttonbkg.png);background-repeat:repeat-x;border-top:none;border-left:none;border-right:1px solid #ce8513;border-bottom:1px solid #ce8513;height:29px;line-heught:29px;width:auto;text-align:center;font-size:13px !important;color:#000;font-weight:700;cursor:pointer}
+.tg_searchbox .tg_container form input.tgsb_submit_button{background-color:#fec344;background-image:url(../images/tg_searchboxes/buttonbkg.png);background-repeat:repeat-x;border-top:none;border-left:none;border-right:1px solid #ce8513;border-bottom:1px solid #ce8513;height:29px;line-height:29px;width:auto;text-align:center;font-size:13px !important;color:#000;font-weight:700;cursor:pointer;padding:1px 6px}
 .tg_searchbox .tg_container form input.tgsb_submit_button_cmp{width:127px}
 .tg_searchbox .tg_container form input[type=radio]{vertical-align:middle;margin:0 3px}
 .tg_searchbox .tg_container form select{border:1px solid #a7b4b3;border-radius:0 0 0 0;padding:2px !important;height:23px !important;width:37px}
