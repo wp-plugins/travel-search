@@ -108,6 +108,13 @@ The commission earned by an affiliate in a month varies from one affiliate to th
 
 == Changelog ==
 
+= 1.2.2 =
+* Main JS file of the plugin made jQuery noConflict-mode compatible
+* noConflict-mode option has been added to settings for blogs with more instances of jQuery
+* Minor bug has been fixed in the color picker
+* Wording optimized on the boxes, compare button
+* Loading image visual bug has been fixed
+
 = 1.2.1 =
 * Minor bug fixed while saving the settings via FTP - no error message were shown if no password was given.
 * Internal tracking variable made hookable.
