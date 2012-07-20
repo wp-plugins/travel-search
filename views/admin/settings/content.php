@@ -43,8 +43,8 @@ settings_errors();
 	do_settings_sections('tg_searchboxes_options');
 ?>
 <br />
-<label for="travelSearchNoConflict" style="margin-left:10px">Having problems with our plugin and multiple jQuery instances? Check this box:</label> <input id="travelSearchNoConflict" type='checkbox' name='tg_searchboxes_options[noconflict]'<?php echo ($this->options['noconflict'] ? ' checked="checked"' : ''); ?> />
-<br />
+<input id="travelSearchNoConflict" style="margin-left:10px" type='checkbox' name='tg_searchboxes_options[noconflict]'<?php echo ($this->options['noconflict'] ? ' checked="checked"' : ''); ?> />
+<label for="travelSearchNoConflict">Compatibility Mode (<i>Use this option for multiple jQuery instances, if our plugin does not work well</i>)</label> <br />
 <?php /* div containing the color settings */ ?>
 <div class="colorSettings">
 	<label class="colorSet" for="brdcolor">border color:</label><br />
