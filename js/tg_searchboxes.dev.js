@@ -557,7 +557,7 @@ function createImpressionTrackingQueryString(frmObj) {
 	// setting the subID to the impression query string, if it's not defined then set the subID to 106
 	var tgsbSubID = (typeof(frmObj.find('input[name=subID]').val()) != 'undefined') ? 'subID='+frmObj.find('input[name=subID]').val() : 106;
 			
-	return tgsbFrom+tgsbTo+tgsbDepDate+tgsbRetDate+tgsbIdReferral+'&'+tgsbSubID;
+	return tgsbFrom+tgsbTo+tgsbDepDate+tgsbRetDate+tgsbIdReferral+'&'+tgsbSubID+'&trafficSource=wpplugin';
 };
 
 

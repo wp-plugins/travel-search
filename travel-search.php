@@ -25,6 +25,9 @@ License: GPL 2
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 */
+/*	NO direct linking / direct output from Plugin's source; before it brought an error; 23 July 2012; C;	*/
+if(!defined('ABSPATH') || !defined('WPINC'))
+	exit();
 
 /*	defining abs path to the given plugin directory, plugin dir name+plugin name, abs path to the plugin PHP file	*/
 if(!defined('TG_SEARCHBOXES_ABSPATH'))
