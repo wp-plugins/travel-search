@@ -285,7 +285,7 @@ class searchboxesSettingsFormRenderer {
 		echo '<p>Before actually adding the searchboxes to your pages check your general settings.</p>'.
 		'<p>Simply enter your default values into the right fields and leave the tab open that you want to be opened by default.</p>'.
 		'<p>Make sure you enter your Travelgrove Affiliate ID as well so Travelgrove can track your commissions.'.
-		' <a href="https://www.travelgrove.com/affiliates/login.php" target="_blank" title="Travelgrove\'s Affiliates login page">Click here</a> to get your unique Travelgrove Affiliate ID.</p>';
+		' <a href="https://www.travelgrove.com/affiliates/login.php?source=wpPlugin" target="_blank" title="Travelgrove\'s Affiliates login page">Click here</a> to get your unique Travelgrove Affiliate ID.</p>';
 	}
 	
 	/**	setting the Affiliate ID input on the Settings Page	*/
