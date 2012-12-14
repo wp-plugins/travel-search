@@ -164,7 +164,7 @@
 .mdynamic .tg_container form.flights input[type=submit]{position:static;float:right;margin:0 15px 0 0}
 .mdynamic .tg_container div.pwr{position:absolute;bottom:4px;right:13px}
 .mdynamic .tg_container form.packages span.s{width:16%}
-.mdynamic .tg_container form.cars div.formContent{padding-bottom:48px}
+/*.mdynamic .tg_container form.cars div.formContent{padding-bottom:48px}*/
 .mdynamic .tg_container form div.mrcList span{margin-right:10px !important}
 /*autosuggestion css rules start*/
 ul.tgsb_as{display:none;position:absolute;margin:0;padding:2px;border:1px solid #fedf49;background:#fff;z-index:8424;font-size:12px;list-style-type:none;text-align:left}
