@@ -509,6 +509,8 @@ function makeImpressionTrackingRequest(selectedTab, frmObj, callback) {
 		impressionTrackingQueryString += '&searchbox='+selectedTab;
 		// getting the script used for impression tracking using the impression query string
 		jQuery.getScript('http://www.travelgrove.com/js/affiliates/wpPluginImpTrack.php?'+impressionTrackingQueryString, callback);
+	} else {
+		callback();
 	};
 	// if all went well true is returned
 	return true;
