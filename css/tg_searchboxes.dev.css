@@ -1,5 +1,5 @@
 /* general CSS rules for the searchboxes */
-.tg_searchbox{font-size:12px;font-family:Tahoma}
+.tg_searchbox{font-size:12px;font-family:Tahoma;line-height:normal}
 .tg_searchbox .tg_container{border-width:1px;border-style:solid;position:relative;z-index:10}
 .tg_searchbox .tg_tabs{list-style-position:inside;margin:0 !important;padding:0 !important;text-indent:0}
 .tg_searchbox .tg_tabs li:before{content:""}
