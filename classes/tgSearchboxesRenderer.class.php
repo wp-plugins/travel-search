@@ -84,6 +84,13 @@ class tgSearchboxesRenderer {
 			// if the departure date timestamp is bigger then the current timestamp then set the departure date from the shortcode's attribute
 			if($setDepartureDateTimestamp > $nowDateTimestamp) {
 				$departureDate	= $this->atts['departure_date'];
+			/**	@note	if we don't use the dep. date specified as param, we shouldn't use it later to
+					determine if the return date is correct or not - later we will use the default
+					departure date to validate the return date
+				@date	2013.03.06
+				@author	Tibi	*/
+			} else {
+				$setDepartureDateTimestamp	= 0;
 			}
 		}
 		if(!empty($this->atts['return_date'])) {
