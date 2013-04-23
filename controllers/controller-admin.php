@@ -389,7 +389,7 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 				plugins_url('/js/tg_searchboxes_shortcodes.min.js', TG_SEARCHBOXES__FILE__),
 				// dependencies
 				array('tgsb_datepicker_script', 'jquery'),
-				'1.0',
+				'1.2',
 				// add script to footer because on it are attached some js variables
 				true);
 		// options needed for the default settings variables
@@ -438,7 +438,7 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 					plugins_url( '/js/tg_searchboxes.min.js', TG_SEARCHBOXES__FILE__ ),
 					array('tgsb_datepicker_script', 'tgsb_autosuggestion'),
 					// version number
-					'20120711',
+					'20130423',
 					//add this script to the footer because on it are attached some js variables
 					true);
 		// adding to the DOM the js variables needed in the main JS file

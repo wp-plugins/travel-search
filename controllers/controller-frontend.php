@@ -156,7 +156,7 @@ function enqueue_tg_searchboxes_js() {
 			plugins_url( '/js/tg_searchboxes.min.js', TG_SEARCHBOXES__FILE__ ),
 			array('tgsb_datepicker_script', 'tgsb_autosuggestion', 'jquery'),
 			// version number
-			'20120711',
+			'20130423',
 			// adding it to footer to make sure it will appear AFTER inline variables are set
 			(empty($this->options['noconflict']) ? true : false));
 	/**	context-dependent variables needed for dynamic functionality, in the main JS	*/
