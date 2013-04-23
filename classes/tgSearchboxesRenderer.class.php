@@ -83,6 +83,8 @@ class tgSearchboxesRenderer {
 		if(!empty($this->atts['options'])) {
 			$this->atts			= json_decode($this->atts['options'], true);
 		}
+		if (!isset($this->atts['usejavascript']))
+			$this->atts['usejavascript']	= $this->controller->options['usejavascript'];
 		if ($this->atts['usejavascript']){
 			return $this->renderJavaScript();
 		}

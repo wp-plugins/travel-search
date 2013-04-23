@@ -51,9 +51,8 @@ function check_load_with_javascript(){
 	
 	$req	= $_GET;
 	
-	if ($req['usejavascript'])
-		unset($req['usejavascript']);
-	$placeholder	= $req['tgsbPlaceholder'];
+	$req['usejavascript']	= false;
+	$placeholder		= $req['tgsbPlaceholder'];
 	unset($req['tgsbPlaceholder']);
 	// the tgsb_command command parameter should not be sent to the shortcode parser - any other parameter can be sent
 	unset($req['tgsb_command']);
@@ -68,7 +67,8 @@ function check_load_with_javascript(){
 		$params	.= " ". $k ."='". preg_replace("/'/","\\'",$v) ."'";
 	$shortcode	= '['. $this->tg_searchboxes_get_shortcode() .''. $params .']';
 	$html	= do_shortcode($shortcode);
-
+	$html	= preg_replace('/[\s\n\t\r]+/',' ',$html);
+	$html	= preg_replace("/'/","\\'",$html);
 	//sending output as compressed w/ the correct headers
 	@header('Content-Type: text/javascript',true);
 	ob_start('ob_gzhandler');
