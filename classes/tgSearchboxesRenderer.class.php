@@ -70,6 +70,10 @@ class tgSearchboxesRenderer {
 		if(!empty($this->atts['options'])) {
 			$this->atts			= json_decode($this->atts['options'], true);
 		}
+		
+		/* on admin section we shouldn't use JS since the JS hadnling is not included on these pages */
+		if (is_admin())
+			$this->atts['usejavascript']	= false;
 
 		if (!isset($this->atts['usejavascript']))
 			$this->atts['usejavascript']	= $this->controller->options['usejavascript'];
