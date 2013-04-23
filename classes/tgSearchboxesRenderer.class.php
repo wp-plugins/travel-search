@@ -38,10 +38,23 @@ class tgSearchboxesRenderer {
 		return;
 	}
 	
+	/**	@note	method that's used to generate the <script> tag for the JS file that creates the searchbox
+			used if `usejavascript` option is true
+		@date	2013.04.23
+		@author	Tibi	*/	
 	function renderJavaScript(){
 		$queryString	= 'tgsb_command=js_searchbox';
-		foreach($this->atts as $name => $value){
-			if ($name=='usejavascript')
+		$atts	= $this->atts;
+		// `usejavascript` option shouldn't be sent to JS file
+		unset($atts['usejavascript']);
+		// eliminating some default values that shouldn't be sent to JS file
+		if ($atts['alignment']==$this->defaultAlignment)
+			unset($atts['alignment']);
+		if ($atts['size']==$this->defaultSize)
+			unset($atts['size']);
+		foreach($atts as $name => $value){
+			// default values shouldn't be sent to JS file
+			if ($value == $this->controller->options[$name])
 				continue;
 			$queryString.= '&'. urlencode($name) .'='. urlencode($value);
 		}
