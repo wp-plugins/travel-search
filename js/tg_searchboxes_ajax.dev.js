@@ -61,6 +61,8 @@ function setParamsToBoxes(obj) {
 	var tgsb_insertLink = jQuery('#TB_ajaxContent').find('a.send_searchbox_to_editor');
 	tgsb_insertLink.html('Update');
 	jQuery('#TB_ajaxContent').find('input.send_searchbox_to_editor').val('Update Box');
+	if (obj.usejavascript)
+		jQuery('#TB_ajaxContent').find("#travelSearchUseJavaScript").attr('checked',true);
 	// iterating each form
 	tgsb_searchboxesForms.each(function(){
 		var currentForm = jQuery(this);
@@ -129,7 +131,7 @@ if(typeof(tgsb_selBoxParam) != 'undefined' && tgsb_selBoxParam) {
 	setParamsToBoxes(tgsb_selBoxParam);
 };
 
-jQuery('input[name=img_align], #basic .align .field label').click(function(event){
+jQuery('input[name=img_align], #basic .align .field label, #travelSearchUseJavaScript, label[for=travelSearchUseJavaScript]').click(function(event){
 	event.stopPropagation();
 	return true;
 });

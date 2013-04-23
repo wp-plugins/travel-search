@@ -1,11 +1,8 @@
+(function(jQuery){
 var popupWPos = 0;
-var ajaxLoaders = {
-	'160x600':'<img src="'+TG_Searchboxes_Variables.str_ajaxLoaderCircle+'" width="100" height="100" alt="loading..." />',
-	'300x250':'<img src="'+TG_Searchboxes_Variables.str_ajaxLoaderCircle+'" width="100" height="100" alt="loading..." />',
-	'300x533':'<img src="'+TG_Searchboxes_Variables.str_ajaxLoaderCircle+'" width="100" height="100" alt="loading..." />',
-	'728x90':'<img src="'+TG_Searchboxes_Variables.str_ajaxLoaderBert+'" width="128" height="15" alt="loading..." />',
-	'dynamic':'<img src="'+TG_Searchboxes_Variables.str_ajaxLoaderBert+'" width="128" height="15" alt="loading..." />'
-};
+var ajaxLoaders;
+var ASoptions;
+var hotelASoptions;
 // object containing the query string with the searchboxes params used when merchant request should be made, if the query string for a searchbox an a search form is the same then the merchant request is not made and the div having the merchants into it is showed
 var tgsb_searchboxesParams = {};
 
@@ -20,81 +17,10 @@ function TGSearchboxes() {
 		this.queryCodes[queryCodeMember] = queryCodeMemberValue;
 		return true;
 	};
+	this.replacePlaceholder	= replacePlaceholder;
 };
 // calling the TGSearchboxes object
 TGSB = new TGSearchboxes();
-
-
-var ASoptions = {
-	delay: 175,
-	timeout: 5000,
-	script: TG_Searchboxes_Variables.str_ASAjaxURL,
-	loadingClass: 'tgsb_as_load',
-	className: 'tgsb_as tgsb_asMargin',
-	json: true,
-	frameForIE: true,
-	ajaxParams: {
-		action:		'',
-		json:		true,
-		lng:		'def',
-		dsgn:		'flg',
-		addtag:		'em',
-		citytype:	'airports',
-		domainPrefix:	true
-	},
-	autoSelect:true,
-	offsety:0,
-	format: function(selLiObj) {
-		return selLiObj.innerHTML.replace(/<\/?[a-z]+>/gi,'').replace(/(.*),(.*)\((.*)\)/,'$1 ($3)');
-	},
-	callback:function(selLiObj, asObj) {
-		// checking the size of the searchbox
-		var searchboxsize = jQuery(asObj.fld).parents('.tg_searchbox').attr('class').match(/(300x250|728x90)$/);
-		// the merchants refresh is not made when location is selected from the autosuggestion on the boxes with the measures of 300x250 and 728x90 because on those searchboxes the process includes 2 screens
-		if(searchboxsize == null)
-			makeMerchantsRequest(asObj.fld);
-	},
-	errorHandler:function(asObj) {
-		jQuery(asObj.fld).addClass("err").focus(remErr);
-	}
-
-};
-
-var hotelASoptions = {
-	delay: 175,
-	timeout:5000,
-	script: TG_Searchboxes_Variables.str_ASAjaxURL,
-	loadingClass: 'tgsb_as_load',
-	className: 'tgsb_as tgsb_asMargin',
-	json: true,
-	frameForIE: true,
-	ajaxParams: {
-		action: '',
-		json: true,
-		lng:'def',
-		dsgn:'flg',
-		addtag:'em',
-		citytype:'cities',
-		domainPrefix:true
-	},
-	autoSelect:true,
-	offsety:0,
-	format: function(selLiObj) {
-		//jQuery(".tgsb_addDest").val(selLiObj.id);
-		return selLiObj.innerHTML.replace(/<\/?[^>]+>/gi,'').replace(/(.*),(.*) \((.*)\)/,'$1,$2');
-	},
-	callback:function(selLiObj,asObj) {
-		var inp = jQuery(asObj.fld);
-		inp.parents('div.tg_searchbox').find(".tgsb_addDest").val(selLiObj.id);
-
-		var searchboxsize = inp.parents('.tg_searchbox').attr('class').match(/(300x250|728x90)$/);
-// the merchants refresh is not made when location is selected from the autosuggestion on the boxes with the measures of 300x250 and 728x90 because on those searchboxes the process includes 2 screens
-		if(searchboxsize == null)
-			makeMerchantsRequest(asObj.fld);
-//		makeMerchantsRequest(asObj.fld);
-		//return selLiObj.innerHTML.replace(/<\/?[^>]+>/gi,'').replace(/(.*),(.*) \((.*)\)/,'$1,$2');
-	}
-};
 
 // WHAT & WHY: function used to remove the error class from an input
 function remErr(){
@@ -107,6 +33,21 @@ function inputFocus(ev){
 };
 function inputBlur(ev){
 	if (this.value=='') this.value=this.defaultValue; // if input is empty, filling it up with default value
+};
+
+/**	@note	replaces a placeholder of a searchbox w/ the searchbox (when the searchbox is loaded via JS)
+	@date	2013.04.22
+	@author	Tibi	*/
+function replacePlaceholder(shortcode, html){
+	//replacing on document ready to make sure teh element is already defined
+	jQuery(function(){
+		var htmlObj	= jQuery(html);
+		var shortcodeObj= jQuery('span#'+shortcode);
+		if (shortcodeObj.length==0)
+			return false;
+		shortcodeObj.replaceWith(htmlObj);
+		tgsb_initSingleSearchbox(htmlObj);
+	});
 };
 
 /*
@@ -228,11 +169,11 @@ function validateSearchbox(obj, onsbmt, addErrorClass) {
 		if(selectedMerchants.length < 1) {
 			// if the error message is empty
 			if(errMsg.length == 0) {
-				alert('Please select at least one merchant.');
+				alert('Please select at least two providers to compare their prices.');
 				return false;
 			} else {
 				// if the error message is not empty add the error message referring to the selected merchants
-				errMsg += "Please select at least one merchant.\n";
+				errMsg += "Please select at least two providers to compare their prices.\n";
 			};
 		};
 	};
@@ -402,7 +343,8 @@ function makeMerchantsRequest(obj, showErrorMessages, addErrorClass) {
 		// hide the search form
 		if(searchboxsize[1] != 'dynamic')
 			searchbox.find('div.formContent').addClass('nod');
-
+		// add the nod class to the div containing the help class
+		searchbox.find('div.help').addClass('nod');
 		merchantsContainer.html(ajaxLoaders[searchboxsize[1]]);	
 		// show the merchants container div and align it's content ( for ajax loader image) to center 
 		merchantsContainer.addClass('alCnt').removeClass('nod');
@@ -456,8 +398,6 @@ function makeMerchantsRequest(obj, showErrorMessages, addErrorClass) {
 			success: function(rsp){
 				// evaluating the response
 				jsonObj = eval('('+rsp+')');
-				// add the nod class to the div containing the help class
-				searchbox.find('div.help').addClass('nod');
 				// removing the align center class used for ajax loader image
 				merchantsContainer.removeClass('alCnt');
 				// adding in the merchants container the html containing the merchants
@@ -496,7 +436,7 @@ function makeMerchantsRequest(obj, showErrorMessages, addErrorClass) {
 						searchbox.find('div.formContent').removeClass('nod');
 						// click on the submit button
 						submitButton.removeClass('tgsb_submit_button_cmp');
-						submitButton.val('find sites');
+						submitButton.val('search');
 						submitButton.unbind('click').click(function(){
 							// making the merchants request	
 							makeMerchantsRequest(this);
@@ -585,6 +525,8 @@ function makeImpressionTrackingRequest(selectedTab, frmObj, callback) {
 		impressionTrackingQueryString += '&searchbox='+selectedTab;
 		// getting the script used for impression tracking using the impression query string
 		jQuery.getScript('http://www.travelgrove.com/js/affiliates/wpPluginImpTrack.php?'+impressionTrackingQueryString, callback);
+	} else {
+		callback();
 	};
 	// if all went well true is returned
 	return true;
@@ -633,7 +575,7 @@ function createImpressionTrackingQueryString(frmObj) {
 	// setting the subID to the impression query string, if it's not defined then set the subID to 106
 	var tgsbSubID = (typeof(frmObj.find('input[name=subID]').val()) != 'undefined') ? 'subID='+frmObj.find('input[name=subID]').val() : 106;
 			
-	return tgsbFrom+tgsbTo+tgsbDepDate+tgsbRetDate+tgsbIdReferral+'&'+tgsbSubID;
+	return tgsbFrom+tgsbTo+tgsbDepDate+tgsbRetDate+tgsbIdReferral+'&'+tgsbSubID+'&trafficSource=wpplugin';
 };
 
 
@@ -801,21 +743,26 @@ function tgsb_setSearchboxDetails(selectedTab, roundTripOneWay, fromDepart, toAr
 	return false;
 };
 
-
-jQuery(function(){
-	var formsContainer = jQuery('.tg_searchbox');
+/**	@note	initializes a single searchbox set (bins AS objects, merchants, etc.
+	@date	2013.04.22
+	@author	Tibi	*/
+function tgsb_initSingleSearchbox(tgsb){
+	tgsb	= jQuery(tgsb).filter(':not(.tg_searchbox_initialized)');
+	tgsb.addClass('tg_searchbox_initialized');
+	if (tgsb.length==0)
+		return false;
 	// on focusing on an input it's default value will disappear
 	// bluring the default value will appear back 
-	jQuery(".tgsb_addAS").each(function(){
+	tgsb.find(".tgsb_addAS").each(function(){
 		jQuery(this).focus(inputFocus).blur(inputBlur);
 		new AS(this.id,ASoptions);
 	});
-	jQuery(".tgsb_addASH").each(function(){
+	tgsb.find(".tgsb_addASH").each(function(){
 		jQuery(this).focus(inputFocus).blur(inputBlur);
 		new AS(this.id,hotelASoptions);
 	});
 	//clicking on the searchoxes tabs
-	jQuery('div.tg_searchbox ul.tg_tabs li span').click(function(){
+	tgsb.find('div.tg_searchbox ul.tg_tabs li span').click(function(){
 		// getting the selected tab
 		selectedTab = jQuery(this).attr('class').match(/^[a-z]+/);
 		// getting the parrent container with the css class tg_searchbox
@@ -836,11 +783,9 @@ jQuery(function(){
 			if(searchboxsize[1] == '160x600' || searchboxsize[1] == '300x533' || searchboxsize[1] == 'dynamic')
 				makeMerchantsRequest(submitButton.get(0), false, false);
 		});
-		
-
 	});
-	
-	formsContainer.find('form').each(function() {
+
+	tgsb.find('form').each(function() {
 		var currentForm = jQuery(this);
 		// setting the searchboxsize
 		var searchboxsize = currentForm.parents('.tg_searchbox').attr('class').match(/(160x600|300x250|300x533|728x90|dynamic)$/);
@@ -851,7 +796,7 @@ jQuery(function(){
 			//making an impression tracking when selecting a tab
 			makeImpressionTrackingRequest(selectedTab, currentForm, function(){
 				// setting the searchboxsize
-				var searchboxsize = currentForm.parents('.tg_searchbox').attr('class').match(/(160x600|300x250|300x533|728x90|dynamic)$/);
+				var searchboxsize = currentForm.parents('.tg_searchbox').attr('class').match(/m(160x600|300x250|300x533|728x90|dynamic)/);
 				// for the boxes sized 160x600, 300x533 and dynamic make merchants request
 				if(searchboxsize[1] == '160x600' || searchboxsize[1] == '300x533' || searchboxsize[1] == 'dynamic')
 					makeMerchantsRequest(submitButton.get(0), false, false);
@@ -886,4 +831,93 @@ jQuery(function(){
 			return false;
 		});
 	});
+}
+
+
+jQuery(function(){
+	ajaxLoaders = {
+		'160x600':'<img src="'+TG_Searchboxes_Variables.str_ajaxLoaderCircle+'" width="100" height="100" alt="loading..." />',
+		'300x250':'<img src="'+TG_Searchboxes_Variables.str_ajaxLoaderCircle+'" width="100" height="100" alt="loading..." />',
+		'300x533':'<img src="'+TG_Searchboxes_Variables.str_ajaxLoaderCircle+'" width="100" height="100" alt="loading..." />',
+		'728x90':'<img src="'+TG_Searchboxes_Variables.str_ajaxLoaderBert+'" width="128" height="15" alt="loading..." />',
+		'dynamic':'<img src="'+TG_Searchboxes_Variables.str_ajaxLoaderBert+'" width="128" height="15" alt="loading..." />'
+	};
+
+	ASoptions = {
+		delay: 175,
+		timeout: 5000,
+		script: TG_Searchboxes_Variables.str_ASAjaxURL,
+		loadingClass: 'tgsb_as_load',
+		className: 'tgsb_as tgsb_asMargin',
+		json: true,
+		frameForIE: true,
+		ajaxParams: {
+			action:		'',
+			json:		true,
+			lng:		'def',
+			dsgn:		'flg',
+			addtag:		'em',
+			citytype:	'airports',
+			domainPrefix:	true
+		},
+		autoSelect:true,
+		offsety:0,
+		format: function(selLiObj) {
+			return selLiObj.innerHTML.replace(/<\/?[a-z]+>/gi,'').replace(/(.*),(.*)\((.*)\)/,'$1 ($3)');
+		},
+		callback:function(selLiObj, asObj) {
+			// checking the size of the searchbox
+			var searchboxsize = jQuery(asObj.fld).parents('.tg_searchbox').attr('class').match(/(300x250|728x90)$/);
+			// the merchants refresh is not made when location is selected from the autosuggestion on the boxes with the measures of 300x250 and 728x90 because on those searchboxes the process includes 2 screens
+			if(searchboxsize == null)
+				makeMerchantsRequest(asObj.fld);
+		},
+		errorHandler:function(asObj) {
+			jQuery(asObj.fld).addClass("err").focus(remErr);
+		}
+	};
+	
+	hotelASoptions = {
+		delay: 175,
+		timeout:5000,
+		script: TG_Searchboxes_Variables.str_ASAjaxURL,
+		loadingClass: 'tgsb_as_load',
+		className: 'tgsb_as tgsb_asMargin',
+		json: true,
+		frameForIE: true,
+		ajaxParams: {
+			action: '',
+			json: true,
+			lng:'def',
+			dsgn:'flg',
+			addtag:'em',
+			citytype:'cities',
+			domainPrefix:true
+		},
+		autoSelect:true,
+		offsety:0,
+		format: function(selLiObj) {
+			//jQuery(".tgsb_addDest").val(selLiObj.id);
+			return selLiObj.innerHTML.replace(/<\/?[^>]+>/gi,'').replace(/(.*),(.*) \((.*)\)/,'$1,$2');
+		},
+		callback:function(selLiObj,asObj) {
+			var inp = jQuery(asObj.fld);
+			inp.parents('div.tg_searchbox').find(".tgsb_addDest").val(selLiObj.id);
+	
+			var searchboxsize = inp.parents('.tg_searchbox').attr('class').match(/(300x250|728x90)$/);
+	// the merchants refresh is not made when location is selected from the autosuggestion on the boxes with the measures of 300x250 and 728x90 because on those searchboxes the process includes 2 screens
+			if(searchboxsize == null)
+				makeMerchantsRequest(asObj.fld);
+	//		makeMerchantsRequest(asObj.fld);
+			//return selLiObj.innerHTML.replace(/<\/?[^>]+>/gi,'').replace(/(.*),(.*) \((.*)\)/,'$1,$2');
+		}
+	};
+
+	tgsb_initSingleSearchbox('.tg_searchbox');
+	if (typeof(TGSB_placeholders)!='undefined' && TGSB_placeholders.length>0){
+		for(var i=0;i<TGSB_placeholders.length;i++)
+			replacePlaceholder(TGSB_placeholders[i].placeholder, TGSB_placeholders[i].html);
+	};
+
 });
+})(tgsb_myjquery);

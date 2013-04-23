@@ -1,5 +1,5 @@
 /* general CSS rules for the searchboxes */
-.tg_searchbox{font-size:12px;font-family:Tahoma}
+.tg_searchbox{font-size:12px;font-family:Tahoma;line-height:normal}
 .tg_searchbox .tg_container{border-width:1px;border-style:solid;position:relative;z-index:10}
 .tg_searchbox .tg_tabs{list-style-position:inside;margin:0 !important;padding:0 !important;text-indent:0}
 .tg_searchbox .tg_tabs li:before{content:""}
@@ -11,7 +11,7 @@
 .tg_searchbox .tg_container form label{display:block !important;margin-right:3px}
 .tg_searchbox .tg_container form label.radio{display:inline-block !important;font-size:10px}
 .tg_searchbox .tg_container form input{font-family:Tahoma}
-.tg_searchbox .tg_container form input.tgsb_submit_button{background-color:#fec344;background-image:url(../images/tg_searchboxes/buttonbkg.png);background-repeat:repeat-x;border-top:none;border-left:none;border-right:1px solid #ce8513;border-bottom:1px solid #ce8513;height:29px;line-heught:29px;width:87px;text-align:center;font-size:13px !important;color:#000;font-weight:700;cursor:pointer}
+.tg_searchbox .tg_container form input.tgsb_submit_button{background-color:#fec344;background-image:url(../images/tg_searchboxes/buttonbkg.png);background-repeat:repeat-x;border-top:none;border-left:none;border-right:1px solid #ce8513;border-bottom:1px solid #ce8513;height:29px;line-height:29px;width:auto;text-align:center;font-size:13px !important;color:#000;font-weight:700;cursor:pointer;padding:1px 6px}
 .tg_searchbox .tg_container form input.tgsb_submit_button_cmp{width:127px}
 .tg_searchbox .tg_container form input[type=radio]{vertical-align:middle;margin:0 3px}
 .tg_searchbox .tg_container form select{border:1px solid #a7b4b3;border-radius:0 0 0 0;padding:2px !important;height:23px !important;width:37px}
@@ -101,7 +101,7 @@
 .m300x533 .tg_container form span.s{width:55px;margin-bottom:0;vertical-align:bottom}
 .m300x533 .tg_container form input.tgsb_addAS{width:120px !important}
 .m300x533 .tg_container form.hotels input.tgsb_addASH{width:262px !important}
-.m300x533 .tg_container form input[type=submit]{display:inline-block;margin:0 0 0 70px;vertical-align:bottom}
+.m300x533 .tg_container form input[type=submit]{display:block;margin:auto;vertical-align:bottom}
 .m300x533 .tg_container div.pwr{position:absolute;bottom:4px;right:13px}
 .m300x533 .tg_container form div.mrcList span.mrr{margin-right:10px!important}
 .m300x533 .tg_container form.flights div.mrcList{height:245px}
@@ -164,7 +164,7 @@
 .mdynamic .tg_container form.flights input[type=submit]{position:static;float:right;margin:0 15px 0 0}
 .mdynamic .tg_container div.pwr{position:absolute;bottom:4px;right:13px}
 .mdynamic .tg_container form.packages span.s{width:16%}
-.mdynamic .tg_container form.cars div.formContent{padding-bottom:48px}
+/*.mdynamic .tg_container form.cars div.formContent{padding-bottom:48px}*/
 .mdynamic .tg_container form div.mrcList span{margin-right:10px !important}
 /*autosuggestion css rules start*/
 ul.tgsb_as{display:none;position:absolute;margin:0;padding:2px;border:1px solid #fedf49;background:#fff;z-index:8424;font-size:12px;list-style-type:none;text-align:left}

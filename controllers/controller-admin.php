@@ -48,7 +48,10 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		'tbstxtcolor'		=> '#53667b',
 		'tbsbrdcolor'		=> '#d9d9d9',
 		'links'			=> true,
-		'cssfiletimestamp'	=> '0'
+		'cssfiletimestamp'	=> '0',
+		'noconflict'		=> false,
+		// marks if the loading method of the searchbox should be PHP or JavaScript | Tibi | 2013.04.22
+		'usejavascript'		=> false
 		);
 
 	/**
@@ -337,16 +340,17 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		// adding JS for the datepicker (for depart, return, check-in, check-out, pick-up, drop-off dates)
 		wp_enqueue_script(	'tgsb_datepicker_script',
 					plugins_url('/js/jquery-ui-datepicker.min.js', TG_SEARCHBOXES__FILE__),
-					array('jquery', 'jquery-ui-core'));
+					array('jquery', 'jquery-ui-core'),
+					'20120711');
 		// enqueuing the farbtastic color-picker css file
 		wp_enqueue_style( 'farbtastic' );
 		// enqueuing the farbtastic color-picker js file
 		wp_enqueue_script( 'farbtastic' );
 		// main CSS rules used on the TG searchbox Settings Page of the plugin
-		wp_enqueue_style('tgsb_searchboxes_settings_style', plugins_url('/css/tg_searchboxes_settings.min.css', TG_SEARCHBOXES__FILE__));
+		wp_enqueue_style('tgsb_searchboxes_settings_style', plugins_url('/css/tg_searchboxes_settings.min.css', TG_SEARCHBOXES__FILE__), array(), '20120711');
 		// including customized settings, set by the user
 		// added the filemtime because the values of the color are changing in the css file when a user decide to change them and so we want to do a cache refresh for that file
-		wp_enqueue_style('tgsb_searchboxes_color_style', plugins_url('/css/tg_searchboxes_color.css', TG_SEARCHBOXES__FILE__).'?'.$this->options['cssfiletimestamp']);
+		wp_enqueue_style('tgsb_searchboxes_color_style', plugins_url('/css/tg_searchboxes_color.css', TG_SEARCHBOXES__FILE__), array(), $this->options['cssfiletimestamp']);
 		// adding the js file used for the google plus one button
 		// it was added like that because we want to be print between the head tags and because it has also inline js "{parsetags:'explicit'}" that has to be present
 		?>
@@ -360,7 +364,7 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 				plugins_url('/js/tg_searchboxes_settings.min.js', TG_SEARCHBOXES__FILE__),
 				// dependencies
 				array('tgsb_datepicker_script', 'farbtastic', 'jquery'),
-				'1.0',
+				'20120711',
 				// add script to footer because on it are attached some js variables
 				true);
 
@@ -377,7 +381,7 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 			)
       		);
 		/**	main CSS rules for the searchboxes	*/
-		wp_enqueue_style('tg_searchboxes_css', plugins_url('/css/tg_searchboxes.min.css', TG_SEARCHBOXES__FILE__).'?v=20120606');
+		wp_enqueue_style('tg_searchboxes_css', plugins_url('/css/tg_searchboxes.min.css', TG_SEARCHBOXES__FILE__), array(), '20120711');
 		// adding the JS file used for the shortcodes generation on the settings page /js/tg_searchboxes_shortcodes.js
 		wp_enqueue_script(
 				'tgsb_searchboxes_shortcodes_script',
@@ -415,9 +419,9 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 	function tg_searchboxes_frontend_head() {
 		/**	customized CSS rules of the searchbox	*/
 				// added the filemtime because the values of the color are changing in the css file when a user decide to change them and so we want to do a cache refresh for that file
-		wp_enqueue_style('tg_searchboxes_color_css', plugins_url('/css/tg_searchboxes_color.css', TG_SEARCHBOXES__FILE__).'?'.$this->options['cssfiletimestamp']);
+		wp_enqueue_style('tg_searchboxes_color_css', plugins_url('/css/tg_searchboxes_color.css', TG_SEARCHBOXES__FILE__), array(), $this->options['cssfiletimestamp']);
 		/**	main CSS rules for the searchboxes	*/
-		wp_enqueue_style('tg_searchboxes_css', plugins_url('/css/tg_searchboxes.min.css', TG_SEARCHBOXES__FILE__).'?v=20120606');
+		wp_enqueue_style('tg_searchboxes_css', plugins_url('/css/tg_searchboxes.min.css', TG_SEARCHBOXES__FILE__), array(), '20120711');
 		/**	jQuery datepicker CSS rules for Calendars	*/
 		wp_enqueue_style('datepicker_stylesheet', plugins_url('/css/ui-lightness/datepicker.min.css', TG_SEARCHBOXES__FILE__));
 		
@@ -428,13 +432,13 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		/**	jQuery DatePicker calendar for date inputs	*/
 		wp_enqueue_script(	'tgsb_datepicker_script',
 					plugins_url('/js/jquery-ui-datepicker.min.js', TG_SEARCHBOXES__FILE__),
-					array('jquery', 'jquery-ui-core'));
+					array('jquery', 'jquery-ui-core'), '20120711');
 		/**	main JS for dynamic functionalities of the searchboxes	*/
 		wp_enqueue_script(	'tgsb_main_script',
 					plugins_url( '/js/tg_searchboxes.min.js', TG_SEARCHBOXES__FILE__ ),
 					array('tgsb_datepicker_script', 'tgsb_autosuggestion'),
 					// version number
-					'1.0',
+					'20120711',
 					//add this script to the footer because on it are attached some js variables
 					true);
 		// adding to the DOM the js variables needed in the main JS file

@@ -44,6 +44,13 @@ class Tg_Searchboxes_Controller_Base {
 		return;
 	}
 	
+	/**	@note	gets the shortcode that's used in current travel search instance
+	 *	@date	2013.04.23
+	 * 	@author	Tibi	*/
+	public function tg_searchboxes_get_shortcode(){
+		return $this->shortcode_tg_searchboxes;
+	}
+	
 	function jquery_ui() {
 		wp_deregister_script( 'jquery-ui-core' );
 		wp_register_script( 'jquery-ui-core', plugins_url('/js/jquery-ui.min.js', TG_SEARCHBOXES__FILE__));

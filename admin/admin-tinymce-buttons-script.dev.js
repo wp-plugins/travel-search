@@ -381,6 +381,7 @@ function tg_searchboxes_tinymce_button_click(tinyMCE_obj){
 			var selectedTab = jQuery('.sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container').find('form.sel').attr('class').match(/^(flights|hotels|cars|packages)/);
 		
 			var fields = jQuery('.sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container form').serializeArray();
+			var loadFromJS	= jQuery('#travelSearchUseJavaScript').attr('checked');
 			var optionsString = '';
 			// getting the "from" value
 			tgsb_fromAir = tgsbFromAir(fields);
@@ -418,6 +419,10 @@ function tg_searchboxes_tinymce_button_click(tinyMCE_obj){
 			tgsb_rtow = tgsbRTOW(fields);
 			// adding the "roundtrip/oneway" value to the options string
 			optionsString += (tgsb_rtow.length) ? tgsb_rtow+',' : tgsb_rtow;
+			
+        		// adding the flag that matks if SB should be loaded w/ JS or not value to the options string
+        		optionsString += loadFromJS ? '"usejavascript":"on",' : '';
+			
 			// if the box measures is "300x250" then it is not needed to add the size as option because that is considered the default value
 			optionsString += (tgSearchboxMeasures == '300x250') ? '' : '"size":"'+tgSearchboxMeasures+'",';
 			// if the selected tab is null the set the selected tab to flights

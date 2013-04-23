@@ -182,6 +182,8 @@ function generateShortcode() {
         tgSearchboxMeasures = (tgSearchboxMeasures.length == 0) ? '300x250' : tgSearchboxMeasures;
         var selectedTab = jQuery('#tgsb_shortcodeGenerator .sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container').find('form.sel').attr('class').match(/^(flights|hotels|cars|packages)/);
         var fields = jQuery('#tgsb_shortcodeGenerator .sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container form').serializeArray();
+	// Tibi | 2013.04.23 | checking if we have to set the flag that marks that we have to use JS load for the JS
+	var loadFromJS	= jQuery('#tgsb_shortcodeGenerator #travelSearchShortcodeUseJavaScript').attr('checked');
         var optionsString = '';
         // getting the "from" value
         tgsb_fromAir = tgsbFromAir(fields);
@@ -219,6 +221,10 @@ function generateShortcode() {
         tgsb_rtow = tgsbRTOW(fields);
         // adding the "roundtrip/oneway" value to the options string
         optionsString += (tgsb_rtow.length) ? tgsb_rtow+',' : tgsb_rtow;
+	
+        // adding the flag that matks if SB should be loaded w/ JS or not value to the options string
+        optionsString += loadFromJS ? '"usejavascript":"on",' : '';
+	
         // if the box measures is "300x250" then it is not needed to add the size as option because that is considered the default value
         optionsString += (tgSearchboxMeasures == '300x250') ? '' : '"size":"'+tgSearchboxMeasures+'",';
         // if the selected tab is null the set the selected tab to flights

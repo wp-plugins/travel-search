@@ -57,9 +57,6 @@ class searchboxesSettingsFormRenderer {
 		add_settings_field('tg_searchboxes_options_departure_date', 'Default Departure Date:', array(&$this, 'departure_date_select'), 'tg_searchboxes_options', 'tg_searchboxes_options');
 		// adding the return date select to the form as a setting field
 		add_settings_field('tg_searchboxes_options_return_date', 'Default Return Date:', array(&$this, 'return_date_select'), 'tg_searchboxes_options', 'tg_searchboxes_options');
-		// adding the return date select to the form as a setting field
-		add_settings_field('tg_searchboxes_options_links', 'Show "travel search" link:', array(&$this, 'links_select'), 'tg_searchboxes_options', 'tg_searchboxes_options');
-		
 	}
 	
 	/*
@@ -274,6 +271,12 @@ class searchboxesSettingsFormRenderer {
 		
 		// checking the links option value
 		$valid['links'] = (empty($input['links'])) ? false : true;
+
+		// checking the noconflict option value
+		$valid['noconflict'] = (empty($input['noconflict'])) ? false : true;
+
+		// checking the noconflict option value
+		$valid['usejavascript'] = $input['usejavascript'] ? true : false;
 		
 		// this value is used to avoid caching for the color file after new values are saved
 		$valid['cssfiletimestamp'] = time();
@@ -285,7 +288,7 @@ class searchboxesSettingsFormRenderer {
 		echo '<p>Before actually adding the searchboxes to your pages check your general settings.</p>'.
 		'<p>Simply enter your default values into the right fields and leave the tab open that you want to be opened by default.</p>'.
 		'<p>Make sure you enter your Travelgrove Affiliate ID as well so Travelgrove can track your commissions.'.
-		' <a href="https://www.travelgrove.com/affiliates/login.php" target="_blank" title="Travelgrove\'s Affiliates login page">Click here</a> to get your unique Travelgrove Affiliate ID.</p>';
+		' <a href="https://www.travelgrove.com/affiliates/login.php?source=wpPlugin" target="_blank" title="Travelgrove\'s Affiliates login page">Click here</a> to get your unique Travelgrove Affiliate ID.</p>';
 	}
 	
 	/**	setting the Affiliate ID input on the Settings Page	*/
@@ -472,17 +475,6 @@ class searchboxesSettingsFormRenderer {
 	}
 	
 	/*
-		WHAT & WHY: method used to generate the links select on the Settings Page
-	*/
-	function links_select() {
-		$output .= "<select name='tg_searchboxes_options[links]' style='width:185px'>";
-		$output .= "<option value='1'".($this->controller->options['links'] ? ' selected="selected"' : '').">yes</option>";
-		$output .= "<option value='0'".(!$this->controller->options['links'] ? ' selected="selected"' : '').">no</option>";		
-		$output .= "</select>";
-		echo $output;
-	}
-	
-		/*
 		WHAT & WHY: method used to verify the ftp credentials and if they are needed then display the form where a user will add them
 	*/
 	function checkFTPCredentials() {

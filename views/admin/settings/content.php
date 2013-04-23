@@ -43,20 +43,24 @@ settings_errors();
 	do_settings_sections('tg_searchboxes_options');
 ?>
 <br />
+<input id="travelSearchUseJavaScript" style="margin-left:10px" type='checkbox' name='tg_searchboxes_options[usejavascript]'<?php echo ($this->options['usejavascript'] ? ' checked="checked"' : ''); ?> />
+<label for="travelSearchUseJavaScript">Load Searchbox Using JavaScript (<i>Use this option if you would like to create the searchbox using JavaScript to hide it from search engines</i>)</label> <br />
+<input id="travelSearchNoConflict" style="margin-left:10px" type='checkbox' name='tg_searchboxes_options[noconflict]'<?php echo ($this->options['noconflict'] ? ' checked="checked"' : ''); ?> />
+<label for="travelSearchNoConflict">Compatibility Mode (<i>Use this option for multiple jQuery instances, if our plugin does not work well</i>)</label> <br />
 <?php /* div containing the color settings */ ?>
 <div class="colorSettings">
-	<label class="colorSet">border color:</label><br />
-	<input class="i1" type="text" name="tg_searchboxes_options[brdcolor]" value="<?php echo esc_attr($this->options['brdcolor']); ?>" style="background-color:<?php echo esc_attr($this->options['brdcolor']); ?>" /><span class="colorwheal i1">&nbsp;</span><br />
-	<label class="colorSet">text color:</label><br />
-	<input class="i2" type="text" name="tg_searchboxes_options[txtcolor]"  value="<?php echo esc_attr($this->options['txtcolor']); ?>" style="background-color:<?php echo esc_attr($this->options['txtcolor']); ?>" /><span class="colorwheal i2">&nbsp;</span><br />
-	<label class="colorSet">background color:</label><br />
-	<input class="i3" type="text" name="tg_searchboxes_options[bgdcolor]" value="<?php echo esc_attr($this->options['bgdcolor']); ?>" style="background-color:<?php echo esc_attr($this->options['bgdcolor']); ?>" /><span class="colorwheal i3">&nbsp;</span><br />
-	<label class="colorSet">tabs color:</label><br />
-	<input class="i4" type="text" name="tg_searchboxes_options[tbscolor]" value="<?php echo esc_attr($this->options['tbscolor']); ?>" style="background-color:<?php echo esc_attr($this->options['tbscolor']); ?>" /><span class="colorwheal i4">&nbsp;</span><br />
-	<label class="colorSet">tabs text color:</label><br />
-	<input class="i5" type="text" name="tg_searchboxes_options[tbstxtcolor]" value="<?php echo esc_attr($this->options['tbstxtcolor']); ?>" style="background-color:<?php echo esc_attr($this->options['tbstxtcolor']); ?>" /><span class="colorwheal i5">&nbsp;</span><br />
-	<label class="colorSet">tabs border color:</label><br />
-	<input class="i6" type="text" name="tg_searchboxes_options[tbsbrdcolor]" value="<?php echo esc_attr($this->options['tbsbrdcolor']); ?>" style="background-color:<?php echo esc_attr($this->options['tbsbrdcolor']); ?>" /><span class="colorwheal i6">&nbsp;</span>
+	<label class="colorSet" for="brdcolor">border color:</label><br />
+	<input class="i1" type="text" name="tg_searchboxes_options[brdcolor]" id="brdcolor" value="<?php echo esc_attr($this->options['brdcolor']); ?>" style="background-color:<?php echo esc_attr($this->options['brdcolor']); ?>" /><span class="colorwheal i1">&nbsp;</span><br />
+	<label class="colorSet" for="txtcolor">text color:</label><br />
+	<input class="i2" type="text" name="tg_searchboxes_options[txtcolor]" id="txtcolor" value="<?php echo esc_attr($this->options['txtcolor']); ?>" style="background-color:<?php echo esc_attr($this->options['txtcolor']); ?>" /><span class="colorwheal i2">&nbsp;</span><br />
+	<label class="colorSet" for="bgdcolor">background color:</label><br />
+	<input class="i3" type="text" name="tg_searchboxes_options[bgdcolor]" id="bgdcolor" value="<?php echo esc_attr($this->options['bgdcolor']); ?>" style="background-color:<?php echo esc_attr($this->options['bgdcolor']); ?>" /><span class="colorwheal i3">&nbsp;</span><br />
+	<label class="colorSet" for="tbscolor">tabs color:</label><br />
+	<input class="i4" type="text" name="tg_searchboxes_options[tbscolor]" id="tbscolor" value="<?php echo esc_attr($this->options['tbscolor']); ?>" style="background-color:<?php echo esc_attr($this->options['tbscolor']); ?>" /><span class="colorwheal i4">&nbsp;</span><br />
+	<label class="colorSet" for="tbstxtcolor">tabs text color:</label><br />
+	<input class="i5" type="text" name="tg_searchboxes_options[tbstxtcolor]" id="tbstxtcolor" value="<?php echo esc_attr($this->options['tbstxtcolor']); ?>" style="background-color:<?php echo esc_attr($this->options['tbstxtcolor']); ?>" /><span class="colorwheal i5">&nbsp;</span><br />
+	<label class="colorSet" for="tbsbrdcolor">tabs border color:</label><br />
+	<input class="i6" type="text" name="tg_searchboxes_options[tbsbrdcolor]" id="tbsbrdcolor" value="<?php echo esc_attr($this->options['tbsbrdcolor']); ?>" style="background-color:<?php echo esc_attr($this->options['tbsbrdcolor']); ?>" /><span class="colorwheal i6">&nbsp;</span>
 	<div class="i1 nod"></div>
 	<div class="i2 nod"></div>
 	<div class="i3 nod"></div>
@@ -75,10 +79,18 @@ settings_errors();
 	<p>&larr;navigate to each tab by clicking it</p>
 	<p>&larr;select flight type<br>(roundtrip versus one way)</p>
 	<p>
-		&larr;enter your default departure and return location or simple leave the fields empty.<br><br>
-		* You can also set these values later on individually for each box you use.<br><br>
-		* You have to enter the departure and return locations only once, empty fields will be filled in automatically.
+		&larr;enter your default departure and return location or simple leave the fields empty.<br /><br />
+		* You can also set these values later on individually for each box you use.<br /><br />
+		* You have to enter the departure and return locations only once, empty fields will be filled in automatically.<br /><br />
+		* Note: If you do not want to show the "travel search" link, <a href="#" class="showTravelSearchLink">click here</a>
 	</p>
+	<div class="travelSearchLink" style="display:none">
+		<label for="travelSearchLink">Show "travel search" link:</label>
+		<select name='tg_searchboxes_options[links]' id="travelSearchLink" style="width:50px">
+			<option value='1'<?php echo ($this->options['links'] ? ' selected="selected"' : ''); ?>>yes</option>
+			<option value='0'<?php echo (!$this->options['links'] ? ' selected="selected"' : ''); ?>>no</option>
+		</select>
+	</div>
 </div>
 <div class="spcr">&nbsp;</div>
 <p class="submit">
@@ -153,7 +165,10 @@ Using this tool will allow you to add a box anywhere on your blog i.e. the sideb
 * Click on a tab you want to show as your default tab: Flights, Hotels, Packages or Cars<br />
 * enter departure/destination cities (optional)<br />
 * select travel dates (optional)<br />
-* select the number and type of travelers (optional)<br /><br /><br />
+* select the number and type of travelers (optional)<br /><br />
+<input id="travelSearchShortcodeUseJavaScript" name='travelSearchShortcodeUseJavaScript' type='checkbox' />
+<label for="travelSearchShortcodeUseJavaScript">Load Searchbox Using JavaScript (<i>Use this option if you would like to create the searchbox using JavaScript to hide it from search engines</i>)</label> <br />
+<br /><br />
 <i><strong>Implement anywhere on your blog</strong></i><br />
 a) Copy the following PHP shortcode:<br /><br />
 <input type="text" size="80" value="&lt;?php echo do_shortcode('[tg_searchboxes]'); ?&gt;" id="tgsb_shortcode_php" onclick="this.select();" /> <input type="button" class="button-highlighted" value="<?php _e('Select') ?>" onclick="javascript:jQuery(this).prev().select();" /><br /><br />

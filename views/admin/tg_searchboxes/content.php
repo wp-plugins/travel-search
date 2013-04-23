@@ -11,6 +11,7 @@
 if( !defined('TG_SEARCHBOXES_ABSPATH') )
 	exit();
 ?>
+
 Select a searchbox by the preferred size. You can choose to customize it and add it to your post.
 
 <ul class="subsubsub measuresChooser" id="tgsb_measuresChooser">
@@ -113,6 +114,7 @@ Select a searchbox by the preferred size. You can choose to customize it and add
 	<i>* The minimum width of the dynamic box is 300 pixels.</i>
 	<br />
 	<p style="font-style:italic;color:#666;margin:0px;text-align:center">
+
 		<strong>Customize this box</strong><br /><br />
 		* select search type (click one of the tabs):<br />
 		Flights, Hotels, Packages or Cars<br /><br />
@@ -122,6 +124,10 @@ Select a searchbox by the preferred size. You can choose to customize it and add
 		<input type="button" class="button-primary send_searchbox_to_editor" value="Insert Box">
 	</p>
 </div><br />
+
+<input title='Use this option if you would like to create the searchbox using JavaScript to hide it from search engines' id='travelSearchUseJavaScript' type='checkbox' name='usejavascript' />
+<label title='Use this option if you would like to create the searchbox using JavaScript to hide it from search engines' for="travelSearchUseJavaScript">Load Searchbox Using JavaScript</label> <br />
+
 <?php /* <a href="#" class="getShortcode">Get Shortcode</a>
 <a href="#" class="send_searchbox_to_editor">Insert</a> */ ?>
 <br />

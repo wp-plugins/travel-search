@@ -256,7 +256,9 @@ jQuery(function(){
 		selectedTab = jQuery(this).attr('class').match(/^[a-z]+/);
 		var cont = jQuery(this).parents("div.tg_searchbox:eq(0)"); 
 		cont.find('ul.tg_tabs li span').removeClass('sel');
+		cont.find('ul.tg_tabs li span').attr('style', 'background-color:'+jQuery('#tbscolor').val()+' !important');
 		cont.find('ul.tg_tabs li span.'+selectedTab).addClass('sel');
+		cont.find('ul.tg_tabs li span.sel').attr('style', 'background-color:'+jQuery('#bgdcolor').val()+' !important');
 		cont.find('div.tg_container div').removeClass('sel');
 		cont.find('div.tg_container div.'+selectedTab).addClass('sel');
 	});
@@ -396,6 +398,12 @@ jQuery(function(){
 		jQuery('#tgsb_shortcodeGenerator').addClass('nod');
 		jQuery('#'+tgsb_settingsSelectedTab).removeClass('nod');
 		scrollTo(0,0);
+		return false;
+	});
+	// showing the div where the user can change the option regarding the travel search link
+	jQuery('a.showTravelSearchLink').click(function () {
+
+		jQuery('div.travelSearchLink').slideToggle('slow');
 		return false;
 	});
 	

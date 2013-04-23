@@ -38,6 +38,38 @@ class tgSearchboxesRenderer {
 		return;
 	}
 	
+	/**	@note	instead of generating the HTML searchbox, generates a <script> tag and a placeholder for the searchbox
+	 *		<script> is loaded asynchroniously and when it's loaded, it will replace the placeholder with the searchbox
+	 *	@date	2013.04.23
+	 *	@author	Tibi	*/
+	function renderJavaScript(){
+		$queryString	= 'tgsb_command=js_searchbox';
+		foreach($this->atts as $name => $value){
+			/*	the usejavascript option shouldn't be sent because inside the JS file we don't want to
+				create another script tag */
+			if ($name=='usejavascript')
+				continue;
+			/*	default values don't have to be sent via GET parameters (they would be set up anyway) so
+				we can skip them */
+			if ($value==$this->controller->options[$name])
+				continue;
+			$queryString.= '&'. urlencode($name) .'='. urlencode($value);
+		}
+		$queryString	.= '&tgsbPlaceholder=tgsb_'.self::$nrOfBoxes;
+		//$jsLink	= home_url('/?'.$queryString);
+		$jsLink	= plugins_url('/js/searchbox.js.php?'.$queryString, TG_SEARCHBOXES__FILE__);
+		$script	= '<script type="text/javascript" src="'.$jsLink.'"></script>';
+		$script	= '<script type="text/javascript">
+			var s= document.createElement("script");
+			s.type = "text/javascript";
+			s.src= "'.$jsLink.'";
+			s.async=true;
+			document.head.appendChild(s);
+		</script>'; 
+		return '<span class="tgsbPlaceholder" id="tgsb_'.self::$nrOfBoxes.'"></span>'.
+			$script;
+	}
+	
 	function renderSearchboxes() {
 	
 		if(empty($this->atts)) {
@@ -51,7 +83,9 @@ class tgSearchboxesRenderer {
 		if(!empty($this->atts['options'])) {
 			$this->atts			= json_decode($this->atts['options'], true);
 		}
-		
+		if ($this->atts['usejavascript']){
+			return $this->renderJavaScript();
+		}
 		if(empty($this->atts['size'])) {
 			$this->atts['size']		= $this->defaultSize;
 		}
@@ -1010,11 +1044,11 @@ private function renderHotelsSearchbox160x600() {
 	private function renderSubmitButton() {
 		
 		$button = array(
-			'160x600'	=> '<input class="tgsb_submit_button" type="submit" value="find sites" />', 
-			'300x250'	=> '<input class="tgsb_submit_button" type="submit" value="find sites" />', 
-			'300x533'	=> '<input class="tgsb_submit_button" type="submit" value="find sites" />', 
-			'728x90'	=> '<input class="tgsb_submit_button" type="submit" value="find sites" />',
-			'dynamic'	=> '<input class="tgsb_submit_button" type="submit" value="find sites" />',
+			'160x600'	=> '<input class="tgsb_submit_button" type="submit" value="compare prices" />', 
+			'300x250'	=> '<input class="tgsb_submit_button" type="submit" value="search" />', 
+			'300x533'	=> '<input class="tgsb_submit_button" type="submit" value="compare prices" />', 
+			'728x90'	=> '<input class="tgsb_submit_button" type="submit" value="search" />',
+			'dynamic'	=> '<input class="tgsb_submit_button" type="submit" value="search" />',
 			);
 			
 		if(!empty($this->atts['defaultSettings']))
