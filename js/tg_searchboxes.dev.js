@@ -302,7 +302,7 @@ function makeMerchantsRequest(obj, showErrorMessages, addErrorClass) {
 	addErrorClass = (typeof(addErrorClass) == 'undefined' || !addErrorClass) ? false : true;	
 	var tgsb_querycode = 0;
 	// getting the size of the searchox
-	var searchboxsize = jQuery(obj).parents('.tg_searchbox').attr('class').match(/(160x600|300x250|300x533|728x90|dynamic)$/);
+	var searchboxsize = jQuery(obj).parents('.tg_searchbox').attr('class').match(/m(160x600|300x250|300x533|728x90|dynamic)/);
 	var searchboxId = jQuery(obj).parents('.tg_searchbox').get(0).id;
 	// if no one of the sizes is set then return false
 	if(searchboxsize == null || (searchboxsize[1] != '160x600' && searchboxsize[1] != '300x250' && searchboxsize[1] != '300x533' && searchboxsize[1] != '728x90' && searchboxsize[1] != 'dynamic'))
@@ -525,8 +525,6 @@ function makeImpressionTrackingRequest(selectedTab, frmObj, callback) {
 		impressionTrackingQueryString += '&searchbox='+selectedTab;
 		// getting the script used for impression tracking using the impression query string
 		jQuery.getScript('http://www.travelgrove.com/js/affiliates/wpPluginImpTrack.php?'+impressionTrackingQueryString, callback);
-	} else {
-		callback();
 	};
 	// if all went well true is returned
 	return true;
@@ -646,7 +644,7 @@ function createDatepicker(i1,i2,rtowInputs){
 			// oneway radio input id 
 			var ow = rtowInputs.get(1).id;
 			// getting the searchbox size
-			var searchboxsize = jQuery('#'+i2).parents('.tg_searchbox').attr('class').match(/(160x600|300x250|300x533|728x90|dynamic)$/);
+			var searchboxsize = jQuery('#'+i2).parents('.tg_searchbox').attr('class').match(/m(160x600|300x250|300x533|728x90|dynamic)/);
 			// if oneway radio button is checked then the return date input is disabled
 			jQuery('#'+ow).change(function(){
 				if(this.checked){
@@ -746,6 +744,9 @@ function tgsb_setSearchboxDetails(selectedTab, roundTripOneWay, fromDepart, toAr
 /**	@note	initializes a single searchbox set (bins AS objects, merchants, etc.
 	@date	2013.04.22
 	@author	Tibi	*/
+/**	@note	initializes a single searchbox set (bins AS objects, merchants, etc.
+	@date	2013.04.22
+	@author	Tibi	*/
 function tgsb_initSingleSearchbox(tgsb){
 	tgsb	= jQuery(tgsb).filter(':not(.tg_searchbox_initialized)');
 	tgsb.addClass('tg_searchbox_initialized');
@@ -762,7 +763,7 @@ function tgsb_initSingleSearchbox(tgsb){
 		new AS(this.id,hotelASoptions);
 	});
 	//clicking on the searchoxes tabs
-	tgsb.find('div.tg_searchbox ul.tg_tabs li span').click(function(){
+	tgsb.find('ul.tg_tabs li span').click(function(){
 		// getting the selected tab
 		selectedTab = jQuery(this).attr('class').match(/^[a-z]+/);
 		// getting the parrent container with the css class tg_searchbox
@@ -778,7 +779,7 @@ function tgsb_initSingleSearchbox(tgsb){
 		// make an impression tracking request for the selected tab, selected form
 		makeImpressionTrackingRequest(selectedTab, selectedForm, function(){
 			// setting the searchboxsize
-			var searchboxsize = selectedForm.parents('.tg_searchbox').attr('class').match(/(160x600|300x250|300x533|728x90|dynamic)$/);
+			var searchboxsize = selectedForm.parents('.tg_searchbox').attr('class').match(/m(160x600|300x250|300x533|728x90|dynamic)/);
 			// for the boxes sized 160x600, 300x533 and dynamic make merchants request
 			if(searchboxsize[1] == '160x600' || searchboxsize[1] == '300x533' || searchboxsize[1] == 'dynamic')
 				makeMerchantsRequest(submitButton.get(0), false, false);
@@ -788,7 +789,7 @@ function tgsb_initSingleSearchbox(tgsb){
 	tgsb.find('form').each(function() {
 		var currentForm = jQuery(this);
 		// setting the searchboxsize
-		var searchboxsize = currentForm.parents('.tg_searchbox').attr('class').match(/(160x600|300x250|300x533|728x90|dynamic)$/);
+		var searchboxsize = currentForm.parents('.tg_searchbox').attr('class').match(/m(160x600|300x250|300x533|728x90|dynamic)/);
 		// setting the submit button of the current form
 		var submitButton = currentForm.find('input.tgsb_submit_button');
 		if(currentForm.hasClass('sel')) {
@@ -818,11 +819,11 @@ function tgsb_initSingleSearchbox(tgsb){
 		var i2 = inputs.get(1).id; // return date input
 		// setting the default value of the oneway input
 		var rtowInputs = false;
-		var rtowInputs = currentForm.hasClass('flights') ? jQuery(this).find('input[name=oneway], select[name=oneway]') : false;
+		var rtowInputs = currentForm.hasClass('flights') ? currentForm.find('input[name=oneway], select[name=oneway]') : false;
 		/* creating the datepicker */
 		createDatepicker(i1,i2,rtowInputs);
 		/* submitting the forms */
-		jQuery(this).submit(function() {
+		currentForm.submit(function() {
 			if(submitButton.hasClass('submited'))
 				return false;
 			submitButton.addClass('submited');
@@ -867,7 +868,7 @@ jQuery(function(){
 		},
 		callback:function(selLiObj, asObj) {
 			// checking the size of the searchbox
-			var searchboxsize = jQuery(asObj.fld).parents('.tg_searchbox').attr('class').match(/(300x250|728x90)$/);
+			var searchboxsize = jQuery(asObj.fld).parents('.tg_searchbox').attr('class').match(/(300x250|728x90)/);
 			// the merchants refresh is not made when location is selected from the autosuggestion on the boxes with the measures of 300x250 and 728x90 because on those searchboxes the process includes 2 screens
 			if(searchboxsize == null)
 				makeMerchantsRequest(asObj.fld);
@@ -903,8 +904,8 @@ jQuery(function(){
 		callback:function(selLiObj,asObj) {
 			var inp = jQuery(asObj.fld);
 			inp.parents('div.tg_searchbox').find(".tgsb_addDest").val(selLiObj.id);
-	
-			var searchboxsize = inp.parents('.tg_searchbox').attr('class').match(/(300x250|728x90)$/);
+
+			var searchboxsize = inp.parents('.tg_searchbox').attr('class').match(/(300x250|728x90)/);
 	// the merchants refresh is not made when location is selected from the autosuggestion on the boxes with the measures of 300x250 and 728x90 because on those searchboxes the process includes 2 screens
 			if(searchboxsize == null)
 				makeMerchantsRequest(asObj.fld);
@@ -912,12 +913,11 @@ jQuery(function(){
 			//return selLiObj.innerHTML.replace(/<\/?[^>]+>/gi,'').replace(/(.*),(.*) \((.*)\)/,'$1,$2');
 		}
 	};
-
+	
 	tgsb_initSingleSearchbox('.tg_searchbox');
 	if (typeof(TGSB_placeholders)!='undefined' && TGSB_placeholders.length>0){
 		for(var i=0;i<TGSB_placeholders.length;i++)
 			replacePlaceholder(TGSB_placeholders[i].placeholder, TGSB_placeholders[i].html);
-	};
-
+	}
 });
 })(tgsb_myjquery);

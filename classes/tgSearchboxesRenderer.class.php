@@ -38,20 +38,10 @@ class tgSearchboxesRenderer {
 		return;
 	}
 	
-	/**	@note	instead of generating the HTML searchbox, generates a <script> tag and a placeholder for the searchbox
-	 *		<script> is loaded asynchroniously and when it's loaded, it will replace the placeholder with the searchbox
-	 *	@date	2013.04.23
-	 *	@author	Tibi	*/
 	function renderJavaScript(){
 		$queryString	= 'tgsb_command=js_searchbox';
 		foreach($this->atts as $name => $value){
-			/*	the usejavascript option shouldn't be sent because inside the JS file we don't want to
-				create another script tag */
 			if ($name=='usejavascript')
-				continue;
-			/*	default values don't have to be sent via GET parameters (they would be set up anyway) so
-				we can skip them */
-			if ($value==$this->controller->options[$name])
 				continue;
 			$queryString.= '&'. urlencode($name) .'='. urlencode($value);
 		}
@@ -61,7 +51,6 @@ class tgSearchboxesRenderer {
 		$script	= '<script type="text/javascript" src="'.$jsLink.'"></script>';
 		$script	= '<script type="text/javascript">
 			var s= document.createElement("script");
-			s.type = "text/javascript";
 			s.src= "'.$jsLink.'";
 			s.async=true;
 			document.head.appendChild(s);
@@ -71,7 +60,6 @@ class tgSearchboxesRenderer {
 	}
 	
 	function renderSearchboxes() {
-	
 		if(empty($this->atts)) {
 			foreach($this->controller->options as $option => $optionValue) {
 				$this->atts[$option] = $optionValue;
@@ -79,12 +67,13 @@ class tgSearchboxesRenderer {
 			$this->atts['size']		= $this->defaultSize;
 			$this->atts['alignment']	= $this->defaultAlignment;
 		}
-		
 		if(!empty($this->atts['options'])) {
 			$this->atts			= json_decode($this->atts['options'], true);
 		}
+
 		if (!isset($this->atts['usejavascript']))
 			$this->atts['usejavascript']	= $this->controller->options['usejavascript'];
+
 		if ($this->atts['usejavascript']){
 			return $this->renderJavaScript();
 		}
