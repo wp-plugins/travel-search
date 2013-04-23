@@ -108,6 +108,9 @@ The commission earned by an affiliate in a month varies from one affiliate to th
 
 == Changelog ==
 
+= 1.2.3 =
+* Searchboxes can be loaded asynchroniously via JavaScript
+
 = 1.2.2 =
 * Main JS file of the plugin made jQuery noConflict-mode compatible
 * noConflict-mode option has been added to settings for blogs with more instances of jQuery
