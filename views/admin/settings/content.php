@@ -43,6 +43,7 @@ settings_errors();
 	do_settings_sections('tg_searchboxes_options');
 ?>
 <br />
+<?php	/*travelSearchUseJavaScript added | we should have default/global value for the flag that marks if searchbox should be loaded via JS or not | Tibi | 2013.04.23 */	?>
 <input id="travelSearchUseJavaScript" style="margin-left:10px" type='checkbox' name='tg_searchboxes_options[usejavascript]'<?php echo ($this->options['usejavascript'] ? ' checked="checked"' : ''); ?> />
 <label for="travelSearchUseJavaScript">Load Searchbox Using JavaScript (<i>Use this option if you would like to create the searchbox using JavaScript to hide it from search engines</i>)</label> <br />
 <input id="travelSearchNoConflict" style="margin-left:10px" type='checkbox' name='tg_searchboxes_options[noconflict]'<?php echo ($this->options['noconflict'] ? ' checked="checked"' : ''); ?> />
@@ -166,6 +167,7 @@ Using this tool will allow you to add a box anywhere on your blog i.e. the sideb
 * enter departure/destination cities (optional)<br />
 * select travel dates (optional)<br />
 * select the number and type of travelers (optional)<br /><br />
+<?php	/*travelSearchUseJavaScript added | we should have default/global value for the flag that marks if searchbox should be loaded via JS or not | Tibi | 2013.04.23 */	?>
 <input id="travelSearchShortcodeUseJavaScript" name='travelSearchShortcodeUseJavaScript' type='checkbox' />
 <label for="travelSearchShortcodeUseJavaScript">Load Searchbox Using JavaScript (<i>Use this option if you would like to create the searchbox using JavaScript to hide it from search engines</i>)</label> <br />
 <br /><br />

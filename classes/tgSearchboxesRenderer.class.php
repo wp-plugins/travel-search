@@ -59,17 +59,19 @@ class tgSearchboxesRenderer {
 			$queryString.= '&'. urlencode($name) .'='. urlencode($value);
 		}
 		$queryString	.= '&tgsbPlaceholder=tgsb_'.self::$nrOfBoxes;
-		//$jsLink	= home_url('/?'.$queryString);
-		$jsLink	= plugins_url('/js/searchbox.js.php?'.$queryString, TG_SEARCHBOXES__FILE__);
-		$script	= '<script type="text/javascript" src="'.$jsLink.'"></script>';
-		$script	= '<script type="text/javascript">
-			var s= document.createElement("script");
-			s.src= "'.$jsLink.'";
-			s.async=true;
-			document.head.appendChild(s);
-		</script>'; 
-		return '<span class="tgsbPlaceholder" id="tgsb_'.self::$nrOfBoxes.'"></span>'.
-			$script;
+		//the link to the javascript file (php that generates JS code)
+		$jsLink		= plugins_url('/js/searchbox.js.php?'.$queryString, TG_SEARCHBOXES__FILE__);
+		$script		= '<script type="text/javascript" src="'.$jsLink.'"></script>';
+		$script		= '<script type="text/javascript">'.
+					'var s= document.createElement("script");'.
+					's.type= "text/javascript";'.
+					's.src= "'.$jsLink.'";'.
+					's.async=true;'.
+					'document.head.appendChild(s);'.
+				'</script>';
+		// will be REPLACED with the searchbox
+		$placeholder	= '<span class="tgsbPlaceholder" id="tgsb_'.self::$nrOfBoxes.'"></span>';
+		return $placeholder.$script;
 	}
 	
 	function renderSearchboxes() {
@@ -87,10 +89,10 @@ class tgSearchboxesRenderer {
 		/* on admin section we shouldn't use JS since the JS hadnling is not included on these pages */
 		if (is_admin())
 			$this->atts['usejavascript']	= false;
-
+		/* if the usejavascript flag is not set at all, we use the default settings */
 		if (!isset($this->atts['usejavascript']))
 			$this->atts['usejavascript']	= $this->controller->options['usejavascript'];
-
+		/* if the usejavascript flag is active, instead of returning the searchbox HTML, we return the placeholder & script tag that will load the searchbox via JS */
 		if ($this->atts['usejavascript']){
 			return $this->renderJavaScript();
 		}

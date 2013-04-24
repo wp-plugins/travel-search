@@ -275,7 +275,7 @@ class searchboxesSettingsFormRenderer {
 		// checking the noconflict option value
 		$valid['noconflict'] = (empty($input['noconflict'])) ? false : true;
 
-		// checking the noconflict option value
+		// checking the usejavascript flag value | Tibi | 2013.04.23
 		$valid['usejavascript'] = $input['usejavascript'] ? true : false;
 		
 		// this value is used to avoid caching for the color file after new values are saved

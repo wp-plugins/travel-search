@@ -50,9 +50,9 @@ function check_load_with_javascript(){
 
 	// doing an action to let other developers hook into our plugin
 	do_action('tgsb_before_js_load');
-	
+
 	$req	= $_GET;
-	
+
 	$req['usejavascript']	= false;
 	$placeholder	= $req['tgsbPlaceholder'];
 	unset($req['tgsbPlaceholder']);
@@ -63,29 +63,38 @@ function check_load_with_javascript(){
 		foreach($req as $k=>$v) {
 			$req[$k]	= stripslashes($v);
 		};
+		
+	/* the searchboxindex should be adjusted to the correct value*/
+	$neededIndex	= preg_match('/[0-9]+/',$placeholder,$match) ? $match[0] : 1;
+	$currentIndex	= 1;
+	while($neededIndex>$currentIndex){
+		$tgSbRenderer	= new tgSearchboxesRenderer(NULL, NULL);
+		unset($tgSbRenderer);
+		$currentIndex++;
+	}
+		
 	// building up shortcode
 	$params	= "";
 	foreach($req as $k=>$v)
 		$params	.= " ". $k ."='". preg_replace("/'/","\\'",$v) ."'";
 	$shortcode	= '['. $this->tg_searchboxes_get_shortcode() .''. $params .']';
 	$html	= do_shortcode($shortcode);
-
+	$html	= preg_replace('/[\s\n\t\r]+/',' ',$html);
+	$html	= str_replace("'","\\'",$html);
 	//sending output as compressed w/ the correct headers
 	@header('Content-Type: text/javascript',true);
-	// searchbox can be cached for up to 30 minutes - like this while navigating between pages, the same searchbox is not loaded again
-	// commented out since it's not working 
-	// @header('Cache-Control: public, max-age=1805',true);
-	// @header('Expires:'. gmdate('D, d M Y H:i:s',time()+1800) .' GMT', true);
 	ob_start('ob_gzhandler');
 	print "
-	if (typeof(TGSB)!='undefined')
-		TGSB.replacePlaceholder('".$placeholder."', '".$html."');
-	else {
-		TGSB_placeholders	= typeof(TGSB_placeholders)=='array' ?
-			TGSB_placeholders : new Array();
-		TGSB_placeholders.push({'placeholder':'".$placeholder."', 'html':'".$html."'});
-	};";
-	//print "document.write('".$html."');";
+	(function(){
+		var html = '".$html."';
+		if (typeof(TGSB)!='undefined')
+			TGSB.replacePlaceholder('".$placeholder."', html);
+		else {
+			TGSB_placeholders	= typeof(TGSB_placeholders)=='array' ?
+				TGSB_placeholders : new Array();
+			TGSB_placeholders.push({'placeholder':'".$placeholder."', 'html':html});
+		};
+	})();";
 
 	// unregistering any non-wordpress hook binded to `shutdown` event to prevent any output after we are done
 	$this->unregister_shutdown_hooks();

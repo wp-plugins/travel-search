@@ -301,7 +301,7 @@ function makeMerchantsRequest(obj, showErrorMessages, addErrorClass) {
 	showErrorMessages = (typeof(showErrorMessages) == 'undefined' || !showErrorMessages) ? false : true;
 	addErrorClass = (typeof(addErrorClass) == 'undefined' || !addErrorClass) ? false : true;	
 	var tgsb_querycode = 0;
-	// getting the size of the searchox
+	// getting the size of the searchox | regexp changed by Tibi to match in whole class instead of the end of the string | 2013.04.23
 	var searchboxsize = jQuery(obj).parents('.tg_searchbox').attr('class').match(/m(160x600|300x250|300x533|728x90|dynamic)/);
 	var searchboxId = jQuery(obj).parents('.tg_searchbox').get(0).id;
 	// if no one of the sizes is set then return false
@@ -643,7 +643,7 @@ function createDatepicker(i1,i2,rtowInputs){
 			var rt = rtowInputs.get(0).id;
 			// oneway radio input id 
 			var ow = rtowInputs.get(1).id;
-			// getting the searchbox size
+			// getting the searchbox size | regexp changed by Tibi to match in whole class instead of the end of the string | 2013.04.23
 			var searchboxsize = jQuery('#'+i2).parents('.tg_searchbox').attr('class').match(/m(160x600|300x250|300x533|728x90|dynamic)/);
 			// if oneway radio button is checked then the return date input is disabled
 			jQuery('#'+ow).change(function(){
@@ -741,12 +741,10 @@ function tgsb_setSearchboxDetails(selectedTab, roundTripOneWay, fromDepart, toAr
 	return false;
 };
 
-/**	@note	initializes a single searchbox set (bins AS objects, merchants, etc.
-	@date	2013.04.22
-	@author	Tibi	*/
-/**	@note	initializes a single searchbox set (bins AS objects, merchants, etc.
-	@date	2013.04.22
-	@author	Tibi	*/
+/**	@note	initializes a single searchbox set (bins AS objects, merchants, etc.)
+ *		functionality was not modified, only jQuery refences were changed to point to elements inside `tgsb` got as param
+ * 	@date	2013.04.22
+ * 	@author	Tibi	*/
 function tgsb_initSingleSearchbox(tgsb){
 	tgsb	= jQuery(tgsb).filter(':not(.tg_searchbox_initialized)');
 	tgsb.addClass('tg_searchbox_initialized');
@@ -778,7 +776,7 @@ function tgsb_initSingleSearchbox(tgsb){
 		var submitButton = selectedForm.find('input.tgsb_submit_button');
 		// make an impression tracking request for the selected tab, selected form
 		makeImpressionTrackingRequest(selectedTab, selectedForm, function(){
-			// setting the searchboxsize
+			// setting the searchboxsize | regexp changed by Tibi to match in whole class instead of the end of the string | 2013.04.23
 			var searchboxsize = selectedForm.parents('.tg_searchbox').attr('class').match(/m(160x600|300x250|300x533|728x90|dynamic)/);
 			// for the boxes sized 160x600, 300x533 and dynamic make merchants request
 			if(searchboxsize[1] == '160x600' || searchboxsize[1] == '300x533' || searchboxsize[1] == 'dynamic')
@@ -788,7 +786,7 @@ function tgsb_initSingleSearchbox(tgsb){
 
 	tgsb.find('form').each(function() {
 		var currentForm = jQuery(this);
-		// setting the searchboxsize
+		// setting the searchboxsize | regexp changed by Tibi to match in whole class instead of the end of the string | 2013.04.23
 		var searchboxsize = currentForm.parents('.tg_searchbox').attr('class').match(/m(160x600|300x250|300x533|728x90|dynamic)/);
 		// setting the submit button of the current form
 		var submitButton = currentForm.find('input.tgsb_submit_button');
@@ -796,7 +794,7 @@ function tgsb_initSingleSearchbox(tgsb){
 			selectedTab = currentForm.attr('class').match(/^[a-z]+/);
 			//making an impression tracking when selecting a tab
 			makeImpressionTrackingRequest(selectedTab, currentForm, function(){
-				// setting the searchboxsize
+				// setting the searchboxsize | regexp changed by Tibi to match in whole class instead of the end of the string | 2013.04.23
 				var searchboxsize = currentForm.parents('.tg_searchbox').attr('class').match(/m(160x600|300x250|300x533|728x90|dynamic)/);
 				// for the boxes sized 160x600, 300x533 and dynamic make merchants request
 				if(searchboxsize[1] == '160x600' || searchboxsize[1] == '300x533' || searchboxsize[1] == 'dynamic')
@@ -867,7 +865,7 @@ jQuery(function(){
 			return selLiObj.innerHTML.replace(/<\/?[a-z]+>/gi,'').replace(/(.*),(.*)\((.*)\)/,'$1 ($3)');
 		},
 		callback:function(selLiObj, asObj) {
-			// checking the size of the searchbox
+			// checking the size of the searchbox | regexp changed by Tibi to match in whole class instead of the end of the string | 2013.04.23
 			var searchboxsize = jQuery(asObj.fld).parents('.tg_searchbox').attr('class').match(/(300x250|728x90)/);
 			// the merchants refresh is not made when location is selected from the autosuggestion on the boxes with the measures of 300x250 and 728x90 because on those searchboxes the process includes 2 screens
 			if(searchboxsize == null)
@@ -904,7 +902,7 @@ jQuery(function(){
 		callback:function(selLiObj,asObj) {
 			var inp = jQuery(asObj.fld);
 			inp.parents('div.tg_searchbox').find(".tgsb_addDest").val(selLiObj.id);
-
+			// regexp changed by Tibi to match in whole class instead of the end of the string | 2013.04.23
 			var searchboxsize = inp.parents('.tg_searchbox').attr('class').match(/(300x250|728x90)/);
 	// the merchants refresh is not made when location is selected from the autosuggestion on the boxes with the measures of 300x250 and 728x90 because on those searchboxes the process includes 2 screens
 			if(searchboxsize == null)
@@ -914,7 +912,11 @@ jQuery(function(){
 		}
 	};
 	
+	/*	searchbox initialization moved to a separate function to make possible the initialization of the searchboxes if they are loaded via JS as well (after doc. ready) */
 	tgsb_initSingleSearchbox('.tg_searchbox');
+	/*	if this JS file is not yet loaded when the searchbox builder JS is loaded, instead of adding the searchbox to the DOM,
+	 *	the JS files add the searchbox to a JS array and here we walk through this array and add each searchbox to the DOM
+	 *	IMPORTANT: if this file is already loaded when the searchbox JS is loaded, the placeholder is replaced w/ the searchbox	*/
 	if (typeof(TGSB_placeholders)!='undefined' && TGSB_placeholders.length>0){
 		for(var i=0;i<TGSB_placeholders.length;i++)
 			replacePlaceholder(TGSB_placeholders[i].placeholder, TGSB_placeholders[i].html);
