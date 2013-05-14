@@ -109,7 +109,10 @@ The commission earned by an affiliate in a month varies from one affiliate to th
 == Changelog ==
 
 = 1.2.4 =
-* Loading of searchboxes via JavaScript was updated to work with older IE versions as well
+ * CSS conficts at the searchbox fixed;
+ * socket operational mode added where allow_url_open is turned off;
+ * JS conflicts with CSS3-MediaQueries-JS fixed;
+ * IE compatibility issue fixed;
 
 = 1.2.3 =
 * Searchboxes can be loaded asynchroniously via JavaScript
