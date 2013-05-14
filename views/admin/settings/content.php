@@ -43,8 +43,9 @@ settings_errors();
 	do_settings_sections('tg_searchboxes_options');
 ?>
 <br />
+<?php	/*travelSearchUseJavaScript added | we should have default/global value for the flag that marks if searchbox should be loaded via JS or not | Tibi | 2013.04.23 */	?>
 <input id="travelSearchUseJavaScript" style="margin-left:10px" type='checkbox' name='tg_searchboxes_options[usejavascript]'<?php echo ($this->options['usejavascript'] ? ' checked="checked"' : ''); ?> />
-<label for="travelSearchUseJavaScript">Load Searchbox Using JavaScript (<i>Use this option if you would like to create the searchbox using JavaScript to hide it from search engines</i>)</label> <br />
+<label for="travelSearchUseJavaScript">Load Searchbox Using JavaScript (<i>beta version, for advanced users only</i>)</label> <br />
 <input id="travelSearchNoConflict" style="margin-left:10px" type='checkbox' name='tg_searchboxes_options[noconflict]'<?php echo ($this->options['noconflict'] ? ' checked="checked"' : ''); ?> />
 <label for="travelSearchNoConflict">Compatibility Mode (<i>Use this option for multiple jQuery instances, if our plugin does not work well</i>)</label> <br />
 <?php /* div containing the color settings */ ?>
@@ -166,8 +167,9 @@ Using this tool will allow you to add a box anywhere on your blog i.e. the sideb
 * enter departure/destination cities (optional)<br />
 * select travel dates (optional)<br />
 * select the number and type of travelers (optional)<br /><br />
+<?php	/*travelSearchUseJavaScript added | we should have default/global value for the flag that marks if searchbox should be loaded via JS or not | Tibi | 2013.04.23 */	?>
 <input id="travelSearchShortcodeUseJavaScript" name='travelSearchShortcodeUseJavaScript' type='checkbox' />
-<label for="travelSearchShortcodeUseJavaScript">Load Searchbox Using JavaScript (<i>Use this option if you would like to create the searchbox using JavaScript to hide it from search engines</i>)</label> <br />
+<label for="travelSearchShortcodeUseJavaScript">Load Searchbox Using JavaScript (<i>beta version, for advanced users only</i>)</label> <br />
 <br /><br />
 <i><strong>Implement anywhere on your blog</strong></i><br />
 a) Copy the following PHP shortcode:<br /><br />

@@ -66,8 +66,16 @@ function http_post($url, $data) {
 		$headersString	.= $headerKey.': '.$headerValue."\r\n";
 	}
 	$headersString	= (empty($headersString)) ? "Connection: close\r\nContent-Length: $data_len\r\n" : $headersString;
+	/**
+		@note	use sockets were file_get_contents is not allowed;
+		@date	2013-Apr-03;
+		@author LZ/Travelgrove Tech;
+	*/
+	if(!ini_get('allow_url_fopen')) {
+		return readRemoteFile($url, $headersString, $data_url);
+	}
 	return array(	'content'	=> file_get_contents (
-   					$url,
+					$url,
 					false,
 					stream_context_create(
 						array(	'http'	=> array('method'	=> 'POST',
@@ -78,6 +86,85 @@ function http_post($url, $data) {
 				),
 			/** $http_response_header reserved variable will contain the headers automatically	*/
             		'headers'	=> $http_response_header);
+}
+
+/**
+	@note	access remote files via sockets; where file_get_contents is not allowed;
+	@date	2013-Apr-03;
+	@author	L.Z./Travelgrove Tech;
+	@param	String	$url		URL to send the POST request to;
+	@param	String	$headers	headers to send; separated by \r\n; already concatenated to string;
+	@param	String	$data		POST data to send;
+	@param	Int	$connectionTimeOut	connection time out, defaults to 30 sec.
+	@param	Int	$readTimeout		read time out, defaults to 30 sec.
+	@return	Array	of headers + data read;
+*/
+function readRemoteFile($url, $headers, $data, $connectionTimeOut = 30, $readTimeout = 30) {
+	/*	basic input validation	*/
+	if(!$url)
+		return false;
+	$url	= parse_url($url);
+	$errno	= $errstr	= false;
+	/*	opening the socket connection	*/
+	$fp	= @fsockopen($url['host'], 80, $errno, $errstr, $connectionTimeOut);
+	if(!$fp)
+		return false;
+	/*	add Content-Length if not present	*/
+	if(strpos($headers, 'Content-Length') === false) {
+		$headers	.= 'Content-Length: '.strlen($data)."\r\n";
+	}
+				/*	POST request of HTTP 1.1	*/
+	$dataToSend	=	"POST ".$url['path']." HTTP/1.0\r\n".
+				/*	to the given host	*/
+				"Host: ".$url['host']."\r\n".
+				/*	sending the headers from the parameter	*/
+				$headers.
+				/*	Content-Type header for POST parameters	*/
+				"Content-Type: application/x-www-form-urlencoded\r\n".
+				/*	empy line marking the end of the headers	*/
+				"\r\n".
+				/*	sending POST data + end of line	*/
+				$data."\r\n".
+				/*	empy line marking the end of the data/request	*/
+				"\r\n";
+	/*	sending the whole request	*/
+	if(!@fwrite($fp, $dataToSend))
+		return false;
+	/*	setting stream timeout; no Error/Warning appears, only in meta data timed_out=>true	*/
+	if(function_exists('socket_set_timeout')) {
+		@socket_set_timeout($fp, $readTimeout, 0);
+	} else if(function_exists('stream_set_timeout')) {
+		@stream_set_timeout($fp, $readTimeout, 0);
+	}
+	$contentRead	= '';
+	/*	a package read at one iteration, max 40K	*/
+	$package	= true;
+	/*	if not the end of the file	*/
+	// while (!@feof($fp)) {
+	while($package) {
+		/*	read 40k from the content	*/
+		$package	= @fread($fp, 409600);
+		if (!$package)
+			break;
+		$contentRead	.= $package;
+	}
+	@fclose($fp);
+	if(empty($contentRead))
+		return false;
+	/*	looking for the empty line separating the headers from the content	*/
+	$emptyLinePos	= strpos($contentRead, "\r\n\r\n");
+	if(!$emptyLinePos)
+		return array('content' => $contentRead, 'headers' => null);
+	/*	get the headers as a string	*/
+	$headers	= substr($contentRead, 0, $emptyLinePos);
+	/*	split headers by end-of-line	*/
+	$headers	= explode("\r\n", $headers);
+	/*	trim each header - just to be sure	*/
+	for($i = 0, $n = count($headers); $i<$n; $i++)
+		$headers[$i]	= trim($headers[$i]);
+	/*	get the content read as a string	*/
+	$contentRead	= substr($contentRead, $emptyLinePos+4);
+	return array('content' => trim($contentRead), 'headers' => $headers);
 }
 
 /**	trasforming the response of JSON into JSON containing the merchants as HTML, to render the merchants	*/
@@ -126,4 +213,21 @@ if( !function_exists('apache_request_headers') ) {
 	return( $arh );
 	}
 }
+
+/**
+	@note	basic debugging fn;
+	@date	2013-Apr-03;
+	@author	L.Z./Travelgrove Tech;
+	@param	String|Mixed	$str	message to debug;
+	@return	Boolean		true if msg was sent; false otherwise;
+*/
+function TG_debug($str) {
+	if($_SERVER['REMOTE_ADDR']!='85.186.103.20')
+		return false;
+	print('<pre>');
+	var_dump($str);
+	print('</pre>');
+	return true;
+}
+
 ?>

@@ -4,7 +4,7 @@ Donate link: http://www.travelgrove.com/
 Tags: travel, search, flights, airfares, hotel, hotel rooms, car rentals, vacations, holiday, vacation packages, deals, airfare tickets, plugin, affiliate, travel widget
 Requires at least: 3.1
 Tested up to: 3.5.1
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 
 Search and Compare major travel websites for cheapest flights, hotels, car rentals and vacation packages in this one-step travel search engine.
 
@@ -108,6 +108,9 @@ The commission earned by an affiliate in a month varies from one affiliate to th
 
 == Changelog ==
 
+= 1.2.4 =
+* Loading of searchboxes via JavaScript was updated to work with older IE versions as well
+
 = 1.2.3 =
 * Searchboxes can be loaded asynchroniously via JavaScript
 
@@ -152,4 +155,4 @@ The commission earned by an affiliate in a month varies from one affiliate to th
 
 == Upgrade Notice ==
 
-For full functionality update to version 1.2.
+For full functionality update to version 1.2.4

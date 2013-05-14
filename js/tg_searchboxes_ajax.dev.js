@@ -131,6 +131,7 @@ if(typeof(tgsb_selBoxParam) != 'undefined' && tgsb_selBoxParam) {
 	setParamsToBoxes(tgsb_selBoxParam);
 };
 
+// travelSearchUseJavaScript added by Tibi on 2013.04.23 | click event should work on this input and label as well
 jQuery('input[name=img_align], #basic .align .field label, #travelSearchUseJavaScript, label[for=travelSearchUseJavaScript]').click(function(event){
 	event.stopPropagation();
 	return true;

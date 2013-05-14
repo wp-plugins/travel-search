@@ -381,6 +381,7 @@ function tg_searchboxes_tinymce_button_click(tinyMCE_obj){
 			var selectedTab = jQuery('.sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container').find('form.sel').attr('class').match(/^(flights|hotels|cars|packages)/);
 		
 			var fields = jQuery('.sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container form').serializeArray();
+			// marks if searchbox should be loaded with JS file or not | Tibi | 2013.04.23
 			var loadFromJS	= jQuery('#travelSearchUseJavaScript').attr('checked');
 			var optionsString = '';
 			// getting the "from" value
@@ -420,7 +421,7 @@ function tg_searchboxes_tinymce_button_click(tinyMCE_obj){
 			// adding the "roundtrip/oneway" value to the options string
 			optionsString += (tgsb_rtow.length) ? tgsb_rtow+',' : tgsb_rtow;
 			
-        		// adding the flag that matks if SB should be loaded w/ JS or not value to the options string
+        		// adding the flag that matks if SB should be loaded w/ JS or not value to the options string | Tibi | 2013.04.23
         		optionsString += loadFromJS ? '"usejavascript":"on",' : '';
 			
 			// if the box measures is "300x250" then it is not needed to add the size as option because that is considered the default value

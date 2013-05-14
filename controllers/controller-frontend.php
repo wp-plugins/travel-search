@@ -31,10 +31,12 @@ function __construct() {
 	/**	adding a hook for the shortcode "tg_searchboxes";
 	* WP will automatically pass the found arguments: [shortcode argument1=value1 argument2=value2]	*/
 	add_shortcode($this->shortcode_tg_searchboxes, array(&$this, 'tg_searchboxes_handle_tg_shortcode'));
-	// checking if current request is to load the searchbox via external JS file | Tibi | 2013.04.23
+	
+	// checking if current request is to load the searchbox via external JS file
 	$this->check_load_with_javascript();
 	return;
 }
+
 
 /**	@note	function that checks if teh current request is not a request for loading a searchbox via JS | if it's one of these, it will output the searchbox in JS format and it breaks the script executions
 		NOTE: all non-wordpress hooks that are registered to the shutdown hook won't be called to prevent any output error since this file serves javaScript requests
@@ -48,11 +50,10 @@ function check_load_with_javascript(){
 
 	// doing an action to let other developers hook into our plugin
 	do_action('tgsb_before_js_load');
-	
+
 	$req	= $_GET;
-	
-	if ($req['usejavascript'])
-		unset($req['usejavascript']);
+
+	$req['usejavascript']	= false;
 	$placeholder	= $req['tgsbPlaceholder'];
 	unset($req['tgsbPlaceholder']);
 	// the tgsb_command command parameter should not be sent to the shortcode parser - any other parameter can be sent
@@ -62,24 +63,38 @@ function check_load_with_javascript(){
 		foreach($req as $k=>$v) {
 			$req[$k]	= stripslashes($v);
 		};
+		
+	/* the searchboxindex should be adjusted to the correct value*/
+	$neededIndex	= preg_match('/[0-9]+/',$placeholder,$match) ? $match[0] : 1;
+	$currentIndex	= 1;
+	while($neededIndex>$currentIndex){
+		$tgSbRenderer	= new tgSearchboxesRenderer(NULL, NULL);
+		unset($tgSbRenderer);
+		$currentIndex++;
+	}
+		
 	// building up shortcode
 	$params	= "";
 	foreach($req as $k=>$v)
 		$params	.= " ". $k ."='". preg_replace("/'/","\\'",$v) ."'";
 	$shortcode	= '['. $this->tg_searchboxes_get_shortcode() .''. $params .']';
 	$html	= do_shortcode($shortcode);
-
+	$html	= preg_replace('/[\s\n\t\r]+/',' ',$html);
+	$html	= str_replace("'","\\'",$html);
 	//sending output as compressed w/ the correct headers
 	@header('Content-Type: text/javascript',true);
 	ob_start('ob_gzhandler');
 	print "
-	if (typeof(TGSB)!='undefined')
-		TGSB.replacePlaceholder('".$placeholder."', '".$html."');
-	else {
-		TGSB_placeholders	= typeof(TGSB_placeholders)=='array' ?
-			TGSB_placeholders : new Array();
-		TGSB_placeholders.push({'placeholder':'".$placeholder."', 'html':'".$html."'});
-	};";
+	(function(){
+		var html = '".$html."';
+		if (typeof(TGSB)!='undefined')
+			TGSB.replacePlaceholder('".$placeholder."', html);
+		else {
+			TGSB_placeholders	= typeof(TGSB_placeholders)=='array' ?
+				TGSB_placeholders : new Array();
+			TGSB_placeholders.push({'placeholder':'".$placeholder."', 'html':html});
+		};
+	})();";
 
 	// unregistering any non-wordpress hook binded to `shutdown` event to prevent any output after we are done
 	$this->unregister_shutdown_hooks();
@@ -110,6 +125,7 @@ function unregister_shutdown_hooks(){
 	}
 	return $unregistered;
 }
+
 
 /**	handle shortcodes via renderer class	*/
 function tg_searchboxes_handle_tg_shortcode($attr) {
@@ -149,7 +165,7 @@ function enqueue_tg_searchboxes_js() {
 			plugins_url( '/js/tg_searchboxes.min.js', TG_SEARCHBOXES__FILE__ ),
 			array('tgsb_datepicker_script', 'tgsb_autosuggestion', 'jquery'),
 			// version number
-			'20120711',
+			'20130423',
 			// adding it to footer to make sure it will appear AFTER inline variables are set
 			(empty($this->options['noconflict']) ? true : false));
 	/**	context-dependent variables needed for dynamic functionality, in the main JS	*/

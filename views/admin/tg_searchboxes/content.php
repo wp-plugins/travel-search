@@ -22,6 +22,11 @@ Select a searchbox by the preferred size. You can choose to customize it and add
 	<li><a class="dynamic current" href="#">dynamic</a></li>
 </ul>
 <div class="clear"></div>
+<?php /* marks if searchbox inside content should be loaded via JavaScript or not | Tibi | 2013.04.24 */ ?>
+<div style='position:absolute;left:384px;top:102px;'>
+	<label title='Use this option if you would like to create the searchbox using JavaScript to hide it from search engines' for="travelSearchUseJavaScript"><strong title="Beta version, for advanced users only">Load using JavaScript: </strong></label>
+	<input title='Use this option if you would like to create the searchbox using JavaScript to hide it from search engines' id='travelSearchUseJavaScript' type='checkbox' name='usejavascript' /> <br />
+</div>
 <table id="basic">
 	<tr class="align">
 		<td class="field">
@@ -124,9 +129,6 @@ Select a searchbox by the preferred size. You can choose to customize it and add
 		<input type="button" class="button-primary send_searchbox_to_editor" value="Insert Box">
 	</p>
 </div><br />
-
-<input title='Use this option if you would like to create the searchbox using JavaScript to hide it from search engines' id='travelSearchUseJavaScript' type='checkbox' name='usejavascript' />
-<label title='Use this option if you would like to create the searchbox using JavaScript to hide it from search engines' for="travelSearchUseJavaScript">Load Searchbox Using JavaScript</label> <br />
 
 <?php /* <a href="#" class="getShortcode">Get Shortcode</a>
 <a href="#" class="send_searchbox_to_editor">Insert</a> */ ?>

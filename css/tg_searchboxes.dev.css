@@ -16,11 +16,11 @@
 .tg_searchbox .tg_container form input[type=radio]{vertical-align:middle;margin:0 3px}
 .tg_searchbox .tg_container form select{border:1px solid #a7b4b3;border-radius:0 0 0 0;padding:2px !important;height:23px !important;width:37px}
 .tg_searchbox .tg_container form input.tgsb_addAS, .tg_searchbox .tg_container form input.tgsb_addASH{border:1px solid #a7b4b3;margin:0;border-radius:0 0 0 0;padding:3px !important;font-size:12px !important}
-.tg_searchbox .tg_container form input.tgsb_addDP{width:97px !important;border:1px solid #a7b4b3;padding:3px !important;font-size:12px !important}
+.tg_searchbox .tg_container form input.tgsb_addDP{width:97px !important;border:1px solid #a7b4b3;padding:3px !important;font-size:12px !important;display:inline-block;}
 .tg_searchbox .tg_container form img{margin:0 !important;padding:0 !important;border:0 !important;background-color:transparent !important;vertical-align:top;cursor:pointer;display:inline-block}
 .tg_searchbox .tg_container form img.trackingPixel{position:absolute;cursor:default}
 .tg_searchbox .tg_container form div.hr{background:#ebf3db;border-bottom:1px solid #dde5d0;margin-top:5px;padding:0}
-.tg_searchbox .tg_container form span{display:inline-block !important}
+.tg_searchbox .tg_container form span{display:inline-block !important;vertical-align:top;}
 .tg_searchbox .tg_container form span.s select{margin:0}
 .tg_searchbox .tg_container div.pwr{font-size:10px;color:#6c7266;line-height:1.2em !important}
 .tg_searchbox .tg_container div.pwr a{text-decoration:underline;color:#6c7266}
