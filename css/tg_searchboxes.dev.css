@@ -46,7 +46,8 @@
 .m160x600 .tg_tabs li span{display:inline-block !important;line-height:28px;height:27px;border-left:1px solid #d9d9d9;border-right:1px solid #d9d9d9;border-top:1px solid #d9d9d9;padding:0 12px !important;position:relative;top:1px;z-index:11;font-weight:500 !important;text-transform:none !important;font-size:12px !important;border-bottom:0 !important}
 .m160x600 .tg_tabs li span.sel, .m160x600 .tg_tabs li span:hover{height:29px;line-height:29px;background-image:url(../images/tg_searchboxes/tab-shade.png) !important;background-repeat:repeat-x}
 .m160x600 .tg_container form{margin:5px auto 0}
-.m160x600 .tg_container form label{line-height:25px;margin-right:0 !important}
+.m160x600 .tg_container form label{line-height:25px;margin-right:0 !important;font-weight:500 !important;
+padding:0px !important}
 .m160x600 .tg_container form label.radio{font-size:9px}
 .m160x600 .tg_container form span{width:138px;margin-bottom:4px;border:0 !important; background:transparent !important;text-transform:none !important;padding: 0 !important;font-weight:500 !important;font-size:12px !important}
 .m160x600 .tg_container form span.r{width:128px !important;float:none !important}
