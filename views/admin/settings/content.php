@@ -29,7 +29,7 @@ require_once ( TG_SEARCHBOXES_ABSPATH.'classes/tgSearchboxesRenderer.class.php' 
 settings_errors();
 ?>
 <?php /* WHAT & WHY: social media buttons; WHO & WHEN: Cipri on the 18th of June 2012 */ ?>
-<span class="socialmediaButtons"><span class="plusone-button"><span id="plusone-div"></span><script type="text/javascript">gapi.plusone.render('plusone-div', {"size": "medium","count": "true", "href":"http://www.travelgrove.com"});</script></span><span class="facebook-like-button"><span id="fb-root"></span><script type="text/javascript" src="http://connect.facebook.net/en_US/all.js#appId=187304151306561&amp;xfbml=true"></script><script type="text/javascript">document.write('<'+'fb:like'+' href="www.facebook.com/travelgrove" send="false" layout="button_count" show_faces="false" font="tahoma" width="90"></'+'fb:like'+'>');</script></span></span>
+<span class="socialmediaButtons"><span class="plusone-button"><span id="plusone-div"></span><script type="text/javascript">gapi.plusone.render('plusone-div', {"size": "medium","count": "true", "href":"http://www.travelgrove.com"});</script></span><span class="facebook-like-button"><span id="fb-root"></span><script type="text/javascript" src="http://connect.facebook.net/en_US/all.js#appId=187304151306561&amp;xfbml=true"></script><script type="text/javascript">document.write('<'+'fb:like'+' href="http://www.facebook.com/travelgrove" send="false" layout="button_count" show_faces="false" font="tahoma" width="90"></'+'fb:like'+'>');</script></span></span>
 <ul class="tgsb_settings subsubsub">
 	<li class="current"><a class="tgsb_settings current" href="#">Default Settings</a></li><li><a class="tgsb_shortcodeGenerator" href="#">Shortcode Generator</a></li><li class="noCnt">&nbsp;</li>
 </ul>
