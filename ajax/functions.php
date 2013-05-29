@@ -74,7 +74,7 @@ function http_post($url, $data) {
 	if(!ini_get('allow_url_fopen')) {
 		return readRemoteFile($url, $headersString, $data_url);
 	}
-	return array(	'content'	=> file_get_contents (
+	return array(	'content'	=> @file_get_contents (
 					$url,
 					false,
 					stream_context_create(
