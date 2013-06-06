@@ -155,26 +155,35 @@ function enqueue_tg_searchboxes_js() {
 	wp_enqueue_script('tgsb_autosuggestion', plugins_url('/js/autosuggestion.min.js', TG_SEARCHBOXES__FILE__), array('jquery'));
 	/**	jQuery DatePicker; dependent on jQuery and jQuery UI	*/
 	wp_enqueue_script('tgsb_datepicker_script', plugins_url('/js/jquery-ui-datepicker.min.js', TG_SEARCHBOXES__FILE__), array('jquery', 'jquery-ui-core'), '20120711');
-/*
-	print('options: <pre>');
-	print_r($this->options);
-	print('</pre>');
-*/
+
+	/**	@note	JS file holding the class that handles popups
+		@date	2013-JUN-4
+		@author	Tibi	*/
+	wp_enqueue_script('tgsb_popup_handler_script',
+			plugins_url( '/js/popupHandler.class.min.js', TG_SEARCHBOXES__FILE__ ),
+			false,
+			// version number
+			'20130604',
+			// adding it to footer to make sure it will appear AFTER inline variables are set
+			empty($this->options['noconflict']) ? true : false );
+
 	/**	dynamic functionalities of the searchboxes; main JS file	*/
 	wp_enqueue_script('tgsb_main_script',
 			plugins_url( '/js/tg_searchboxes.min.js', TG_SEARCHBOXES__FILE__ ),
-			array('tgsb_datepicker_script', 'tgsb_autosuggestion', 'jquery'),
+			array('tgsb_datepicker_script', 'tgsb_autosuggestion', 'jquery', 'tgsb_popup_handler_script'),
 			// version number
 			'20130423',
 			// adding it to footer to make sure it will appear AFTER inline variables are set
 			(empty($this->options['noconflict']) ? true : false));
+			
 	/**	context-dependent variables needed for dynamic functionality, in the main JS	*/
 	wp_localize_script(
 			// the name of the script where are this variables attached to
 			'tgsb_main_script',
 			// js object name that will contain the variables
 			'TG_Searchboxes_Variables',
-			array(	'str_CalendarURL'	=> plugins_url('/images/tg_searchboxes/calendarnew.png', TG_SEARCHBOXES__FILE__),
+			array(	'plugin_url'		=> plugins_url('', TG_SEARCHBOXES__FILE__),
+				'str_CalendarURL'	=> plugins_url('/images/tg_searchboxes/calendarnew.png', TG_SEARCHBOXES__FILE__),
 				'str_ASAjaxURL'		=> plugins_url('/ajax/autosuggestion.php', TG_SEARCHBOXES__FILE__),
 				/*	converting PHP-format date to JS-format	*/
 				'str_dateFormat'	=> $this->options['date_format'] == 'd/m/Y' ? 'dd/mm/yy' : 'mm/dd/yy',

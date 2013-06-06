@@ -20,7 +20,7 @@
 .tg_searchbox .tg_container form img{margin:0 !important;padding:0 !important;border:0 !important;background-color:transparent !important;vertical-align:top;cursor:pointer;display:inline-block}
 .tg_searchbox .tg_container form img.trackingPixel{position:absolute;cursor:default}
 .tg_searchbox .tg_container form div.hr{background:#ebf3db;border-bottom:1px solid #dde5d0;margin-top:5px;padding:0}
-.tg_searchbox .tg_container form span{display:inline-block !important;vertical-align:top;}
+.tg_searchbox .tg_container form span{display:inline-block !important;vertical-align:top !important;}
 .tg_searchbox .tg_container form span.s select{margin:0}
 .tg_searchbox .tg_container div.pwr{font-size:10px;color:#6c7266;line-height:1.2em !important}
 .tg_searchbox .tg_container div.pwr a{text-decoration:underline;color:#6c7266}

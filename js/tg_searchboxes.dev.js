@@ -6,6 +6,16 @@ var hotelASoptions;
 // object containing the query string with the searchboxes params used when merchant request should be made, if the query string for a searchbox an a search form is the same then the merchant request is not made and the div having the merchants into it is showed
 var tgsb_searchboxesParams = {};
 
+// object used to open the popup windows
+var windowOpenerObj;
+
+/*	@note	config variable for the IE popup blocker handling: if true, when a merchant is checked, a blank window will open and when merchants are compared. the compare window will load into this blank window
+	@date	2013 JUN 3
+	@author	Tibi
+*/
+//var onClickPopupHandling	= $.browser.msie;
+var onClickPopupHandling	= false;
+
 
 /*
 	WHAT & WHY: TGSearchboxes object
@@ -262,11 +272,16 @@ function ppups(obj) {
 			'&trafficSource=wpplugin' + 
 			'&searchsystem=us' +
 			'&querycode='+tgsb_querycode;
-	// iterating through the selected merchants elements 	
-	searchbox.find(".mrcList .mSel").each(function(){
-		var t = jQuery(this);
+	// iterating through the selected merchants elements
+	var currentWindowIdx	= 0;
+	var merchantSet		= searchbox.find(".mrcList .mSel");
+	merchantSet.each(function(){
+		var t		= jQuery(this);
+		var wName	= onClickPopupHandling ? t.attr('title') + '_' + t.attr('rel') : '';
 		// opening a new window for the search results
-		jump(url+'&merchant='+t.attr('title')+'&intitem='+t.attr('rel'));
+		// jump(url+'&merchant='+t.attr('title')+'&intitem='+t.attr('rel'));
+		windowOpenerObj.open(url+'&merchant='+t.attr('title')+'&intitem='+t.attr('rel'), wName, currentWindowIdx, merchantSet.length);
+		currentWindowIdx++;
 	});
 	 
 	return true;
@@ -446,11 +461,21 @@ function makeMerchantsRequest(obj, showErrorMessages, addErrorClass) {
 					});
 				};
 				// iterating the merchants
-				merchants.each(function(){
-					// if clicking on a merchant span then toggle the mSel class used for merchants selection
-					jQuery(this).click(function(){
-						jQuery(this).toggleClass('mSel');
-					});
+				merchants.click(function(){
+					var t	= jQuery(this);
+					t.toggleClass('mSel');
+					if (onClickPopupHandling) {
+						var wName	= t.attr('title') + '_' + t.attr('rel');
+						if (!t.hasClass('mSel')) {
+							windowOpenerObj.close(wName);
+						} else {
+							var prevOpts	= $.extend({}, windowOpenerObj.opts);
+							windowOpenerObj.setOptions({	'popUnder'	: true,
+											'style'		: 'fix'		});
+							var newWin	= windowOpenerObj.open('about:blank', wName, 0, 1, /*isSingle:*/1);
+							windowOpenerObj.opts = prevOpts;
+						}
+					}
 				});
 				// removing the submited class from the submit button
 				jQuery(submitButton).removeClass('submited');
@@ -821,6 +846,7 @@ function tgsb_initSingleSearchbox(tgsb){
 		/* creating the datepicker */
 		createDatepicker(i1,i2,rtowInputs);
 		/* submitting the forms */
+		windowOpenerObj.wrapButton(submitButton.get(0));
 		currentForm.submit(function() {
 			if(submitButton.hasClass('submited'))
 				return false;
@@ -862,7 +888,7 @@ jQuery(function(){
 		autoSelect:true,
 		offsety:0,
 		format: function(selLiObj) {
-			return selLiObj.innerHTML.replace(/<\/?[a-z]+>/gi,'').replace(/(.*),(.*)\((.*)\)/,'$1 ($3)');
+			return selLiObj.innerHTML.replace(/<\/?[a-z]+[^>]*>/gi,'').replace(/(.*),(.*)\((.*)\)/,'$1 ($3)');
 		},
 		callback:function(selLiObj, asObj) {
 			// checking the size of the searchbox | regexp changed by Tibi to match in whole class instead of the end of the string | 2013.04.23
@@ -911,6 +937,17 @@ jQuery(function(){
 			//return selLiObj.innerHTML.replace(/<\/?[^>]+>/gi,'').replace(/(.*),(.*) \((.*)\)/,'$1,$2');
 		}
 	};
+	
+	windowOpenerObj = new TGSB_WindowOpener({
+		chromePPBmode	: window.chrome ? true : false,
+		maxScreenWidth	: screen.width,
+		maxScreenHeight	: screen.height,
+		winWidth	: parseInt(screen.width*0.8),
+		blankPageHtml	: '<div style="margin:10px auto;width:100%;text-align:center;">'+
+					'<img src="'+ TG_Searchboxes_Variables.plugin_url +'/images/please-wait.jpg">'+
+				'</div>',
+		position	: {left:0, top:0, width:500, height:180}
+	});
 	
 	/*	searchbox initialization moved to a separate function to make possible the initialization of the searchboxes if they are loaded via JS as well (after doc. ready) */
 	tgsb_initSingleSearchbox('.tg_searchbox');
