@@ -6,7 +6,9 @@ var hotelASoptions;
 // object containing the query string with the searchboxes params used when merchant request should be made, if the query string for a searchbox an a search form is the same then the merchant request is not made and the div having the merchants into it is showed
 var tgsb_searchboxesParams = {};
 
-// object used to open the popup windows
+/*	@note	this object will be used to open up the popups from each form
+	@date	2013 JUN 06
+	@author	Tibi	*/
 var windowOpenerObj;
 
 /*	@note	config variable for the IE popup blocker handling: if true, when a merchant is checked, a blank window will open and when merchants are compared. the compare window will load into this blank window
@@ -280,6 +282,9 @@ function ppups(obj) {
 		var wName	= onClickPopupHandling ? t.attr('title') + '_' + t.attr('rel') : '';
 		// opening a new window for the search results
 		// jump(url+'&merchant='+t.attr('title')+'&intitem='+t.attr('rel'));
+		/*	@note	method how we open up the popups were changed | implemented the chrome popup handling solution
+			@date	2013 JUN 06
+			@author	Tibi	*/
 		windowOpenerObj.open(url+'&merchant='+t.attr('title')+'&intitem='+t.attr('rel'), wName, currentWindowIdx, merchantSet.length);
 		currentWindowIdx++;
 	});
@@ -464,6 +469,9 @@ function makeMerchantsRequest(obj, showErrorMessages, addErrorClass) {
 				merchants.click(function(){
 					var t	= jQuery(this);
 					t.toggleClass('mSel');
+					/*	@note	in case IE popup handling solution will be activated, we have to open up blank windows if a merchant is checked
+						@date	2013 JUN 06
+						@author	Tibi	*/
 					if (onClickPopupHandling) {
 						var wName	= t.attr('title') + '_' + t.attr('rel');
 						if (!t.hasClass('mSel')) {
@@ -845,7 +853,9 @@ function tgsb_initSingleSearchbox(tgsb){
 		var rtowInputs = currentForm.hasClass('flights') ? currentForm.find('input[name=oneway], select[name=oneway]') : false;
 		/* creating the datepicker */
 		createDatepicker(i1,i2,rtowInputs);
-		/* submitting the forms */
+		/*	@note	the submit button should be wrapped behind an iframe in chrome to make popups work
+			@date	2013 JUN 06
+			@author	Tibi	*/
 		windowOpenerObj.wrapButton(submitButton.get(0));
 		currentForm.submit(function() {
 			if(submitButton.hasClass('submited'))
@@ -938,6 +948,9 @@ jQuery(function(){
 		}
 	};
 	
+	/*	@note	this object will be used to open up the popups from each form
+		@date	2013 JUN 06
+		@author	Tibi	*/
 	windowOpenerObj = new TGSB_WindowOpener({
 		chromePPBmode	: window.chrome ? true : false,
 		maxScreenWidth	: screen.width,
@@ -946,6 +959,8 @@ jQuery(function(){
 		blankPageHtml	: '<div style="margin:10px auto;width:100%;text-align:center;">'+
 					'<img src="'+ TG_Searchboxes_Variables.plugin_url +'/images/please-wait.jpg">'+
 				'</div>',
+			
+		useHover	: false,
 		position	: {left:0, top:0, width:500, height:180}
 	});
 	

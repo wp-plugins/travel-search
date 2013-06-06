@@ -83,6 +83,9 @@
 .m300x250 .tg_container form input.tgsb_addAS{width:120px !important}
 .m300x250 .tg_container form.hotels input.tgsb_addASH{width:262px !important}
 .m300x250 .tg_container form input[type=submit]{display:block;vertical-align:bottom;position:absolute;bottom:0;right:15px}
+/* CSS rule for the iframe wrapped over the submit button in chrome | Tibi | 2013-JUN-06 */
+.m300x250 .tg_container form .ppupHandlerCont{position:absolute!important;bottom:0;right:15px}
+.m300x250 .tg_container form .ppupHandlerCont input[type=submit]{position:static;}
 .m300x250 .tg_container div.pwr{position:absolute;bottom:4px;right:13px}
 .m300x250 .tg_container form div.mrcList span.mrr{margin-right:10px !important}
 .m300x250 .tg_container form div.mrcList a.tgBackToSearchbox{left:15px}
@@ -129,6 +132,9 @@
 .m728x90 .tg_container form input.tgsb_addAS{width:145px}
 .m728x90 .tg_container div.pwr{position:absolute;right:13px;bottom:5px}
 .m728x90 .tg_container form input[type=submit]{display:block;position:absolute;right:15px;top:30px}
+/* CSS rule for the iframe wrapped over the submit button in chrome | Tibi | 2013-JUN-06 */
+.m728x90 .tg_container form .ppupHandlerCont{position:absolute!important;right:15px;top:30px}
+.m728x90 .tg_container form .ppupHandlerCont input {position:static;}
 .m728x90 .tg_container form input.tgsb_addASH{width:291px}
 .m728x90 .tg_container form.hotels div{float:left}
 .m728x90 .tg_container form.cars span{width:210px}
@@ -161,7 +167,12 @@
 .mdynamic .tg_container form.hotels input.tgsb_addASH{width:96% !important}
 /*.mdynamic .tg_container form input[type=image]{display:block;padding:0;vertical-align:bottom;position:absolute;bottom:0;right:15px}*/
 .mdynamic .tg_container form input[type=submit]{display:block;vertical-align:bottom;position:absolute;bottom:0;right:15px}
+/* CSS rule for the iframe wrapped over the submit button in chrome | Tibi | 2013-JUN-06 */
+.mdynamic .tg_container form .ppupHandlerCont{position:absolute!important;bottom:0;right:15px}
+.mdynamic .tg_container form .ppupHandlerCont input {position:static;}
 .mdynamic .tg_container form.flights input[type=submit]{position:static;float:right;margin:0 15px 0 0}
+/* CSS rule for the iframe wrapped over the submit button in chrome | Tibi | 2013-JUN-06 */
+.mdynamic .tg_container form.flights .ppupHandlerCont{position:relative!important;right:0px!important;float:right;}
 .mdynamic .tg_container div.pwr{position:absolute;bottom:4px;right:13px}
 .mdynamic .tg_container form.packages span.s{width:16%}
 /*.mdynamic .tg_container form.cars div.formContent{padding-bottom:48px}*/

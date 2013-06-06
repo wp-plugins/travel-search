@@ -1,4 +1,6 @@
-/*	main constructor	*/
+/*	@note	this object will be used to open up the popups from each form
+	@date	2013 JUN 06
+	@author	Tibi	*/
 TGSB_WindowOpener	= function(opts) {
 			/*	try to reach the top window if this is not it;
 				will work only from the same domain;
@@ -36,7 +38,11 @@ TGSB_WindowOpener	= function(opts) {
 				position:	{left:0, top:0, width:100, height:100},
 				/*	enable/disable chrome popup-blocker trick	*/
 				chromePPBmode:	false,
-				blankPageHtml: "<h4 style='text-align:center;'>Please wait...</h4>"
+				blankPageHtml: "<h4 style='text-align:center;'>Please wait...</h4>",
+				/*	@note	if hover is enabled a CSS class will be added to the wrapped button in chrome when the mouse goes over the iFrame
+					@date	2013 JUN 06
+					@author	Tibi	*/
+				useHover:	false
 			};
 			/*	object holding opened windows;	*/
 			this.windowCache	= {};
@@ -411,7 +417,7 @@ TGSB_WindowOpener.prototype	= {
 		/*	basic validation	*/
 		if(!this.opts.chromePPBmode || !sButton)
 			return false;
-		if (typeof(sButton.click)!='function' && typeof(sButton.onclick)!='function')
+		if (typeof(jQuery)=='undefined' && typeof(sButton.click)!='function' && typeof(sButton.onclick)!='function')
 			return false;
 		/*	creating span into which the submit button will be placed	*/
 		var span		= this._top.document.createElement('span');
@@ -474,17 +480,39 @@ TGSB_WindowOpener.prototype	= {
 			contentDoc.body.style.margin	= "0";
 			contentDoc.body.style.cursor	= "pointer";
 			contentDoc.onclick	= function (e) {
+				/*	@note	ORDER MATTERS! first should be default DOM click event, in case an input is clicked, form submit events are triggered only w/ this
+					@date	2013 JUN 06
+					@author	Tibi	*/
 				if(typeof(sButton.click)=='function')
 					sButton.click();
+				else if (typeof(jQuery)!='undefined')
+					jQuery(sButton).click();
 				else if(typeof(sButton.onclick)=='function')
 					sButton.onclick();
+			};
+			/*	@note	to be able to handle hover effect, we add/remove a CSS class to teh button, when teh mouse is hovered on the iframe
+				@date	2013 JUN 06
+				@author	Tibi	*/
+			if (self.opts.useHover) {
+				contentDoc.onmouseover	= function(){
+					var n	= sButton.className.replace(/\bwindowOpener_mouseOver\b/g,'');
+					sButton.className	= (n + ' windowOpener_mouseOver').replace(/ +/,' ').replace(/^ | $/g,'');
+				};
+				contentDoc.onmouseout	= function(){
+					var n	= sButton.className.replace(/\bwindowOpener_mouseOver\b/g,'');
+					sButton.className	= n.replace(/ +/g,' ').replace(/^ | $/g,'');
+				};
 			};
 		};
 		/*	binding the onload function	*/
 		iframe.onload	= iFrameOnLoad;
-		
-		/*if button is positioned absolute, the button wrapper should also be positioned absolute, and the button itself should be positioned relative w/ position 0/0*/
-		if (this._getStyle(sButton,'position')=='absolute') {
+
+		/*	@note	if button is positioned absolute, the button wrapper should also be positioned absolute, and the button itself should be positioned relative w/ position 0/0
+			@date	2013 JUN 06
+			@author	Tibi
+			@NOTE	Finally we decided to not use JS to set these CSS rules since they can be set to the CSS class of the wrapper
+			*/
+		/*if (this._getStyle(sButton,'position')=='absolute') {
 			span.style.position	= 'absolute';
 			span.style.left		= this._getStyle(sButton,'left');
 			span.style.top		= this._getStyle(sButton,'top');
@@ -493,7 +521,9 @@ TGSB_WindowOpener.prototype	= {
 			bStyle.position		= 'relative';
 			bStyle.top		= '0px';
 			bStyle.left		= '0px';
-		}
+		} else if (this._getStyle(sButton,'float')!='none') {
+			span.style.float	= this._getStyle(sButton,'float');
+		};*/
 		
 		/*	adding the generated span to the button's parent, right before the button	*/
 		sButton.parentNode.insertBefore(span, sButton);
@@ -502,9 +532,13 @@ TGSB_WindowOpener.prototype	= {
 		/*	attaching the iframe to the span	*/
 		span.appendChild(iframe);
 		return iframe;
-	},
+	}
 
-	_getStyle: function (elem, cssRule){
+	/*	@note	reads out the merged CSS rule for an element
+		@date	2013 JUN 06
+		@author	Tibi
+		*/
+	/*_getStyle: function (elem, cssRule){
 		var strValue = "";
 		if(document.defaultView && document.defaultView.getComputedStyle)
 			return document.defaultView.getComputedStyle(elem, "").getPropertyValue(cssRule);
@@ -514,6 +548,6 @@ TGSB_WindowOpener.prototype	= {
 			return p1.toUpperCase();
 		});
 		return elem.currentStyle[cssRule];
-	}
+	}*/
 	/**	END OF POPUP-BLOCKER MODE FUNCTIONS	*/
 };
