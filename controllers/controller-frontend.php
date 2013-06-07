@@ -143,7 +143,7 @@ function enqueue_tg_searchboxes_css() {
 	// adding the timestamp that was saved when new colors where saved for the css color file
 	wp_enqueue_style('tg_searchboxes_color_style', plugins_url('/css/tg_searchboxes_color.css', TG_SEARCHBOXES__FILE__), array(), $this->options['cssfiletimestamp']);
 	/**	basic/main CSS rules for the boxes	*/
-	wp_enqueue_style('tg_searchboxes_style', plugins_url('/css/tg_searchboxes.min.css', TG_SEARCHBOXES__FILE__), array(), '20120711');
+	wp_enqueue_style('tg_searchboxes_style', plugins_url('/css/tg_searchboxes.min.css', TG_SEARCHBOXES__FILE__), array(), '20130607');
 	/**	CSS rules for the datepicker calendars	*/
 	wp_enqueue_style('tgsb_datepicker_style', plugins_url('/css/ui-lightness/datepicker.min.css', TG_SEARCHBOXES__FILE__));
 	return true;
