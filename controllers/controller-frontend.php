@@ -72,6 +72,14 @@ function check_load_with_javascript(){
 		unset($tgSbRenderer);
 		$currentIndex++;
 	}
+	
+	/**	@note	If we get a subID via GET parameter, we have to use that subID | for the filter using priority of 20 - this should be enough to make sure no other filters were registered after this filter
+		@date	2013-JUL-10
+		@author	Tibi	*/
+	if ($req['subID']) {
+		$this->javascriptSubID	= $req['subID'];
+		add_filter('tg_searchboxes_subID', array($this, 'set_javascript_subid'), 20);
+	};
 		
 	// building up shortcode
 	$params	= "";
@@ -104,6 +112,13 @@ function check_load_with_javascript(){
 
 	// exiting the script to prevent any other output
 	exit();
+}
+
+/**	@note	used to set the subID got via GET parameter if searchbox is loaded via JS | binded to `tg_searchboxes_subID` filter
+	@date	2013-JUL-10
+	@author	Tibi	*/
+public function set_javascript_subid($defSubId){
+	return $this->javascriptSubID ? $this->javascriptSubID : $defSubId;
 }
 
 /**	@note	unregisters non-wordpress shutdown hooks to prevent outpt after the script is terminated

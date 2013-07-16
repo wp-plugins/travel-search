@@ -13,7 +13,9 @@ class tgSearchboxesRenderer {
 	private $controller;
 	private $defaultSize		= '300x250';
 	private $defaultSelectedTab	= 'flights';
-	private $subID			= '106';
+	private $subID;
+	/*	added to be able to compare if default subID is in use or not | Tibi | 2013-Jul-10	*/
+	private $defaultSubID		= '106';
 	private $defaultAlignment	= 'alignnone';
 
 	private static $nrOfBoxes;
@@ -32,7 +34,7 @@ class tgSearchboxesRenderer {
 		$this->controller	= $controller;
 		$this->atts		= $atts;
 		/**	make the subID hookable - only for internal uses	*/
-		$this->subID		= apply_filters('tg_searchboxes_subID', $this->subID);
+		$this->subID		= apply_filters('tg_searchboxes_subID', $this->defaultSubID);
 		/**	current number of boxes needed for incremental IDs for inputs / labels	*/
 		self::$nrOfBoxes++;
 		return;
@@ -58,6 +60,13 @@ class tgSearchboxesRenderer {
 				continue;
 			$queryString.= '&'. urlencode($name) .'='. urlencode($value);
 		}
+		
+		/*	@note	subID comparison to default subID added because subID was not transfered to the JS file and custom subID was lost when SB loaded from JS
+			@date	2013-JUL-10
+			@author	Tibi	*/
+		if ($this->defaultSubID!=$this->subID)
+			$queryString	.= '&subID='. (int)$this->subID;
+		
 		$queryString	.= '&tgsbPlaceholder=tgsb_'.self::$nrOfBoxes;
 		//the link to the javascript file (php that generates JS code)
 		$jsLink		= plugins_url('/js/searchbox.js.php?'.$queryString, TG_SEARCHBOXES__FILE__);
