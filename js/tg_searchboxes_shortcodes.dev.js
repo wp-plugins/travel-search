@@ -176,11 +176,32 @@ function tgsbRTOW(serializedFieldsArray) {
    });
    return returnValue;
 };
+
+function tgsbCruises(fields){
+    var ret = "";
+    jQuery.each(fields, function(idx, val){
+        if (
+            val.value &&
+            val.value != TG_Searchboxes_Variables.tgsbDefaultSettings[val.name] &&
+            (
+            val.name == 'cruiseline'
+            || val.name == 'length_of_stay'
+            || val.name == 'destination'
+            || val.name == 'month_year'
+            )
+        ) {
+            ret += '"' + val.name + '":"' + val.value + '",';
+        }
+    });
+    return ret;
+}
+
+
 /* WHAT & WHY: function used to generate the shortcode */
 function generateShortcode() {
         var tgSearchboxMeasures = jQuery('#tgsb_shortcodeGenerator ul.measuresChooser li a.current').text();
         tgSearchboxMeasures = (tgSearchboxMeasures.length == 0) ? '300x250' : tgSearchboxMeasures;
-        var selectedTab = jQuery('#tgsb_shortcodeGenerator .sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container').find('form.sel').attr('class').match(/^(flights|hotels|cars|packages)/);
+        var selectedTab = jQuery('#tgsb_shortcodeGenerator .sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container').find('form.sel').attr('class').match(/^(flights|hotels|cars|packages|cruises)/);
         var fields = jQuery('#tgsb_shortcodeGenerator .sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container form').serializeArray();
 	// Tibi | 2013.04.23 | checking if we have to set the flag that marks that we have to use JS load for the JS
 	var loadFromJS	= jQuery('#tgsb_shortcodeGenerator #travelSearchShortcodeUseJavaScript').attr('checked');
@@ -221,6 +242,8 @@ function generateShortcode() {
         tgsb_rtow = tgsbRTOW(fields);
         // adding the "roundtrip/oneway" value to the options string
         optionsString += (tgsb_rtow.length) ? tgsb_rtow+',' : tgsb_rtow;
+        // adding the cruises parameters to the options string
+        optionsString += tgsbCruises(fields);
 	
         // adding the flag that matks if SB should be loaded w/ JS or not value to the options string | Tibi | 2013.04.23
         optionsString += loadFromJS ? '"usejavascript":"on",' : '';
@@ -354,12 +377,24 @@ jQuery(function(){
         jQuery('#tgsb_shortcodeGenerator .tg_searchbox form').each(function(){
                  // initializing the datepicker for the (departure date, return date) inputs on the shortcode generator section
                 var inputs = jQuery(this).find(".tgsb_addDP");
-                var i1 = inputs.get(0).id;
-                var i2 = inputs.get(1).id;
-                var currentForm = jQuery(this);
-                var rtowInputs = false;
-                var rtowInputs = currentForm.hasClass('flights') ? jQuery(this).find('input[name=oneway]') : false;
-                createDatepicker(i1,i2,rtowInputs, generateShortcode);
+                if (inputs.length>1) {
+                    var i1 = inputs.get(0).id;
+                    var i2 = inputs.get(1).id;
+                    var currentForm = jQuery(this);
+                    var rtowInputs = false;
+                    var rtowInputs = currentForm.hasClass('flights') ? jQuery(this).find('input[name=oneway]') : false;
+                    createDatepicker(i1, i2, rtowInputs, generateShortcode);
+                };
         });
+    jQuery('#tgsb_shortcodeGenerator select.cruises').change(function() {
+        // changing the value of the kids select on selected the searchboxe from the shortcode generator section
+        /*
+        var slct = jQuery(this);
+         */
+        /*
+        slct.parents('.tg_searchbox').find('.tg_container > form').find('.kids').val(slct.val());
+         */
+        generateShortcode();
+    });
 	jQuery("#travelSearchShortcodeUseJavaScript").click(generateShortcode);
 });

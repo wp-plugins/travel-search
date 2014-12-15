@@ -13,7 +13,9 @@ class tgSearchboxesRenderer {
 	private $controller;
 	private $defaultSize		= '300x250';
 	private $defaultSelectedTab	= 'flights';
-	private $subID			= '106';
+	private $subID;
+	/*	added to be able to compare if default subID is in use or not | Tibi | 2013-Jul-10	*/
+	private $defaultSubID		= '106';
 	private $defaultAlignment	= 'alignnone';
 
 	private static $nrOfBoxes;
@@ -26,15 +28,98 @@ class tgSearchboxesRenderer {
 	private $seniors	= array(0, 1, 2, 3, 4, 5);
 	private $rooms		= array(1, 2, 3, 4, 5);
 	private $flightsClass	= array('Economy', 'Business', 'First');
+
+    private $cruiseDest = array(
+        "" => "Any Destination",
+        "1201" => "Africa",
+        "184" => "Alaska",
+        "858" => "Asia",
+        "1295" => "Bahamas",
+        "1035" => "Bermuda",
+        "1294" => "Canada/ New England",
+        "24" => "Caribbean",
+        "186" => "Eastern Caribbean",
+        "188" => "Exotic Caribbean",
+        "189" => "Southern Caribbean",
+        "187" => "Western Caribbean",
+        "992" => "Costa Rica",
+        "23" => "Europe",
+        "407" => "Mediterranean",
+        "795" => "Northern Europe",
+        "793" => "Transatlantic",
+        "1465" => "Western Europe",
+        "26" => "Hawaii",
+        "22" => "Latin America",
+        "7" => "Mexico",
+        "56" => "Baja California",
+        "1977" => "Gulf of Mexico",
+        "411" => "Mexican Riviera",
+        "240" => "Panama Canal",
+        "1296" => "South America",
+        "25" => "South Pacific",
+        "89" => "Australia",
+        "848" => "New Zealand",
+        "579" => "Tahiti",
+        "6" => "Western U.S.",
+        "1896" => "Pacific Coast",
+    );
+    private $cruiseLine = array(
+        "12" => "Any cruise line",
+        "2" => "Carnival Cruise Line",
+        "3" => "Celebrity Cruises",
+        "13" => "Costa Cruises",
+        "4" => "Crystal Cruises",
+        "19" => "Cunard Line Ltd.",
+        "5" => "Disney Cruise Line",
+        "6" => "Holland America Cruise Line",
+        "7" => "Norwegian Cruise Line",
+        "8" => "Princess Cruises",
+        "15" => "Radisson Seven Seas",
+        "11" => "Royal Caribbean",
+        "16" => "Seabourn Cruise Line",
+        "17" => "Silversea Cruises",
+    );
+    private $cruiseLength = array(
+        "1" => "Any Cruise Length",
+        "2" => "1-2 Nights",
+        "3" => "3-6 Nights",
+        "4" => "7-9 Nights",
+        "5" => "10-15 Nights",
+        "6" => "15 and more Nights",
+    );
+    private $cruiseMonth;
 		
 	
 	function __construct($controller, $atts) {
 		$this->controller	= $controller;
-		$this->atts		= $atts;
+		/**	@note	tg_searchboxes_attributes filter was added to make available custom searchbox filling
+				note that for admin interface no hook is yet added to filter search details
+			@date	2013-SEP-04
+			@author	Tibi	*/
+		if (is_admin())
+			$this->atts	= $atts;
+		else
+			$this->atts	= apply_filters('tg_searchboxes_attributes', $atts);
 		/**	make the subID hookable - only for internal uses	*/
-		$this->subID		= apply_filters('tg_searchboxes_subID', $this->subID);
+		$this->subID		= apply_filters('tg_searchboxes_subID', $this->defaultSubID);
 		/**	current number of boxes needed for incremental IDs for inputs / labels	*/
 		self::$nrOfBoxes++;
+
+        $this->cruiseMonth = array(
+            '' => 'Any Month'
+        );
+        for($i = 0; $i<12; $i++) {
+            $time = strtotime("+{$i} months");
+            $value = date("Ym", $time);
+            $output = date("M-Y", $time);
+            $this->cruiseMonth[$value] = $output;
+        }
+        if (!isset($this->atts['ajaxSettings'])) {
+            $this->atts['ajaxSettings'] = null;
+        }
+        if (!isset($this->atts['defaultSettings'])) {
+            $this->atts['defaultSettings'] = null;
+        }
 		return;
 	}
 	
@@ -58,6 +143,13 @@ class tgSearchboxesRenderer {
 				continue;
 			$queryString.= '&'. urlencode($name) .'='. urlencode($value);
 		}
+		
+		/*	@note	subID comparison to default subID added because subID was not transfered to the JS file and custom subID was lost when SB loaded from JS
+			@date	2013-JUL-10
+			@author	Tibi	*/
+		if ($this->defaultSubID!=$this->subID)
+			$queryString	.= '&subID='. (int)$this->subID;
+		
 		$queryString	.= '&tgsbPlaceholder=tgsb_'.self::$nrOfBoxes;
 		//the link to the javascript file (php that generates JS code)
 		$jsLink		= plugins_url('/js/searchbox.js.php?'.$queryString, TG_SEARCHBOXES__FILE__);
@@ -84,9 +176,15 @@ class tgSearchboxesRenderer {
 			$this->atts['alignment']	= $this->defaultAlignment;
 		}
 		if(!empty($this->atts['options'])) {
-			$this->atts			= json_decode($this->atts['options'], true);
+			$optionsAtts			= json_decode($this->atts['options'], true);
+			/**	@note	Options was copied entirely over atts, but we should copy it only by value to prevent the removal of variables that are not present in `options`
+				@date	2013-SEP-04
+				@author	Tibi	*/
+			//$this->atts = $optionsAtts;
+			foreach($optionsAtts as $k => $v)
+				$this->atts[$k]		= $v;
+			unset($this->atts['options']);
 		}
-		
 		/* on admin section we shouldn't use JS since the JS hadnling is not included on these pages */
 		if (is_admin())
 			$this->atts['usejavascript']	= false;
@@ -155,7 +253,6 @@ class tgSearchboxesRenderer {
 				$returnDate	= $this->atts['return_date'];
 			}
 		}
-		
 		$this->valuesToBeSet = array(
 			'from_air'	=> (empty($this->atts['from_air']) ? 
 						$this->controller->options['from_air'] : 
@@ -186,8 +283,32 @@ class tgSearchboxesRenderer {
 			'rtow'		=> (!isset($this->atts['rtow']) ?
 						$this->controller->options['rtow'] : 			
 						$this->atts['rtow']
-					)
+					),
+			'cruiseline' => (!isset($this->atts['cruiseline']) ?
+                            $this->controller->options['cruiseline'] :
+                            $this->atts['cruiseline']
+                    ),
+			'destination' => (!isset($this->atts['destination']) ?
+                            $this->controller->options['destination'] :
+                            $this->atts['destination']
+                    ),
+			'length_of_stay' => (!isset($this->atts['length_of_stay']) ?
+                            $this->controller->options['length_of_stay'] :
+                            $this->atts['length_of_stay']
+                    ),
+			'month_year' => (!isset($this->atts['month_year']) ?
+                            $this->controller->options['month_year'] :
+                            $this->atts['month_year']
+                    ),
 		);
+		
+		if (!isset($output)) {
+			$output = '';
+		};
+		
+		if (!isset($this->atts['defaultSettings'])) {
+			$this->atts['defaultSettings'] = false;
+		}
 		
 		$output .=	'<div class="tg_searchbox '.$this->atts['alignment'].' m'.$this->atts['size'].'" id="tgsb_'.self::$nrOfBoxes.'">';
 		$output .=		'<ul class="tg_tabs">';
@@ -195,6 +316,7 @@ class tgSearchboxesRenderer {
 		$output .=			'<li><span class="hotels'.(($this->atts['selectedTab'] == 'hotels') ? ' sel' : '').'">'.(($this->atts['size']=='160x600') ? 'Hotel' : 'Hotels').'</span></li>';
 		$output .=			(($this->atts['size']=='160x600') ? '' : '<li><span class="packages'.(($this->atts['selectedTab'] == 'packages') ? ' sel' : '').'">Packages</span></li>');
 		$output .=			'<li><span class="cars'.(($this->atts['selectedTab'] == 'cars') ? ' sel' : '').'">'.(($this->atts['size']=='160x600') ? 'Car' : 'Cars').'</span></li>';
+        $output .=			(($this->atts['size']=='160x600' || $this->atts['size'] == '728x90') ? '' : '<li><span class="cruises'.(($this->atts['selectedTab'] == 'cruises') ? ' sel' : '').'">Cruises</span></li>');
 		$output .=		'</ul>';
 		$output .=		'<div class="tg_container">';
 		$output .=			($this->atts['defaultSettings']) ? '<div class="flights sel">' : '<form method="post" action="" class="flights'.(($this->atts['selectedTab'] == 'flights') ? ' sel' : '').'">';
@@ -213,7 +335,15 @@ class tgSearchboxesRenderer {
 		
 		$output .=			($this->atts['defaultSettings']) ? '<div class="cars">' : '<form class="cars'.(($this->atts['selectedTab'] == 'cars') ? ' sel' : '').'" method="post" action="">';
 		$output .=			$this->renderCarsSearchbox();
-		$output .=			($this->atts['defaultSettings']) ? '</div>' : '</form>';		
+		$output .=			($this->atts['defaultSettings']) ? '</div>' : '</form>';
+
+        if($this->atts['size'] != '160x600' && $this->atts['size'] != '728x90') {
+            // we don't have the cruises searchbox on the 160x600  box
+            $output .=			($this->atts['defaultSettings']) ? '<div class="cruises">' : '<form class="cruises'.(($this->atts['selectedTab'] == 'cruises') ? ' sel' : '').'" method="post" action="">';
+            $output .=			$this->renderCruisesSearchbox();
+            $output .=			($this->atts['defaultSettings']) ? '</div>' : '</form>';
+        }
+
 		// the "get this widget" link will be present only on the Dynamic Sized Box 
 		$output .=			'<div class="pwr">'.
 						($this->controller->options['links'] ?
@@ -269,6 +399,19 @@ class tgSearchboxesRenderer {
 			return '';
 		return $this->$method();
 	}
+
+    function renderCruisesSearchbox() {
+        $output = array(
+            '300x250'	=> 'renderCruisesSearchbox300x250',
+            '300x533'	=> 'renderCruisesSearchbox300x533',
+            '728x90'	=> 'renderCruisesSearchbox728x90',
+            'dynamic'	=> 'renderCruisesSearchboxDynamic'
+        );
+        $method = $output[$this->atts['size']];
+        if(!array_key_exists($this->atts['size'], $output))
+            return '';
+        return $this->$method();
+    }
 	
 	function renderCarsSearchbox() {
 		$output = array(
@@ -418,6 +561,7 @@ private function renderFlightsSearchbox160x600() {
 	}
 
 	private function renderFlightsSearchbox728x90() {
+        $output = "";
 		$output .= '<div class="formContent">';
 		$output .= '<span>
 			<label for="tgsb_'.self::$nrOfBoxes.'_from_f">From:</label>
@@ -466,6 +610,9 @@ private function renderFlightsSearchbox160x600() {
 	}
 	
 	private function renderFlightsSearchboxDynamic() {
+		if (!isset($this->atts['ajaxSettings'])) {
+			$this->atts['ajaxSettings'] = false;
+		}
 			$output = '<div class="formContent">';
 			$output .= '<input type="radio" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[flights_oneway]' : 'oneway').'" id="tgsb_'.self::$nrOfBoxes.'_rt" value=""'.((empty($this->valuesToBeSet['rtow'])) ? ' checked="checked"' : '').' /><label class="radio" for="tgsb_'.self::$nrOfBoxes.'_rt">Roundtrip</label>
 			<input type="radio" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[flights_oneway]' : 'oneway').'" id="tgsb_'.self::$nrOfBoxes.'_ow" value="on"'.((!empty($this->valuesToBeSet['rtow'])) ? ' checked="checked"' : '').' /><label class="radio" for="tgsb_'.self::$nrOfBoxes.'_ow">One Way</label>
@@ -627,6 +774,7 @@ private function renderHotelsSearchbox160x600() {
 	}
 	
 	private function renderHotelsSearchbox728x90() {
+        $output = "";
 		$output .= '<div class="formContent">';
 		$output .= '<div>
 				<label for="tgsb_'.self::$nrOfBoxes.'_city_h">City:</label>
@@ -928,6 +1076,7 @@ private function renderHotelsSearchbox160x600() {
 
 
 	private function renderCarsSearchbox300x250(){
+
 		$output = '<div class="formContent">';
 		$output .= '<span>
 				<label for="tgsb_'.self::$nrOfBoxes.'_from_c">Pick-Up:</label>
@@ -1049,7 +1198,135 @@ private function renderHotelsSearchbox160x600() {
 		$output = preg_replace('/>[\s\t\r\n]+</','><',$output);
 		return $output;
 	}
-	
+
+
+    private function renderCruisesSearchbox300x250() {
+        $output = '<div class="formContent">';
+
+        $output .= $this->getCruisesSelectsHtml();
+
+        $output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+        $output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
+        $output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
+        $output .= '</div>';
+        $output .= $this->atts['defaultSettings'] ? '' : '<div class="mrcList nod"></div>';
+        $output .= $this->renderSubmitButton();
+        // removing the spaces between the tags
+        $output = preg_replace('/>[\s\t\r\n]+</','><',$output);
+        return $output;
+    }
+
+    private function renderCruisesSearchbox300x533() {
+        $output = "";
+
+        $output .= $this->getCruisesSelectsHtml();
+
+        $output .= '<div class="mrcList nod"></div>';
+        $output .= '<div class="help">&nbsp;</div>';
+        $output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+        $output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
+        $output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
+        $output .= $this->renderSubmitButton();
+        // removing the spaces between the tags
+        $output = preg_replace('/>[\s\t\r\n]+</','><',$output);
+        return $output;
+    }
+
+
+    private function renderCruisesSearchbox728x90() {
+        $output = '<div class="formContent">';
+
+        $output .= $this->getCruisesSelectsHtml();
+
+        $output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+        $output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
+        $output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
+        $output .= '</div>';
+        $output .= '<div class="mrcList nod"></div>';
+        $output .= $this->renderSubmitButton();
+        // removing the spaces between the tags
+        $output = preg_replace('/>[\s\t\r\n]+</','><',$output);
+        return $output;
+    }
+
+    private function renderCruisesSearchboxDynamic() {
+        $output = '<div class="formContent">';
+
+        $output .= $this->getCruisesSelectsHtml();
+
+        $output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="idReferral" value="'.esc_attr($this->controller->options['id_referral']).'" />';
+        $output .= ($this->atts['defaultSettings'] || $this->atts['ajaxSettings']) ? '' : '<input type="hidden" name="subID" value="'.esc_attr($this->subID).'" />';
+        $output .= ($this->controller->options['adid']) ? '<input type="hidden" name="adid" value="'.esc_attr($this->controller->options['adid']).'" />' : '';
+        $output .= '</div>';
+        $output .= $this->atts['defaultSettings'] ? '' : '<div class="mrcList nod"></div>';
+        $output .= $this->renderSubmitButton();
+        // removing the spaces between the tags
+        $output = preg_replace('/>[\s\t\r\n]+</','><',$output);
+        return $output;
+    }
+
+    private function getCruisesSelectsHtml()
+    {
+        $s = $this->getCruiseSelects();
+        $output = '
+            <span>
+				<label for="tgsb_'.self::$nrOfBoxes.'_line_c">Cruiseline:</label>
+				' . $s->lineSelect . '
+			</span>
+            <span class="r">
+				<label for="tgsb_'.self::$nrOfBoxes.'_length_c">Length of stay:</label>
+				' . $s->lengthSelect . '
+			</span>
+            <span>
+				<label for="tgsb_'.self::$nrOfBoxes.'_dest_c">Destination:</label>
+				' . $s->destSelect . '
+			</span>
+            <span class="r">
+				<label for="tgsb_'.self::$nrOfBoxes.'_month_c">Month:</label>
+				' . $s->monthSelect . '
+			</span>
+        ';
+        return $output;
+    }
+
+    private function getCruiseSelects()
+    {
+        $ret = new StdClass();
+        $ret->lineSelect = $this->createSelectTag(
+            $this->atts['defaultSettings'] ? 'tg_searchboxes_options[cruiseline]' : 'cruiseline',
+            'tgsb_'.self::$nrOfBoxes.'_line_c',
+            'cruises',
+            $this->cruiseLine,
+            isset($this->valuesToBeSet['cruiseline']) ? $this->valuesToBeSet['cruiseline'] : '',
+            /*useOptKeyAsValue:*/true
+        );
+        $ret->lengthSelect = $this->createSelectTag(
+            $this->atts['defaultSettings'] ? 'tg_searchboxes_options[length_of_stay]' : 'length_of_stay',
+            'tgsb_'.self::$nrOfBoxes.'_length_c',
+            'cruises',
+            $this->cruiseLength,
+            isset($this->valuesToBeSet['length_of_stay']) ? $this->valuesToBeSet['length_of_stay'] : '',
+            /*useOptKeyAsValue:*/true
+        );
+        $ret->destSelect = $this->createSelectTag(
+            $this->atts['defaultSettings'] ? 'tg_searchboxes_options[destination]' : 'destination',
+            'tgsb_'.self::$nrOfBoxes.'_dest_c',
+            'cruises',
+            $this->cruiseDest,
+            isset($this->valuesToBeSet['destination']) ? $this->valuesToBeSet['destination'] : '',
+            /*useOptKeyAsValue:*/true
+        );
+        $ret->monthSelect = $this->createSelectTag(
+            $this->atts['defaultSettings'] ? 'tg_searchboxes_options[month_year]' : 'month_year',
+            'tgsb_'.self::$nrOfBoxes.'_month_c',
+            'cruises',
+            $this->cruiseMonth,
+            isset($this->valuesToBeSet['month_year']) ? $this->valuesToBeSet['month_year'] : '',
+            /*useOptKeyAsValue:*/true
+        );
+
+        return $ret;
+    }
 
 	/**	HTML for the submit button	*/
 	private function renderSubmitButton() {
@@ -1076,7 +1353,7 @@ private function renderHotelsSearchbox160x600() {
 			return '';
 		$output = '';
 		foreach($options as $idx => $optionContent) {
-			$output .= '<option value="'.esc_attr((($useOptKeyAsValue) ? $idx : $optionContent)).'"'.(($selectedOption == $optionContent ) ? ' selected="selected"' : '').'>'.esc_attr($optionContent).'</option>';
+			$output .= '<option value="'.esc_attr($useOptKeyAsValue ? $idx : $optionContent).'"'.(($selectedOption == ($useOptKeyAsValue ? $idx : $optionContent) ) ? ' selected="selected"' : '').'>'.esc_attr($optionContent).'</option>';
 		}
 		
 		$output = '<select'.((!empty($selectTagName)) ? ' name="'.$selectTagName.'"' : '').((!empty($selectTagId)) ? ' id="'.$selectTagId.'"' : '').((!empty($selectTagClass)) ? ' class="'.$selectTagClass.'"' : '').' >'.$output.'</select>';
@@ -1088,6 +1365,7 @@ private function renderHotelsSearchbox160x600() {
 		if(empty($optionName))
 			return false;
 		$dr_dates = $departFlag ? $this->controller->departure_dates : $this->controller->return_dates;
+        $output = "";
 		$output .= "<select ".($departFlag ? "class='depDate'" : "class='retDate'")." name='tg_searchboxes_options[".$optionName."]' ".((!empty($tagId)) ? " id='".$tagId."'" : '').">";
 		foreach($dr_dates as $dr_date) {
 			$output .= "<option value='".esc_attr($dr_date)."'".(($this->controller->options[($departFlag ? 'departure_date' : 'return_date')] == $dr_date) ? " selected='selected'" : '').">".esc_attr($dr_date)."</option>";
@@ -1116,4 +1394,3 @@ private function renderHotelsSearchbox160x600() {
 		unset($this->atts);
 	}
 }
-?>

@@ -313,12 +313,14 @@ jQuery(function(){
 		//we want only to create the datepicker for the div that has the inputs with the class tgsb_addDP
 		if(!currentForm.hasClass('pwr')) {
 			var inputs = currentForm.find(".tgsb_addDP");
-			// the ids of the inputs
-			var i1 = inputs.get(0).id;
-			var i2 = inputs.get(1).id;
-			var rtowInputs = false;
-			var rtowInputs = currentForm.hasClass('flights') ? jQuery(this).find('input[name="tg_searchboxes_options[flights_oneway]"]') : false;
-			createDatepicker(i1,i2,rtowInputs);
+            if (inputs.length>1) {
+                // the ids of the inputs
+                var i1 = inputs.get(0).id;
+                var i2 = inputs.get(1).id;
+                var rtowInputs = false;
+                var rtowInputs = currentForm.hasClass('flights') ? jQuery(this).find('input[name="tg_searchboxes_options[flights_oneway]"]') : false;
+                createDatepicker(i1, i2, rtowInputs);
+            };
 		};
 	});
 

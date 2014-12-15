@@ -37,8 +37,8 @@ class Tg_Searchboxes_Controller_Base {
 		/**	getting the TG-searchboxes options from the WP options table, used in both derived classses	*/
 		$this->options			= get_option('tg_searchboxes_options');
 		/**	making the tracking parameters hookable and applying filters mapped to them	*/
-		$this->options['id_referral']	= apply_filters('tg_searchboxes_affiliate_id', $this->options['id_referral']);
-		$this->options['adid']		= apply_filters('tg_searchboxes_adid', $this->options['adid']);
+		$this->options['id_referral']	= apply_filters('tg_searchboxes_affiliate_id', isset($this->options['id_referral']) ? $this->options['id_referral'] : 0);
+		$this->options['adid']		= apply_filters('tg_searchboxes_adid', isset($this->options['adid']) ? $this->options['adid'] : '');
 		/**	making the actual shortcode value hookable	*/
 		$this->shortcode_tg_searchboxes	= apply_filters('tg_searchboxes_shortcode', $this->shortcode_tg_searchboxes);
 		return;
@@ -53,7 +53,7 @@ class Tg_Searchboxes_Controller_Base {
 	
 	function jquery_ui() {
 		wp_deregister_script( 'jquery-ui-core' );
-		wp_register_script( 'jquery-ui-core', plugins_url('/js/jquery-ui.min.js', TG_SEARCHBOXES__FILE__));
+		wp_register_script( 'jquery-ui-core', plugins_url('/js/jquery-ui' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__));
 		wp_enqueue_script( 'jquery-ui-core' );
 	}
 

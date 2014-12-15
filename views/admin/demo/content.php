@@ -15,7 +15,7 @@ if( !defined('TG_SEARCHBOXES_ABSPATH') )
 <h2>Dynamic-Width Searchbox:</h2>
 <?php
 	$atts	= array( 'options' => '{"size":"dynamic"}');
-	$tgSearchboxesRenderer	= new tgSearchboxesRenderer(&$this, $atts);
+	$tgSearchboxesRenderer	= new tgSearchboxesRenderer($this, $atts);
 	echo $tgSearchboxesRenderer->renderSearchboxes();
 ?>
 <br />
@@ -24,7 +24,7 @@ Shortcode:<input type="text" size="100" value="[tg_searchboxes options='{&quot;s
 <h2>SkyScraper Searchbox (160x600 pixels):</h2>
 <?php
 	$atts = array( 'options' => '{"size":"160x600"}');
-	$tgSearchboxesRenderer = new tgSearchboxesRenderer(&$this, $atts);
+	$tgSearchboxesRenderer = new tgSearchboxesRenderer($this, $atts);
 	echo $tgSearchboxesRenderer->renderSearchboxes();
 ?>
 <br />
@@ -34,7 +34,7 @@ Shortcode:<input type="text" size="100" value="[tg_searchboxes options='{&quot;s
 <h2>300x250 Searchbox:</h2>
 <?php
 	$atts = array( 'options' => '{"size":"300x250"}');
-	$tgSearchboxesRenderer = new tgSearchboxesRenderer(&$this, $atts);
+	$tgSearchboxesRenderer = new tgSearchboxesRenderer($this, $atts);
 	echo $tgSearchboxesRenderer->renderSearchboxes();
 ?>
 <br />
@@ -43,7 +43,7 @@ Shortcode:<input type="text" size="100" value="[tg_searchboxes options='{&quot;s
 <h2>300x533 Searchbox:</h2>
 <?php
 	$atts = array( 'options' => '{"size":"300x533"}');
-	$tgSearchboxesRenderer = new tgSearchboxesRenderer(&$this, $atts);
+	$tgSearchboxesRenderer = new tgSearchboxesRenderer($this, $atts);
 	echo $tgSearchboxesRenderer->renderSearchboxes();
 ?>
 <br />
@@ -52,7 +52,7 @@ Shortcode:<input type="text" size="100" value="[tg_searchboxes options='{&quot;s
 <h2>Banner-sized Searchbox (728x90):</h2>
 <?php
 	$atts = array( 'options' => '{"size":"728x90"}');
-	$tgSearchboxesRenderer = new tgSearchboxesRenderer(&$this, $atts);
+	$tgSearchboxesRenderer = new tgSearchboxesRenderer($this, $atts);
 	echo $tgSearchboxesRenderer->renderSearchboxes();
 ?>
 <br />

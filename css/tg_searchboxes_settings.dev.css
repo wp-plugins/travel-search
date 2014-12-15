@@ -11,6 +11,7 @@
 .tg_searchbox .tg_container div label.radio{font-size:10px;display:inline-block !important}
 .tg_searchbox .tg_container div input[type=radio]{vertical-align:middle;margin:0 3px}
 .tg_searchbox .tg_container div select{border:1px solid #a7b4b3;border-radius:0 0 0 0;padding:2px !important;height:24px !important}
+.tg_searchbox .tg_container form select.cruises {width:80%;}
 .tg_searchbox .tg_container div input.tgsb_addAS, .tg_searchbox .tg_container div input.tgsb_addASH{border:1px solid #a7b4b3;margin:0;border-radius:0 0 0 0;padding:3px !important;font-size:12px !important}
 .tg_searchbox .tg_container div input.tgsb_addDP{width:97px !important;border:1px solid #a7b4b3;padding:3px !important;font-size:12px !important}
 .tg_searchbox .tg_container div img{padding:0 !important;border:0 !important;background-color:transparent !important;vertical-align:top;cursor:pointer}

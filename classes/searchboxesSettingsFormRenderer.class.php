@@ -38,7 +38,7 @@ class searchboxesSettingsFormRenderer {
 		'd/m/Y'	=> 'dd/mm/yyyy (gb)'
 	);	
 	
-	function __construct($controller = false) {
+	function __construct(&$controller = false) {
 		$this->controller	= $controller;
 		$this->options		= empty($this->controller->options) ? get_option('tg_searchboxes_options') : $this->controller->options;
 	}
@@ -47,16 +47,16 @@ class searchboxesSettingsFormRenderer {
 	// WHO & WHEN: Cipri on the 2nd of Februrary 2012	
 	function admin_init() {
 		// registering the settings
-		register_setting('tg_searchboxes_options', 'tg_searchboxes_options', array(&$this, 'validate_options'));
-		add_settings_section('tg_searchboxes_options', 'Default Searchbox Values and Targeting Options', array(&$this, 'description_text'), 'tg_searchboxes_options');
+		register_setting('tg_searchboxes_options', 'tg_searchboxes_options', array($this, 'validate_options'));
+		add_settings_section('tg_searchboxes_options', 'Default Searchbox Values and Targeting Options', array($this, 'description_text'), 'tg_searchboxes_options');
 		// adding the id referral field to the form as a setting field
-		add_settings_field('tg_searchboxes_options_id_referral', 'Your unique Travelgrove affiliate ID:', array(&$this, 'id_referral_input'), 'tg_searchboxes_options', 'tg_searchboxes_options');
+		add_settings_field('tg_searchboxes_options_id_referral', 'Your unique Travelgrove affiliate ID:', array($this, 'id_referral_input'), 'tg_searchboxes_options', 'tg_searchboxes_options');
 		// adding the date format select to the form as a setting field
-		add_settings_field('tg_searchboxes_options_date_format', 'Date Format:', array(&$this, 'date_format_select'), 'tg_searchboxes_options', 'tg_searchboxes_options');
+		add_settings_field('tg_searchboxes_options_date_format', 'Date Format:', array($this, 'date_format_select'), 'tg_searchboxes_options', 'tg_searchboxes_options');
 		// adding the departure date select to the form as a setting field
-		add_settings_field('tg_searchboxes_options_departure_date', 'Default Departure Date:', array(&$this, 'departure_date_select'), 'tg_searchboxes_options', 'tg_searchboxes_options');
+		add_settings_field('tg_searchboxes_options_departure_date', 'Default Departure Date:', array($this, 'departure_date_select'), 'tg_searchboxes_options', 'tg_searchboxes_options');
 		// adding the return date select to the form as a setting field
-		add_settings_field('tg_searchboxes_options_return_date', 'Default Return Date:', array(&$this, 'return_date_select'), 'tg_searchboxes_options', 'tg_searchboxes_options');
+		add_settings_field('tg_searchboxes_options_return_date', 'Default Return Date:', array($this, 'return_date_select'), 'tg_searchboxes_options', 'tg_searchboxes_options');
 	}
 	
 	/*
@@ -203,6 +203,13 @@ class searchboxesSettingsFormRenderer {
 		unset($rooms);
 		// validating the RoundTrip/OneWay variable
 		$valid['rtow'] = (empty($input['flights_oneway'])) ? false : true;
+
+        $valid['cruiseline'] = isset($input['cruiseline']) && $input['cruiseline'] ? (string)$input['cruiseline'] : null;
+        $valid['length_of_stay'] = isset($input['length_of_stay']) && $input['length_of_stay'] ? (string)$input['length_of_stay'] : null;
+        $valid['destination'] = isset($input['destination']) ? (string)$input['destination'] : null;
+        $valid['month_year'] = isset($input['month_year']) ? (string)$input['month_year'] : null;
+
+
 		
 		// checking if the value of the border color field matches the pattern
 		if(empty($input['brdcolor']) || !preg_match('/^\#([0-9a-f]{3}|[0-9a-f]{6})$/i', $input['brdcolor'])) {
@@ -276,10 +283,11 @@ class searchboxesSettingsFormRenderer {
 		$valid['noconflict'] = (empty($input['noconflict'])) ? false : true;
 
 		// checking the usejavascript flag value | Tibi | 2013.04.23
-		$valid['usejavascript'] = $input['usejavascript'] ? true : false;
+		$valid['usejavascript'] = isset($input['usejavascript']) && $input['usejavascript'] ? true : false;
 		
 		// this value is used to avoid caching for the color file after new values are saved
 		$valid['cssfiletimestamp'] = time();
+
 		return $valid;
 	}
 	
@@ -310,7 +318,8 @@ class searchboxesSettingsFormRenderer {
 	
 	/**	setting the content of the date format select elem on the Settings Page	*/
 	function date_format_select() {
-		$output		.= "<select name='tg_searchboxes_options[date_format]' id='date_format' style='width:185px'>";
+        $output = "";
+		$output .= "<select name='tg_searchboxes_options[date_format]' id='date_format' style='width:185px'>";
 		foreach($this->date_formats as $idx => $date_format) {
 			$output	.= "<option value='".esc_attr($idx)."'".
 				($this->options['date_format'] == $idx ? " selected='selected'" : '').
@@ -412,6 +421,7 @@ class searchboxesSettingsFormRenderer {
 		if(empty($optionName))
 			return false;
 		$dr_dates = $departFlag ? $this->departure_dates : $this->return_dates;
+        $output = "";
 		$output .= "<select ".($departFlag ? "class='depDate'" : "class='retDate'")." name='tg_searchboxes_options[".esc_attr($optionName)."]' ".((!empty($tagId)) ? " id='".esc_attr($tagId)."'" : '')." style='width:185px'>";
 		foreach($dr_dates as $dr_date) {
 			$output .= "<option value='".esc_attr($dr_date)."'".(($this->controller->options[($departFlag ? 'departure_date' : 'return_date')] == $dr_date) ? " selected='selected'" : '').">".($departFlag ? 'current date +' : 'dep. date ').esc_attr($dr_date)."</option>";

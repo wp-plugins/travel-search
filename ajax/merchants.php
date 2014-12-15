@@ -12,16 +12,19 @@ if(!defined('TG_SERVER_BASEPATH'))
 	define('TG_SERVER_BASEPATH', 'http://www.travelgrove.com/');
 
 /*	deserving scripts for different type of providers, hosted on Travelgrove	*/
-$serverScripts	= array('flights'	=> 'air.json.php',
-			'hotels'	=> 'hotel.json.php',
-			'cars'		=> 'car.json.php',
-			'packages'	=> 'vacation.json.php');
+$serverScripts	= array(
+    'flights'	=> 'air.json.php',
+	'hotels'	=> 'hotel.json.php',
+	'cars'		=> 'car.json.php',
+    'packages'	=> 'vacation.json.php',
+    'cruises'	=> 'cruise.json.php',
+);
 /*	handling invalid input; only 'flights', 'hotels', 'cars' or 'packages' are accepted	*/
-if(empty($_POST['merchants']) || !in_array($_POST['merchants'], array_keys($serverScripts)))
+if(empty($_POST['merchants']) || !isset($serverScripts[$_POST['merchants']]))
 	exit();
 /*	PHP proxy functions	*/
 require_once 'functions.php';
-$baseUrl	= TG_SERVER_BASEPATH.TG_PROVIDER_PATH;
+$baseUrl	= TG_SERVER_BASEPATH . TG_PROVIDER_PATH;
 $url		= $baseUrl.$serverScripts[$_POST['merchants']];
 $params			= $_POST;
 $params['searchsystem']	= 'us';
@@ -35,4 +38,3 @@ setHeaders($response['headers']);
 /*	transforming JSON object into a JSON object containing the actual HTML of the providers	*/
 $output			= merchantsJSONToHTML($response['content'], $params['sbsize']);
 exit(json_encode($output));
-?>

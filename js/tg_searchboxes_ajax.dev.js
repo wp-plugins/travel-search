@@ -124,6 +124,14 @@ function setParamsToBoxes(obj) {
 					jQuery('#'+rt).get(0).checked = true;				
 			};
 		};
+        if(typeof(obj.cruiseline) != 'undefined' && obj.cruiseline)
+            currentForm.find('select[name="cruiseline"]').val(obj.cruiseline);
+        if(typeof(obj.destination) != 'undefined' && obj.destination)
+            currentForm.find('select[name="destination"]').val(obj.destination);
+        if(typeof(obj.length_of_stay) != 'undefined' && obj.length_of_stay)
+            currentForm.find('select[name="length_of_stay"]').val(obj.length_of_stay);
+        if(typeof(obj.month_year) != 'undefined' && obj.month_year)
+            currentForm.find('select[name="month_year"]').val(obj.month_year);
 	});
 };
 
@@ -205,30 +213,32 @@ function inputBlur(ev){
 function createDatepicker(i1,i2,rtowInputs){
 jQuery('#'+i1+', #'+i2).each(function(){
 	var inp = jQuery(this);
+    var tsbvars = typeof(TG_Searchboxes_Variables)!='undefined' ? TG_Searchboxes_Variables : {};
 	inp.datepicker({
 		minDate: 0,
 		maxDate: "2y",
 		showOn: "both",
 		// setting the datepicker image 
-		buttonImage: TG_Searchboxes_Variables.str_CalendarURL,
+		buttonImage: tsbvars.str_CalendarURL,
 		buttonImageOnly: true,
-		dateFormat: TG_Searchboxes_Variables.str_dateFormat,
+		dateFormat: tsbvars.str_dateFormat,
 		// setting the date format 
 		onSelect: function(date,dpObj){
 			// d1 is the selected date on the datepicker
 			d1 = jQuery(this).datepicker("getDate");
-			if(this.id == i1) {
+			if(this.id == i1 && tsbvars.str_dateFormat) {
 				// getting the date from the return date input
-				d2 = jQuery.datepicker.parseDate( TG_Searchboxes_Variables.str_dateFormat, jQuery('#'+i2).val());
+				d2 = jQuery.datepicker.parseDate(tsbvars.str_dateFormat, jQuery('#'+i2).val());
 				// setting the minimum date of the return date to the date of the departure date
 				jQuery("#"+i2).datepicker('option','minDate',d1);
 				if(d2 && d1>d2) {
 					// if the departure date is greater then the return date add 5 day to the departure date and set them to the return date
 					d2.setTime(d1.getTime()+60*60*24*5*1000);
-					jQuery("#"+i2).val(jQuery.datepicker.formatDate(TG_Searchboxes_Variables.str_dateFormat, d2));
+                    var dateFormatted = jQuery.datepicker.formatDate(tsbvars.str_dateFormat, d2);
+					jQuery("#"+i2).val(dateFormatted);
 					// the same date value is set to all inputs with the same class
 					var cont = jQuery("#"+i2).parents("div.tg_searchbox:eq(0)");
-					cont.find('input.retDate').val(jQuery.datepicker.formatDate(TG_Searchboxes_Variables.str_dateFormat, d2));
+					cont.find('input.retDate').val(dateFormatted);
 				};
 			};
 			inputName = this.name;
@@ -272,42 +282,59 @@ jQuery('select.rooms').change(function() {
 	slct.parents('.tg_searchbox').find('.tg_container > form').find('.rooms').val(slct.val());
 });
 
-jQuery(".tgsb_addAS, .tgsb_addASH").each(function(){
-	jQuery(this).focus(inputFocus).blur(inputBlur);
-	new AS(this.id,ASoptions);
-});
+try {
 
-jQuery('div.tg_searchbox ul.tg_tabs li span').click(function(){
-	selectedTab = jQuery(this).attr('class').match(/^[a-z]+/);
-	var cont = jQuery(this).parents("div.tg_searchbox:eq(0)"); 
-	cont.find('ul.tg_tabs li span').removeClass('sel');
-	cont.find('ul.tg_tabs li span.'+selectedTab).addClass('sel');
-	cont.find('div.tg_container form').removeClass('sel');
-	cont.find('div.tg_container form.'+selectedTab).addClass('sel');
-});
+    jQuery(".tgsb_addAS, .tgsb_addASH").each(function(){
+        jQuery(this).focus(inputFocus).blur(inputBlur);
+        new AS(this.id,ASoptions);
+    });
 
-/*
-jQuery('.tg_searchbox form').submit(function(){
-	alert('Here you can set up the default values the searchboxes will be filled in with.'+"\n"+'To test how the boxes work add them to your pages or visit the demo page.');
-	return false;
-});
-*/
-jQuery('input.tgsb_submit_button').click(function() {
-	alert('Here you can set up how the box should appear inside your post.'+"\n"+
-		'To see this box in action hit Insert and update your post,'+"\n"+
-		'or visit the demo page of this plugin at:'+"\n"+
-		TG_Searchboxes_Variables.demoPage);
-	return false;
-});
+    jQuery('div.tg_searchbox ul.tg_tabs li span').click(function(){
+        selectedTab = jQuery(this).attr('class').match(/^[a-z]+/);
+        var cont = jQuery(this).parents("div.tg_searchbox:eq(0)");
+        cont.find('ul.tg_tabs li span').removeClass('sel');
+        cont.find('ul.tg_tabs li span.'+selectedTab).addClass('sel');
+        cont.find('div.tg_container form').removeClass('sel');
+        cont.find('div.tg_container form.'+selectedTab).addClass('sel');
+    });
+
+    /*
+    jQuery('.tg_searchbox form').submit(function(){
+        alert('Here you can set up the default values the searchboxes will be filled in with.'+"\n"+'To test how the boxes work add them to your pages or visit the demo page.');
+        return false;
+    });
+    */
+    jQuery('input.tgsb_submit_button').click(function() {
+        alert('Here you can set up how the box should appear inside your post.'+"\n"+
+            'To see this box in action hit Insert and update your post,'+"\n"+
+            'or visit the demo page of this plugin at:'+"\n"+
+            TG_Searchboxes_Variables.demoPage);
+        return false;
+    });
 
 
 
-jQuery('.tg_searchbox form').each(function(){
-	var inputs = jQuery(this).find(".tgsb_addDP");
-	var i1 = inputs.get(0).id;
-	var i2 = inputs.get(1).id;
-	var currentForm = jQuery(this);
-	var rtowInputs = false;
-	var rtowInputs = currentForm.hasClass('flights') ? jQuery(this).find('input[name=oneway], label.radio') : false;
-	createDatepicker(i1,i2,rtowInputs);
-});
+    jQuery('.tg_searchbox form').each(function(){
+        try {
+            var inputs = jQuery(this).find(".tgsb_addDP");
+            if (inputs.length > 1) {
+
+            var i1 = inputs.get(0).id;
+            var i2 = inputs.get(1).id;
+            var currentForm = jQuery(this);
+            var rtowInputs = false;
+            var rtowInputs = currentForm.hasClass('flights') ? jQuery(this).find('input[name=oneway], label.radio') : false;
+            createDatepicker(i1, i2, rtowInputs);
+            }
+        } catch(e) {
+            if (typeof(console)!='undefined' && console.log) {
+                console.log("ERROR IN DATEPICKER: " + e.toString());
+            }
+        }
+    });
+
+} catch(e) {
+    if (typeof(console)!='undefined' && console.log) {
+        console.log("ERROR IN DATEPICKER: " + e.toString());
+    }
+}

@@ -23,14 +23,14 @@ function Tg_Searchboxes_Controller_Frontend() {
 function __construct() {
 	/**	call parent's constructor for reading the options from WP options table	*/
 	parent::__construct();
-//	add_action('wp_enqueue_scripts', array(&$this, 'jquery_ui'), 0);
+//	add_action('wp_enqueue_scripts', array($this, 'jquery_ui'), 0);
 	/**	adding to the dom the css files needed by the plugin in the frontend	*/
 	$this->enqueue_tg_searchboxes_css();
 	/**	adding to the dom the js files and variables needed by the plugin in the frontend	*/
 	$this->enqueue_tg_searchboxes_js();
 	/**	adding a hook for the shortcode "tg_searchboxes";
 	* WP will automatically pass the found arguments: [shortcode argument1=value1 argument2=value2]	*/
-	add_shortcode($this->shortcode_tg_searchboxes, array(&$this, 'tg_searchboxes_handle_tg_shortcode'));
+	add_shortcode($this->shortcode_tg_searchboxes, array($this, 'tg_searchboxes_handle_tg_shortcode'));
 	
 	// checking if current request is to load the searchbox via external JS file
 	$this->check_load_with_javascript();
@@ -45,7 +45,7 @@ function __construct() {
 */
 function check_load_with_javascript(){
 	//if request is not for loading searchbox via JS, returning
-	if ($_GET['tgsb_command']!='js_searchbox')
+	if (!isset($_GET['tgsb_command']) || $_GET['tgsb_command']!='js_searchbox')
 		return false;
 
 	// doing an action to let other developers hook into our plugin
@@ -72,6 +72,14 @@ function check_load_with_javascript(){
 		unset($tgSbRenderer);
 		$currentIndex++;
 	}
+	
+	/**	@note	If we get a subID via GET parameter, we have to use that subID | for the filter using priority of 20 - this should be enough to make sure no other filters were registered after this filter
+		@date	2013-JUL-10
+		@author	Tibi	*/
+	if ($req['subID']) {
+		$this->javascriptSubID	= $req['subID'];
+		add_filter('tg_searchboxes_subID', array($this, 'set_javascript_subid'), 20);
+	};
 		
 	// building up shortcode
 	$params	= "";
@@ -106,6 +114,13 @@ function check_load_with_javascript(){
 	exit();
 }
 
+/**	@note	used to set the subID got via GET parameter if searchbox is loaded via JS | binded to `tg_searchboxes_subID` filter
+	@date	2013-JUL-10
+	@author	Tibi	*/
+public function set_javascript_subid($defSubId){
+	return $this->javascriptSubID ? $this->javascriptSubID : $defSubId;
+}
+
 /**	@note	unregisters non-wordpress shutdown hooks to prevent outpt after the script is terminated
 	@date	2013.04.22
 	@author	Tibi
@@ -130,7 +145,7 @@ function unregister_shutdown_hooks(){
 /**	handle shortcodes via renderer class	*/
 function tg_searchboxes_handle_tg_shortcode($attr) {
 	/**	init the renderer w/ the params. found in the source, by WP fn.	*/
-	$tgSearchboxesRenderer	= new tgSearchboxesRenderer(&$this, $attr);
+	$tgSearchboxesRenderer	= new tgSearchboxesRenderer($this, $attr);
 	// return the generated searchbox
 	return $tgSearchboxesRenderer->renderSearchboxes();
 }
@@ -143,36 +158,36 @@ function enqueue_tg_searchboxes_css() {
 	// adding the timestamp that was saved when new colors where saved for the css color file
 	wp_enqueue_style('tg_searchboxes_color_style', plugins_url('/css/tg_searchboxes_color.css', TG_SEARCHBOXES__FILE__), array(), $this->options['cssfiletimestamp']);
 	/**	basic/main CSS rules for the boxes	*/
-	wp_enqueue_style('tg_searchboxes_style', plugins_url('/css/tg_searchboxes.min.css', TG_SEARCHBOXES__FILE__), array(), '20120711');
+	wp_enqueue_style('tg_searchboxes_style', plugins_url('/css/tg_searchboxes' . TGSB_PACK . '.css?' . TGSB_VER, TG_SEARCHBOXES__FILE__), array());
 	/**	CSS rules for the datepicker calendars	*/
-	wp_enqueue_style('tgsb_datepicker_style', plugins_url('/css/ui-lightness/datepicker.min.css', TG_SEARCHBOXES__FILE__));
+	wp_enqueue_style('tgsb_datepicker_style', plugins_url('/css/ui-lightness/datepicker' . TGSB_PACK . '.css?' . TGSB_VER, TG_SEARCHBOXES__FILE__));
 	return true;
 }
 
 /**	enque the required JS files	*/
 function enqueue_tg_searchboxes_js() {
 	/**	AutoSuggestion drop-down for aiports+cities; (name, path, dependencies) - dependent on jQuery	*/
-	wp_enqueue_script('tgsb_autosuggestion', plugins_url('/js/autosuggestion.min.js', TG_SEARCHBOXES__FILE__), array('jquery'));
+	wp_enqueue_script('tgsb_autosuggestion', plugins_url('/js/autosuggestion' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__), array('jquery'));
 	/**	jQuery DatePicker; dependent on jQuery and jQuery UI	*/
-	wp_enqueue_script('tgsb_datepicker_script', plugins_url('/js/jquery-ui-datepicker.min.js', TG_SEARCHBOXES__FILE__), array('jquery', 'jquery-ui-core'), '20120711');
+	wp_enqueue_script('tgsb_datepicker_script', plugins_url('/js/jquery-ui-datepicker' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__), array('jquery', 'jquery-ui-core'));
 
 	/**	@note	JS file holding the class that handles popups
 		@date	2013-JUN-4
 		@author	Tibi	*/
 	wp_enqueue_script('tgsb_popup_handler_script',
-			plugins_url( '/js/popupHandler.class.min.js', TG_SEARCHBOXES__FILE__ ),
+			plugins_url( '/js/windowOpener.class' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__ ),
 			false,
 			// version number
-			'20130604',
+			'',
 			// adding it to footer to make sure it will appear AFTER inline variables are set
 			empty($this->options['noconflict']) ? true : false );
 
 	/**	dynamic functionalities of the searchboxes; main JS file	*/
 	wp_enqueue_script('tgsb_main_script',
-			plugins_url( '/js/tg_searchboxes.min.js', TG_SEARCHBOXES__FILE__ ),
+			plugins_url( '/js/tg_searchboxes' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__ ),
 			array('tgsb_datepicker_script', 'tgsb_autosuggestion', 'jquery', 'tgsb_popup_handler_script'),
 			// version number
-			'20130423',
+			'',
 			// adding it to footer to make sure it will appear AFTER inline variables are set
 			(empty($this->options['noconflict']) ? true : false));
 			

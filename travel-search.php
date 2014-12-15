@@ -3,7 +3,7 @@
 Plugin Name: Travel Search
 Plugin URI: http://labs.travelgrove.com/plugins/travel-search/
 Description: Travel Search Plugin by Travelgrove allows you to add Flights, Hotels, Vacations and Car Rentals searchboxes to any of your page and posts.
-Version: 1.3
+Version: 1.4
 Author: Travelgrove Labs
 Author URI: http://www.travelgrove.com/
 License: GPL 2
@@ -36,6 +36,10 @@ if(!defined('TG_SEARCHBOXES_BASENAME'))
 	define('TG_SEARCHBOXES_BASENAME', plugin_basename(__FILE__));
 if(!defined('TG_SEARCHBOXES__FILE__'))
 	define('TG_SEARCHBOXES__FILE__', __FILE__);
+if(!defined('TGSB_VER'))
+    define('TGSB_VER', '1.4');
+if(!defined('TGSB_PACK'))
+    define('TGSB_PACK', '.min');
 
 /**	Include file with the Widget Class	*/
 require_once ( TG_SEARCHBOXES_ABSPATH.'classes/tgsbWidget.class.php' );

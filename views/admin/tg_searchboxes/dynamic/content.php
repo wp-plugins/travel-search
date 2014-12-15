@@ -13,6 +13,6 @@
 <?php require_once ( TG_SEARCHBOXES_ABSPATH.'classes/tgSearchboxesRenderer.class.php' ); ?>
 <?php
 	$atts = array( 'options' => '{"size":"dynamic", "ajaxSettings":true}');
-	$tgSearchboxesRenderer = new tgSearchboxesRenderer(&$this, $atts);
+	$tgSearchboxesRenderer = new tgSearchboxesRenderer($this, $atts);
 	echo $tgSearchboxesRenderer->renderSearchboxes();
 ?>

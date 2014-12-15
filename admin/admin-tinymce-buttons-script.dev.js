@@ -179,6 +179,26 @@ function tgsbRTOW(serializedFieldsArray) {
    });
    return returnValue;
 };
+
+function tgsbCruises(fields){
+    var ret = "";
+    jQuery.each(fields, function(idx, val){
+        if (
+            val.value &&
+            val.value != TG_Searchboxes_Variables.tgsbDefaultSettings[val.name] &&
+            (
+                val.name == 'cruiseline'
+                || val.name == 'length_of_stay'
+                || val.name == 'destination'
+                || val.name == 'month_year'
+            )
+        ) {
+            ret += '"' + val.name + '":"' + val.value + '",';
+        }
+    });
+    return ret;
+}
+
 // getting the value from the radio buttons used for the alignment of the box
 function setAlignment() {
 	// default value is alignnone
@@ -322,10 +342,15 @@ var tgsb_popupInitOpt = {
 			title : 'Edit Searchbox'
 		});
 
-		tinymce.dom.Event.add(editButton, 'mousedown', function(e) {
-			var ed = tinyMCE.activeEditor;
-			ed.windowManager.bookmark = ed.selection.getBookmark('simple');
-			ed.execCommand("mceTGSearchboxesInsert");
+		(tinymce.dom.Event.bind ? tinymce.dom.Event.bind : tinymce.dom.Event.add)(editButton, 'mousedown', function(e) {
+			var ed = tinyMCE.activeEditor, el = ed.selection.getNode();
+			/*	@note	the condition to run the `mceTGSearchboxesInsert` command was added to resolve conflicts w/ other plugins that use the gallery button
+				@date	2013-OCT-17
+				@author	Tibi	*/
+			if ( el.nodeName == 'IMG' && ed.dom.hasClass(el, 'TGSearchboxes') ) {
+				ed.windowManager.bookmark = ed.selection.getBookmark('simple');
+				ed.execCommand("mceTGSearchboxesInsert");
+			};
 		});
 
 		dellButton = DOM.add('wp_gallerybtns', 'img', {
@@ -336,7 +361,7 @@ var tgsb_popupInitOpt = {
 			title : 'Delete Searchbox'
 		});
 
-		tinymce.dom.Event.add(dellButton, 'mousedown', function(e) {
+		(tinymce.dom.Event.bind ? tinymce.dom.Event.bind : tinymce.dom.Event.add)(dellButton, 'mousedown', function(e) {
 			var ed = tinyMCE.activeEditor, el = ed.selection.getNode();
 
 			if ( el.nodeName == 'IMG' && ed.dom.hasClass(el, 'TGSearchboxes') ) {
@@ -378,7 +403,7 @@ function tg_searchboxes_tinymce_button_click(tinyMCE_obj){
 			// getting the measures of the box
 			var tgSearchboxMeasures = jQuery('ul.measuresChooser li a.current').text();
 			tgSearchboxMeasures = (tgSearchboxMeasures.length == 0) ? '300x250' : tgSearchboxMeasures;
-			var selectedTab = jQuery('.sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container').find('form.sel').attr('class').match(/^(flights|hotels|cars|packages)/);
+			var selectedTab = jQuery('.sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container').find('form.sel').attr('class').match(/^(flights|hotels|cars|packages|cruises)/);
 		
 			var fields = jQuery('.sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container form').serializeArray();
 			// marks if searchbox should be loaded with JS file or not | Tibi | 2013.04.23
@@ -418,8 +443,10 @@ function tg_searchboxes_tinymce_button_click(tinyMCE_obj){
 			optionsString += (tgsb_rooms.length) ? tgsb_rooms+',' : tgsb_rooms;
 			// getting the "roundtrip/oneway" value
 			tgsb_rtow = tgsbRTOW(fields);
-			// adding the "roundtrip/oneway" value to the options string
-			optionsString += (tgsb_rtow.length) ? tgsb_rtow+',' : tgsb_rtow;
+            // adding the "roundtrip/oneway" value to the options string
+            optionsString += (tgsb_rtow.length) ? tgsb_rtow+',' : tgsb_rtow;
+            // adding the cruises parameters to the options string
+            optionsString += tgsbCruises(fields);
 			
         		// adding the flag that matks if SB should be loaded w/ JS or not value to the options string | Tibi | 2013.04.23
         		optionsString += loadFromJS ? '"usejavascript":"on",' : '';

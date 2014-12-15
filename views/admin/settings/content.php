@@ -72,7 +72,7 @@ settings_errors();
 <div class="SearchboxContainer">
 <?php	
 	$atts = array('options' =>'{"size":"300x250", "defaultSettings":true}');
-	$tgSearchboxesRenderer = new tgSearchboxesRenderer(&$this, $atts);
+	$tgSearchboxesRenderer = new tgSearchboxesRenderer($this, $atts);
 	echo $tgSearchboxesRenderer->renderSearchboxes();
 ?>
 </div>

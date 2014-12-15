@@ -6,15 +6,16 @@ var hotelASoptions;
 // object containing the query string with the searchboxes params used when merchant request should be made, if the query string for a searchbox an a search form is the same then the merchant request is not made and the div having the merchants into it is showed
 var tgsb_searchboxesParams = {};
 
-// object used to open the popup windows
+/*	@note	this object will be used to open up the popups from each form
+	@date	2013 JUN 06
+	@author	Tibi	*/
 var windowOpenerObj;
 
 /*	@note	config variable for the IE popup blocker handling: if true, when a merchant is checked, a blank window will open and when merchants are compared. the compare window will load into this blank window
 	@date	2013 JUN 3
 	@author	Tibi
 */
-//var onClickPopupHandling	= $.browser.msie;
-var onClickPopupHandling	= false;
+var onClickPopupHandling;
 
 
 /*
@@ -22,7 +23,7 @@ var onClickPopupHandling	= false;
 	WHO & WHEN: Cipri on the 16th of March 2012
 */
 function TGSearchboxes() {
-	this.queryCodes = {flights:0, hotels:0, cars:0, packages:0};
+	this.queryCodes = {flights:0, hotels:0, cars:0, packages:0, cruises:0};
 	this.set = function(queryCodeMember, queryCodeMemberValue) {
 		this.queryCodes[queryCodeMember] = queryCodeMemberValue;
 		return true;
@@ -31,6 +32,57 @@ function TGSearchboxes() {
 };
 // calling the TGSearchboxes object
 TGSB = new TGSearchboxes();
+
+/**
+	@note	Initializes the window opener object that will be used to open windows
+	@date	2014-JAN-07
+	@author	Tibi
+*/
+function initWindowOpener(){
+	/*	@note	initializing windowOpener object - this is used to open popup windows when a search is performed
+		@date	2013 JUN 03
+		@author	Tibi	*/
+	windowOpenerObj = new TGSB_WindowOpener({
+		chromePPBmode		: window.chrome ? true : false,
+		popUnder		: false,
+		style			: 'cascade',
+		position		: {left:0, top:0, width:460, height:485},
+		buildPlaceHolderUrl	: function(bttn){},
+		buildPlaceHolderHtml	: function(bttn){
+						bttn	= jQuery(bttn);
+						var sb	= bttn.parents('.tg_searchbox:eq(0)').attr('id');
+						/*	id="m1234"	=>	1234	*/
+						var mId		= bttn.attr('rel').replace(/[^0-9]+/g,'');
+						var mName	= bttn.attr('title');
+						/*	/images/merchants/bookingbuddy.gif	=>	bookingbuddy.gif	*/
+						var mLogo	= bttn.children('img').attr('src').replace(/^.*\/([^\/]+)$/,'$1');
+						var redirectLink= validateSearchbox(bttn, false, false) ? '' : getJumpLink(bttn, mName, mId);
+						var inlineScript= "<script type='text/javascript'>"+
+									"var mName='"+mName+"';"+
+									"var mId="+parseInt(mId)+";"+
+									"var mLogo='"+mLogo+"';"+
+									"var sb='"+sb+"';"+
+									"var redirectLink='"+redirectLink+"'"+
+								"</script>";
+						var script	= "<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>"+
+								"<script type='text/javascript' src='"+TG_Searchboxes_Variables.plugin_url+"/js/placeholder.min.js'></script>";
+						return "<html><head><title>Opening "+mName+"</title>"+
+									inlineScript+script+
+								"</head><body></body></html>";
+					},
+		buildWindowName		: function(bttn){
+						bttn		= jQuery(bttn);
+						var id	 	= bttn.attr('rel').replace(/[^0-9]+/g,'');
+						var merchant	= bttn.attr('title');
+						return merchant + '_' + id;
+					}
+	});
+	/*	@note	marks if a window should be opened or not when a merchant is checked (IE popoup handling)
+			initialized on document.ready | declared in global scope
+		@date	2013-JUL-03
+		@author	Tibi	*/
+	onClickPopupHandling	= jQuery.browser.msie || windowOpenerObj.isChromeMinVer(30);
+}
 
 // WHAT & WHY: function used to remove the error class from an input
 function remErr(){
@@ -71,14 +123,15 @@ function validateSearchbox(obj, onsbmt, addErrorClass) {
 	// flights searchbox 
 	onsbmt = (typeof(onsbmt) == 'undefined' || !onsbmt) ? false : true;
 	addErrorClass = (typeof(addErrorClass) == 'undefined' || !addErrorClass) ? false : true;
-	errMsg = '';
-	errClass = '';
+	var errMsg = '';
+	var errClass = '';
 	// locations pattern
 	var patt1 = /^.*\s\(...\)$/i;
 	// dates pattern
 	var patt2 = /[0-9]{2}\/[0-9]{2}\/[0-9]{4}/;
 	// setting the current form jquery object
 	var currentForm = jQuery(obj).parents('form');
+    var departure;
 	if(!currentForm.hasClass('hotels')) {
 		// the departure location is not set on the hotels searchbox
 		departure = currentForm.find('input.asFrom');
@@ -96,72 +149,76 @@ function validateSearchbox(obj, onsbmt, addErrorClass) {
 	// setting the return date using the datepicker getDate method
 	var d2 = returnDate.datepicker('getDate');
 	// if on the flights search form
-	if(currentForm.hasClass('flights')) {
-		// on the 728x90 box the radio buttons for RT/OW are not present
-		// finding the roundtrip/oneway inputs
-		rtowInputs = currentForm.find('input[name=oneway]');
-		// oneway checked flag set to false
-		var owChk = false;
-		// if exist the roundtrip/oneway inputs ( because on the box 728x90 they are not present)
-		if(typeof(rtowInputs.get(0)) != 'undefined' && typeof(rtowInputs.get(1)) != 'undefined') {
-			rt = rtowInputs.get(0).id; // get the id of the roundtrip input
-			ow = rtowInputs.get(1).id; // get the id of the oneway input
-			owChk = jQuery('#'+ow).attr('checked'); // setting the oneway flag
-		};
 
-	};
-	// if not on the hotels search form
-	if(!currentForm.hasClass('hotels')) {
-		// the departure location is not set on the hotels searchbox
-		if(!patt1.test(departure.val())) {
-			// comparing the departure location with the pattern
-			errMsg += "\t- a departure location\n";
-			errClass += '#'+departure.get(0).id+',';
-		};
-	};
-	// if on the hotels search form
-	if(currentForm.hasClass('hotels')) {
-		if(arrival.val().length<3) {
-			// comparing the arrival location with the pattern
-			errMsg += "\t- an arrival location\n";	
-			errClass += '#'+arrival.get(0).id+',';
-		};
-	} else {
-		if(!patt1.test(arrival.val())) {
-			// comparing the arrival location with the pattern
-			errMsg += "\t- an arrival location\n";	
-			errClass += '#'+arrival.get(0).id+',';
-		};
-	};
+    if (!currentForm.hasClass('cruises')) {
 
-	if(!patt2.test(departureDate.val()) || (d1>0 && d1<date) ) {
-		// comparing the departure date with the pattern
-		errMsg += "\t- a valid departure date\n";	
-		errClass += '#'+departureDate.get(0).id+',';
-	};
-	if(currentForm.hasClass('flights')) {
-		// if the oneway radio button is not checked and the return date is not set
-		if(!owChk && !patt2.test(returnDate.val())) {
-			// comparing the return date with the pattern
-			errMsg += "\t- a valid returning date\n";	
-			errClass += '#'+returnDate.get(0).id+',';
-		};
-		if (!owChk && d1>0 && d2>0 && d1>d2) {
-		// if the oneway radio button is not checked and the departure date is bigger then zero and the return date is bigger then zero and the departure date is bigger then the return date
-			errMsg += "\t- a greater returning date than the departure date\n";
-			errClass+='#'+returnDate.get(0).id+',';
-		};
-	} else {
-		if(!patt2.test(returnDate.val())) {
-			// comparing the return date with the pattern
-			errMsg += "\t- a valid returning date\n";	
-			errClass += '#'+returnDate.get(0).id+',';
-		};
-		if (d1>0 && d2>0 && d1>d2) {
-			errMsg += "\t- a greater returning date than the departure date\n";
-			errClass+='#'+returnDate.get(0).id+',';
-		};
-	};
+        if(currentForm.hasClass('flights')) {
+            // on the 728x90 box the radio buttons for RT/OW are not present
+            // finding the roundtrip/oneway inputs
+            var rtowInputs = currentForm.find('input[name=oneway]');
+            // oneway checked flag set to false
+            var owChk = false;
+            // if exist the roundtrip/oneway inputs ( because on the box 728x90 they are not present)
+            if(typeof(rtowInputs.get(0)) != 'undefined' && typeof(rtowInputs.get(1)) != 'undefined') {
+                var rt = rtowInputs.get(0).id; // get the id of the roundtrip input
+                var ow = rtowInputs.get(1).id; // get the id of the oneway input
+                owChk = jQuery('#'+ow).attr('checked'); // setting the oneway flag
+            }
+
+        }
+        // if not on the hotels search form
+        if(!currentForm.hasClass('hotels')) {
+            // the departure location is not set on the hotels searchbox
+            if(!patt1.test(departure.val())) {
+                // comparing the departure location with the pattern
+                errMsg += "\t- a departure location\n";
+                errClass += '#'+departure.get(0).id+',';
+            }
+        }
+        // if on the hotels search form
+        if(currentForm.hasClass('hotels')) {
+            if(arrival.val().length<3) {
+                // comparing the arrival location with the pattern
+                errMsg += "\t- an arrival location\n";
+                errClass += '#'+arrival.get(0).id+',';
+            }
+        } else {
+            if(!patt1.test(arrival.val())) {
+                // comparing the arrival location with the pattern
+                errMsg += "\t- an arrival location\n";
+                errClass += '#'+arrival.get(0).id+',';
+            }
+        }
+
+        if(!patt2.test(departureDate.val()) || (d1>0 && d1<date) ) {
+            // comparing the departure date with the pattern
+            errMsg += "\t- a valid departure date\n";
+            errClass += '#'+departureDate.get(0).id+',';
+        }
+        if(currentForm.hasClass('flights')) {
+            // if the oneway radio button is not checked and the return date is not set
+            if(!owChk && !patt2.test(returnDate.val())) {
+                // comparing the return date with the pattern
+                errMsg += "\t- a valid returning date\n";
+                errClass += '#'+returnDate.get(0).id+',';
+            }
+            if (!owChk && d1>0 && d2>0 && d1>d2) {
+            // if the oneway radio button is not checked and the departure date is bigger then zero and the return date is bigger then zero and the departure date is bigger then the return date
+                errMsg += "\t- a greater returning date than the departure date\n";
+                errClass+='#'+returnDate.get(0).id+',';
+            }
+        } else {
+            if(!patt2.test(returnDate.val())) {
+                // comparing the return date with the pattern
+                errMsg += "\t- a valid returning date\n";
+                errClass += '#'+returnDate.get(0).id+',';
+            }
+            if (d1>0 && d2>0 && d1>d2) {
+                errMsg += "\t- a greater returning date than the departure date\n";
+                errClass+='#'+returnDate.get(0).id+',';
+            }
+        }
+    }
 	// the comma is present at the end of the errClass variable then replace it
 	if(errClass.match(/\,$/)) {
 		errClass = errClass.substr(0, (errClass.length-1));
@@ -211,13 +268,9 @@ function makeClassicSearchRequest(obj) {
 	return true;
 };
 
-/*
-	WHAT & WHY: function used to create the url needed for the merchants popups on classic search
-	WHO & WHEN: Cipri on the 14th of March 2012 
-	@param	object	obj	containing an object of an input of the search form
-*/
-function ppups(obj) {
-
+function getJumpLink(obj, mName, mId){
+	if (!obj || !mName || !mId)
+		return false;
 	// building the params from the form parent of the source object
 	var fields =  (typeof(obj) != 'undefined') ? jQuery(obj).parents('form').serializeArray() : '';
 	// creating the querystring that will be submited
@@ -259,29 +312,47 @@ function ppups(obj) {
 		// set the query code for the cars search
 		tgsb_querycode = TGSB.queryCodes['cars'];
 	};
+    // if on the cars search form
+    if(searchbox.hasClass('cruises')) {
+        // set the url of the search with the channel 4
+        url = 'http://www.travelgrove.com/cgi-bin/cruises/link_counter_new.cgi?channel=5';
+        // set the query code for the cars search
+        tgsb_querycode = TGSB.queryCodes['cruises'];
+    };
 	// if the url was not set the return false
 	if(url.length==0)
 		return false;
 	// setting the separator by searching the first occurence of the ? character	
 	var separator	= url.indexOf('?')>=0 ? '&' : '?';
-	// creates the url that will be used for the classic search
-	url	+= separator +
-			queryString +
-			'&lang=def' +
-			'&dateFormat=mm/dd/yyyy' +
-			'&trafficSource=wpplugin' + 
-			'&searchsystem=us' +
-			'&querycode='+tgsb_querycode;
-	// iterating through the selected merchants elements
+	url	+= separator + queryString +
+		'&lang=def' +
+		'&dateFormat=mm/dd/yyyy' +
+		'&trafficSource=wpplugin' + 
+		'&searchsystem=us' +
+		'&querycode=' + tgsb_querycode + '&merchant=' + mName + '&intitem=' + mId;
+	return url;
+};
+
+/*
+	WHAT & WHY: function used to create the url needed for the merchants popups on classic search
+	WHO & WHEN: Cipri on the 14th of March 2012 
+	@param	object	obj	containing an object of an input of the search form
+*/
+function ppups(obj) {
+	if (!obj)
+		return false;
 	var currentWindowIdx	= 0;
-	var merchantSet		= searchbox.find(".mrcList .mSel");
+	var merchantSet	 	= jQuery(obj).parents('form:eq(0)').find(".mrcList .mSel");
 	merchantSet.each(function(){
 		var t		= jQuery(this);
-		var wName	= onClickPopupHandling ? t.attr('title') + '_' + t.attr('rel') : '';
-		// opening a new window for the search results
-		// jump(url+'&merchant='+t.attr('title')+'&intitem='+t.attr('rel'));
-		windowOpenerObj.open(url+'&merchant='+t.attr('title')+'&intitem='+t.attr('rel'), wName, currentWindowIdx, merchantSet.length);
-		currentWindowIdx++;
+		var mName	= t.attr('title');
+		var mId		= t.attr('rel');
+		var wName	= mName + '_' + mId;
+		var url		= getJumpLink(obj, mName, mId);
+		/*	@note	method how we open up the popups were changed | implemented the chrome popup handling solution
+			@date	2013 JUN 06
+			@author	Tibi	*/
+		windowOpenerObj.open(url, this, currentWindowIdx++, merchantSet.length);
 	});
 	 
 	return true;
@@ -345,7 +416,7 @@ function makeMerchantsRequest(obj, showErrorMessages, addErrorClass) {
 	if(!queryString)
 		return false;
 	// setting the searchbox type
-	var searchboxType = searchbox.attr('class').match(/(flights|hotels|packages|cars)/);
+	var searchboxType = searchbox.attr('class').match(/(flights|hotels|packages|cars|cruises)/);
 	
 	if(searchboxType == null)
 		return false;
@@ -397,22 +468,27 @@ function makeMerchantsRequest(obj, showErrorMessages, addErrorClass) {
 			// set the query code for the packages search
 			tgsb_querycode = TGSB.queryCodes['packages'];
 		};
-		// if on the cars search form
-		if(searchbox.hasClass('cars')) {
-			// set the query code for the cars search
-			tgsb_querycode = TGSB.queryCodes['cars'];
-		};	
-		
+        // if on the cars search form
+        if(searchbox.hasClass('cars')) {
+            // set the query code for the cars search
+            tgsb_querycode = TGSB.queryCodes['cars'];
+        };
+        // if on the cruises search form
+        if(searchbox.hasClass('cruises')) {
+            // set the query code for the cars search
+            tgsb_querycode = TGSB.queryCodes['cruises'];
+        };
+		var dta = queryString+'&impId='+tgsb_querycode+'&merchants='+searchboxType[1]+'&sbsize='+searchboxsize[1]+'&limit='+merchantsLimit;
 		jQuery.ajax({
 			// the url is from the TG_Searchboxes_Variables object set in the DOM
 			url: TG_Searchboxes_Variables.str_merchantsAjaxURL,
 			type: 'post',
-			data: queryString+'&impId='+tgsb_querycode+'&merchants='+searchboxType[1]+'&sbsize='+searchboxsize[1]+'&limit='+merchantsLimit,
+			data: dta,
 			// dataType was set to text to be compatible with older and newer versions of jQuery
 			dataType: 'text',
 			success: function(rsp){
 				// evaluating the response
-				jsonObj = eval('('+rsp+')');
+				var jsonObj = eval('('+rsp+')');
 				// removing the align center class used for ajax loader image
 				merchantsContainer.removeClass('alCnt');
 				// adding in the merchants container the html containing the merchants
@@ -464,19 +540,16 @@ function makeMerchantsRequest(obj, showErrorMessages, addErrorClass) {
 				merchants.click(function(){
 					var t	= jQuery(this);
 					t.toggleClass('mSel');
-					if (onClickPopupHandling) {
-						var wName	= t.attr('title') + '_' + t.attr('rel');
-						if (!t.hasClass('mSel')) {
-							windowOpenerObj.close(wName);
-						} else {
-							var prevOpts	= $.extend({}, windowOpenerObj.opts);
-							windowOpenerObj.setOptions({	'popUnder'	: true,
-											'style'		: 'fix'		});
-							var newWin	= windowOpenerObj.open('about:blank', wName, 0, 1, /*isSingle:*/1);
-							windowOpenerObj.opts = prevOpts;
-						}
-					}
+					/*	@note	in case IE popup handling solution will be activated, we have to open up blank windows if a merchant is checked
+						@date	2013 JUN 06
+						@author	Tibi	*/
+					if (!onClickPopupHandling)
+						return true;
+					if (t.hasClass('mSel')) {
+						windowOpenerObj.openPlaceholder(t);
+					} else	windowOpenerObj.closePlaceholder(t);
 				});
+				merchants.filter('[rel="5760"]').not('.mSel').click();
 				// removing the submited class from the submit button
 				jQuery(submitButton).removeClass('submited');
 			}			
@@ -516,7 +589,7 @@ function createQueryString(obj, fields) {
 			// setting the content form jquery object
 			var contForm = jQuery(obj).parents('form');
 			// setting the date from the input field
-			tgsb_date = contForm.find('input[name='+field.name+']:eq(0)').datepicker('getDate');
+			var tgsb_date = contForm.find('input[name='+field.name+']:eq(0)').datepicker('getDate');
 			// adding the date to the query string
 			queryString += field.name+'='+setDateByDateFormat(tgsb_date)+((i<(queryString.length-1)) ? '&' : '');
 		};
@@ -541,7 +614,7 @@ function makeImpressionTrackingRequest(selectedTab, frmObj, callback) {
 		callback = function(){};
 	
 	// if the queryCode for that selectedTab is not set then do an impressionTracking
-	if(TGSB.queryCodes[selectedTab] == 0) {
+	if(TGSB.queryCodes[selectedTab] == 0 || !TGSB.queryCodes[selectedTab]) {
 		// making an impression tracking request using the script tag that will be inserted in the DOM
 		var impressionTrackingQueryString = createImpressionTrackingQueryString(frmObj);
 		// if the impression tracking query string is empty the return false;
@@ -550,10 +623,10 @@ function makeImpressionTrackingRequest(selectedTab, frmObj, callback) {
 		impressionTrackingQueryString += '&searchbox='+selectedTab;
 		// getting the script used for impression tracking using the impression query string
 		jQuery.getScript('http://www.travelgrove.com/js/affiliates/wpPluginImpTrack.php?'+impressionTrackingQueryString, callback);
-	};
+	}
 	// if all went well true is returned
 	return true;
-};
+}
 
 /*
 	WHAT & WHY: function used to create the Impression Tracking Query String
@@ -838,15 +911,18 @@ function tgsb_initSingleSearchbox(tgsb){
 
 		// datepicker inputs
 		var inputs = currentForm.find(".tgsb_addDP");
-		var i1 = inputs.get(0).id; // departure date input
-		var i2 = inputs.get(1).id; // return date input
-		// setting the default value of the oneway input
-		var rtowInputs = false;
-		var rtowInputs = currentForm.hasClass('flights') ? currentForm.find('input[name=oneway], select[name=oneway]') : false;
-		/* creating the datepicker */
-		createDatepicker(i1,i2,rtowInputs);
-		/* submitting the forms */
-		windowOpenerObj.wrapButton(submitButton.get(0));
+        if (inputs.length>1) {
+            var i1 = inputs.get(0).id; // departure date input
+            var i2 = inputs.get(1).id; // return date input
+            // setting the default value of the oneway input
+            var rtowInputs = false;
+            var rtowInputs = currentForm.hasClass('flights') ? currentForm.find('input[name=oneway], select[name=oneway]') : false;
+            /* creating the datepicker */
+            createDatepicker(i1, i2, rtowInputs);
+        }
+		/*	@note	the submit button should be wrapped behind an iframe in chrome to make popups work
+			@date	2013 JUN 06
+			@author	Tibi	*/
 		currentForm.submit(function() {
 			if(submitButton.hasClass('submited'))
 				return false;
@@ -860,6 +936,7 @@ function tgsb_initSingleSearchbox(tgsb){
 
 
 jQuery(function(){
+
 	ajaxLoaders = {
 		'160x600':'<img src="'+TG_Searchboxes_Variables.str_ajaxLoaderCircle+'" width="100" height="100" alt="loading..." />',
 		'300x250':'<img src="'+TG_Searchboxes_Variables.str_ajaxLoaderCircle+'" width="100" height="100" alt="loading..." />',
@@ -933,21 +1010,8 @@ jQuery(function(){
 	// the merchants refresh is not made when location is selected from the autosuggestion on the boxes with the measures of 300x250 and 728x90 because on those searchboxes the process includes 2 screens
 			if(searchboxsize == null)
 				makeMerchantsRequest(asObj.fld);
-	//		makeMerchantsRequest(asObj.fld);
-			//return selLiObj.innerHTML.replace(/<\/?[^>]+>/gi,'').replace(/(.*),(.*) \((.*)\)/,'$1,$2');
 		}
 	};
-	
-	windowOpenerObj = new TGSB_WindowOpener({
-		chromePPBmode	: window.chrome ? true : false,
-		maxScreenWidth	: screen.width,
-		maxScreenHeight	: screen.height,
-		winWidth	: parseInt(screen.width*0.8),
-		blankPageHtml	: '<div style="margin:10px auto;width:100%;text-align:center;">'+
-					'<img src="'+ TG_Searchboxes_Variables.plugin_url +'/images/please-wait.jpg">'+
-				'</div>',
-		position	: {left:0, top:0, width:500, height:180}
-	});
 	
 	/*	searchbox initialization moved to a separate function to make possible the initialization of the searchboxes if they are loaded via JS as well (after doc. ready) */
 	tgsb_initSingleSearchbox('.tg_searchbox');
@@ -958,5 +1022,7 @@ jQuery(function(){
 		for(var i=0;i<TGSB_placeholders.length;i++)
 			replacePlaceholder(TGSB_placeholders[i].placeholder, TGSB_placeholders[i].html);
 	}
+	
+	initWindowOpener();
 });
 })(tgsb_myjquery);

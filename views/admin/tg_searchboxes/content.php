@@ -13,7 +13,8 @@ if( !defined('TG_SEARCHBOXES_ABSPATH') )
 ?>
 
 Select a searchbox by the preferred size. You can choose to customize it and add it to your post.
-
+<?php/* <br> added to fix a design issue | Tibi | 2014-01-15 */?>
+<br>
 <ul class="subsubsub measuresChooser" id="tgsb_measuresChooser">
 	<li><a class="160x600" href="#">160x600</a> | </li>
 	<li><a class="300x250" href="#">300x250</a> | </li>
@@ -162,15 +163,21 @@ $options['date_format_js']	= $options['date_format'] == 'd/m/Y' ? 'dd/mm/yy' : '
 		demoPage:		"<?php echo admin_url().'admin.php?page=tg_searchboxes_demo'; ?>"
 	}
 </script>
-<script type="text/javascript" src="<?php echo plugins_url('/js/tg_searchboxes_ajax.min.js', TG_SEARCHBOXES__FILE__); ?>?v=20120614"></script>
-<link href="<?php echo plugins_url('/css/tg_searchboxes.min.css', TG_SEARCHBOXES__FILE__); ?>" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="<?php echo plugins_url('/js/tg_searchboxes_ajax' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__); ?>"></script>
+<link href="<?php echo plugins_url('/css/tg_searchboxes' . TGSB_PACK . '.css?' . TGSB_VER, TG_SEARCHBOXES__FILE__); ?>" rel="stylesheet" type="text/css" />
 <link href="<?php echo plugins_url('/css/tg_searchboxes_color.css', TG_SEARCHBOXES__FILE__).'?'.$options['cssfiletimestamp']; ?>" rel="stylesheet" type="text/css" />
-<link href="<?php echo plugins_url('/css/ui-lightness/datepicker.min.css', TG_SEARCHBOXES__FILE__); ?>" rel="stylesheet" type="text/css" />
+<link href="<?php echo plugins_url('/css/ui-lightness/datepicker' . TGSB_PACK . '.css?' . TGSB_VER, TG_SEARCHBOXES__FILE__); ?>" rel="stylesheet" type="text/css" />
 <style type="text/css">
 <?php /**	while loading via AJAX the calendar must have a higher z-index than the actual popup, otherwise it won't appear;
 		also since the box has position fixed the autosuggestion should also have pos fixed.	*/ ?>
+<?php/**
+
+@note	#ui-datepicker-div{z-index:110 !important} taken out; didn't work in WP3.8; Datepicker didn't appear on admin interface;
+	not needed; let jQuery's DatePicker decide the rigth z-index;
+@date	2014-JAN-15;
+@author	Tibor;
+*/?>
 ul.asMargin{position:fixed}
-#ui-datepicker-div{z-index:110 !important}
 .tgsb{display:none}
 .crnt{display:block}
 ul.measuresChooser#tgsb_measuresChooser li a:link,ul.measuresChooser#tgsb_measuresChooser li a:visited{color:#21759B}

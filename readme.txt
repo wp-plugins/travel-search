@@ -3,8 +3,8 @@ Contributors: travelgrove
 Donate link: http://www.travelgrove.com/
 Tags: travel, search, flights, airfares, hotel, hotel rooms, car rentals, vacations, holiday, vacation packages, deals, airfare tickets, plugin, affiliate, travel widget
 Requires at least: 3.1
-Tested up to: 3.9.1
-Stable tag: 1.3
+Tested up to: 4.0.1
+Stable tag: 1.4
 
 Search and Compare major travel websites for cheapest flights, hotels, car rentals and vacation packages in this one-step travel search engine.
 
@@ -107,6 +107,11 @@ The commission earned by an affiliate in a month varies from one affiliate to th
 7. `Travel Search` box inside the post in Wordpress visual editor
 
 == Changelog ==
+
+= 1.4 =
+ * Cruise search implemented
+ * UI bugs regarding `Compare` button fixed
+ * Better JS/CSS compression
 
 = 1.3 =
  * jQuery compatibility issue fixed on blogs w/o jQuery
