@@ -41,6 +41,20 @@ class Tg_Searchboxes_Controller_Base {
 		$this->options['adid']		= apply_filters('tg_searchboxes_adid', isset($this->options['adid']) ? $this->options['adid'] : '');
 		/**	making the actual shortcode value hookable	*/
 		$this->shortcode_tg_searchboxes	= apply_filters('tg_searchboxes_shortcode', $this->shortcode_tg_searchboxes);
+
+        if (!isset($this->options['cruiseline'])) {
+            $this->options['cruiseline'] = null;
+        }
+        if (!isset($this->options['destination'])) {
+            $this->options['destination'] = null;
+        }
+        if (!isset($this->options['length_of_stay'])) {
+            $this->options['length_of_stay'] = null;
+        }
+        if (!isset($this->options['month_year'])) {
+            $this->options['month_year'] = null;
+        }
+
 		return;
 	}
 	
