@@ -331,14 +331,14 @@ parentObject.AutoSuggest.prototype.generateList = function (req) {
 			for(j=0;j<n;j++) {
 				var argName = jsondata.argumentList[j];
 				var argValue = jsondata.results[i][argName];
-				rsp += ' '+argName+'="'+argValue+'"';
+				rsp += ' '+argName+'="' + this.escapeHtml(argValue) + '"';
 			}
 			rsp += '>'+jsondata.results[i].txt+'</li>';
 		}
 		rsp+='</ul>';
 	} else { //XML
 		rsp = req.substr(40);
-	};
+	}
 	jQuery(this.fld).removeClass(this.opt.loadingClass);
 	if (this.isFocused) {
 		this.createList(rsp, jsondata);
@@ -346,8 +346,17 @@ parentObject.AutoSuggest.prototype.generateList = function (req) {
 	else {
 		if(this.opt.autoSelect) {
 			this.autoSelect(rsp, jsondata);
-		};
-	};
+		}
+	}
+};
+
+parentObject.AutoSuggest.prototype.escapeHtml = function(text) {
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 };
 
 parentObject.AutoSuggest.prototype.autoSelect = function(rsp, jsonObj) {

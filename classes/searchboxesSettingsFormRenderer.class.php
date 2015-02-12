@@ -121,13 +121,26 @@ class searchboxesSettingsFormRenderer {
 		$toAir = $this->getToAir($input);
 		//checking if the toAir value matches the pattern
 		if(!empty($toAir) && !preg_match('/^(.*) \((...)\)$/', $toAir)) {
-			add_settings_error( 'tg_searchboxes_options_to_air', 'tg_searchboxes_options_ro_air_error','Please select a location from the drop-down list. &lt;'.$toAir.'&gt; was not recognized as a valid location!','error');
+			add_settings_error( 'tg_searchboxes_options_to_air', 'tg_searchboxes_options_to_air_error','Please select a location from the drop-down list. &lt;'.$toAir.'&gt; was not recognized as a valid location!','error');
 		} else {
 			// adding the toAir value to the array containing the valid values
 			$valid['to_air'] = $toAir;
 		}
 		// unseting the $toAir variable
 		unset($toAir);
+
+
+        $hotelCity = $this->getHotelCity($input);
+        //checking if the hotelCity value matches the pattern
+        if(!empty($hotelCity) && !preg_match('/^(.*) \((.*)\)$/', $hotelCity) && !preg_match('/^(.*), (..)$/', $hotelCity)) {
+            add_settings_error( 'tg_searchboxes_options_hotel_city', 'tg_searchboxes_options_hotel_city_error','Please select a location from the drop-down list. &lt;'.$hotelCity.'&gt; was not recognized as a valid location!','error');
+        } else {
+            // adding the toAir value to the array containing the valid values
+            $valid['hotel_city'] = $hotelCity;
+        }
+        // unseting the $hotelCity variable
+        unset($hotelCity);
+
 		
 		// setting the departure date
 		$departureDate = (empty($input) || empty($input['flights_departure_date'])) ? false : $input['flights_departure_date'];
@@ -357,6 +370,13 @@ class searchboxesSettingsFormRenderer {
 			return $input['hotels_to_air'];			
 		return '';
 	}
+    private function getHotelCity($input) {
+        if(empty($input))
+            return '';
+        if(!empty($input['hotels_to_air']))
+            return $input['hotels_to_air'];
+        return $this->getToAir($input);
+    }
 	
 	/*
 		WHAT & WHY: function that sets the adults value because there are several inputs containing that value so if one of them is set then that value should be returned

@@ -6,38 +6,85 @@ var tgsb_departureDate = false;
 var tgsb_returnDate = false;
 
 var ASoptions = {
-	delay: 175,
-	timeout: 5000,
-	script: TG_Searchboxes_Settings.str_ASAjaxURL,
-	loadingClass: 'tgsb_as_load',
-	className: 'tgsb_as tgsb_asMargin',
-	json: true,
-	frameForIE: true,
-	ajaxParams: {
-		action:		'',
-		json:		true,
-		lng:		'def',
-		dsgn:		'flg',
-		addtag:		'em',
-		citytype:	'airports',
-		domainPrefix:	true
-	},
-	autoSelect:true,
-	offsety:0,
-	format: function(selLiObj) {
-		return selLiObj.innerHTML.replace(/<\/?[a-z]+>/gi,'').replace(/(.*),(.*)\((.*)\)/,'$1 ($3)');
-	},
-	callback:function(asElem,asObj){
-		var inp = jQuery(asObj.fld);
-		if(inp.hasClass("asFrom")) {
-			inp.parents('.tg_searchbox').find('.tg_container > div:not(.cars)').find('.asFrom').val(inp.val());
-		};
-		
-		if(inp.hasClass("asTo")) {
-			jQuery(".asTo").val(inp.val());
-			inp.parents('.tg_searchbox').find('.tg_container > div.cars').find('.asFrom').val(inp.val());
-		};
-	}
+    delay: 175,
+    timeout: 5000,
+    script: TG_Searchboxes_Settings.str_ASAjaxURL,
+    loadingClass: 'tgsb_as_load',
+    className: 'tgsb_as tgsb_asMargin',
+    json: true,
+    frameForIE: true,
+    ajaxParams: {
+        action:		'',
+        json:		true,
+        lng:		'def',
+        dsgn:		'flg',
+        addtag:		'em',
+        citytype:	'airports',
+        domainPrefix:	true
+    },
+    autoSelect:true,
+    offsety:0,
+    format: function(selLiObj) {
+        return selLiObj.innerHTML.replace(/<\/?[a-z]+>/gi,'').replace(/(.*),(.*)\((.*)\)/,'$1 ($3)');
+    },
+    callback:function(asElem,asObj){
+        var inp = jQuery(asObj.fld);
+        if(inp.hasClass("asFrom")) {
+            inp.parents('.tg_searchbox').find('.tg_container > div:not(.cars)').find('.asFrom').val(inp.val());
+        };
+
+        if(inp.hasClass("asTo")) {
+            jQuery(".asTo").val(inp.val());
+            inp.parents('.tg_searchbox').find('.tg_container > div.cars').find('.asFrom').val(inp.val());
+        };
+    }
+
+};
+
+var hotelASoptions = {
+    delay: 175,
+    timeout: 5000,
+    script: TG_Searchboxes_Settings.str_ASAjaxURL,
+    loadingClass: 'tgsb_as_load',
+    className: 'tgsb_as tgsb_asMargin',
+    json: true,
+    frameForIE: true,
+    ajaxParams: {
+        action:		'',
+        json:		true,
+        lng:		'def',
+        dsgn:		'flg',
+        addtag:		'em',
+        citytype:	'cities',
+        domainPrefix:	true,
+        nearestAirport:	true
+    },
+    autoSelect:true,
+    offsety:0,
+    format: function(selLiObj) {
+        return selLiObj.innerHTML.replace(/<\/?[^>]+>/gi,'').replace(/(.*),(.*) \((.*)\)/,'$1,$2');
+    },
+    callback:function(asElem,asObj){
+        var inp = jQuery(asObj.fld);
+        if(inp.hasClass("asTo")) {
+            var airport = inp.val();
+            for(var i=0; i<asElem.attributes.length; i++) {
+                if (asElem.attributes[i].nodeName == 'airport') {
+                    var val = asElem.attributes[i].value ? asElem.attributes[i].value : asElem.attributes[i].nodeValue;
+                    if (val) {
+                        try {
+                            var arp = eval('(' + val + ')');
+                            if (arp && arp.city && arp.iata) {
+                                airport = arp.city + ' (' + arp.iata + ')';
+                            }
+                        } catch(e) {}
+                    }
+                }
+            }
+            jQuery(".asTo").not(inp).val(airport);
+            inp.parents('#TB_ajaxContent').find('.tg_container > form.cars').find('.asFrom').val(airport);
+        }
+    }
 
 };
 
@@ -247,10 +294,14 @@ function setReturnDateToForm(currentSelectedDateValue) {
 jQuery(function(){
 	
 	jQuery(jQuery('#id_referral').get(0)).focus(inputFocus).blur(inputBlur);
-	jQuery(".tgsb_addAS, .tgsb_addASH").each(function(){
+    jQuery(".tgsb_addAS").each(function(){
 //		jQuery(this).focus(inputFocus).blur(inputBlur);
-		new AS(this.id,ASoptions);
-	});
+        new AS(this.id,ASoptions);
+    });
+    jQuery(".tgsb_addASH").each(function(){
+//		jQuery(this).focus(inputFocus).blur(inputBlur);
+        new AS(this.id,hotelASoptions);
+    });
 
 	jQuery('div.tg_searchbox ul.tg_tabs li span').click(function(){
 		selectedTab = jQuery(this).attr('class').match(/^[a-z]+/);

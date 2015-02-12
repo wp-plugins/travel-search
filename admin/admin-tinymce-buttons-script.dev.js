@@ -14,10 +14,10 @@ function tgsbFromAir(serializedFieldsArray) {
 	// if the serialized array is not defined or it's length is 0 the return an empty string
 	if(typeof(serializedFieldsArray) == 'undefined' || serializedFieldsArray.length == 0)
 		return '';
-	returnValue = '';
+	var returnValue = '';
 	jQuery.each(serializedFieldsArray, function(i, field){
 		// checking for the "from" field and it's value in the serialized array
-		if(field.name == 'tgsbFromAir') {
+		if(!returnValue && field.name == 'tgsbFromAir') {
 			// if the "from" field was found
 			if(field.value != TG_Searchboxes_Variables.tgsbDefaultSettings.from_air) {
 				// if it's value it's not equalto the default value set it as a return value
@@ -30,32 +30,51 @@ function tgsbFromAir(serializedFieldsArray) {
 };
 // getting the "to" field form the serialized array
 function tgsbToAir(serializedFieldsArray) {
-	// if the serialized array is not defined or it's length is 0 the return an empty string
-	if(typeof(serializedFieldsArray) == 'undefined' || serializedFieldsArray.length == 0)
-		return '';
-	returnValue = '';
-	jQuery.each(serializedFieldsArray, function(i, field){
-		// checking for the "to" field and it's value in the serialized array
-		if(field.name == 'tgsbToAir') {
-			// if the "to" field was found
-			if(field.value != TG_Searchboxes_Variables.tgsbDefaultSettings.to_air) {
-				// if it's value it's not equal to the default value set it as a return value
-				returnValue = '"to_air":"'+field.value+'"';
-				return;
-			};
-		};
-   });
-   return returnValue;
-};
+    // if the serialized array is not defined or it's length is 0 the return an empty string
+    if(typeof(serializedFieldsArray) == 'undefined' || serializedFieldsArray.length == 0)
+        return '';
+    var returnValue = '';
+    jQuery.each(serializedFieldsArray, function(i, field){
+        // checking for the "to" field and it's value in the serialized array
+        if(!returnValue && field.name == 'tgsbToAir' && jQuery(field.obj).parents('form.hotels').length==0) {
+            // if the "to" field was found
+            if(field.value != TG_Searchboxes_Variables.tgsbDefaultSettings.to_air) {
+                // if it's value it's not equal to the default value set it as a return value
+                returnValue = '"to_air":"'+field.value+'"';
+                return;
+            };
+        };
+    });
+    return returnValue;
+}
+function tgsbHotelCity(serializedFieldsArray) {
+    // if the serialized array is not defined or it's length is 0 the return an empty string
+    if(typeof(serializedFieldsArray) == 'undefined' || serializedFieldsArray.length == 0)
+        return '';
+    var returnValue = '';
+    jQuery.each(serializedFieldsArray, function(i, field){
+        // checking for the "to" field and it's value in the serialized array
+        if(!returnValue && field.name == 'tgsbToAir' && jQuery(field.obj).parents('form.hotels').length>0 ) {
+            // if the "to" field was found
+            if(field.value != TG_Searchboxes_Variables.tgsbDefaultSettings.hotel_city) {
+                // if it's value it's not equal to the default value set it as a return value
+                returnValue = '"hotel_city":"'+field.value+'"';
+                return;
+            }
+        }
+    });
+    console.log(returnValue);
+    return returnValue;
+}
 // getting the "departure date" field form the serialized array
 function tgsbDepartureDate(serializedFieldsArray) {
 	// if the serialized array is not defined or it's length is 0 the return an empty string
 	if(typeof(serializedFieldsArray) == 'undefined' || serializedFieldsArray.length == 0)
 		return '';
-	returnValue = '';
+	var returnValue = '';
 	jQuery.each(serializedFieldsArray, function(i, field){
 		// checking for the "departure date" field and it's value in the serialized array
-		if(field.name == 'tgsbDepartureDate') {
+		if(!returnValue && field.name == 'tgsbDepartureDate') {
 			// if the "departure date" field was found
 			if(field.value != TG_Searchboxes_Variables.tgsbDefaultSettings.departure_date) {
 				// if it's value it's not equal to the default value set it as a return value
@@ -71,10 +90,10 @@ function tgsbReturnDate(serializedFieldsArray) {
 	// if the serialized array is not defined or it's length is 0 the return an empty string
 	if(typeof(serializedFieldsArray) == 'undefined' || serializedFieldsArray.length == 0)
 		return '';
-	returnValue = '';
+	var returnValue = '';
 	jQuery.each(serializedFieldsArray, function(i, field){
 		// checking for the "return date" field and it's value in the serialized array
-		if(field.name == 'tgsbReturnDate') {
+		if(!returnValue && field.name == 'tgsbReturnDate') {
 			if(field.value != TG_Searchboxes_Variables.tgsbDefaultSettings.return_date) {
 				// if it's value it's not equal to the default value set it as a return value
 				returnValue = '"return_date":"'+field.value+'"';
@@ -89,10 +108,10 @@ function tgsbAdults(serializedFieldsArray) {
 	// if the serialized array is not defined or it's length is 0 the return an empty string
 	if(typeof(serializedFieldsArray) == 'undefined' || serializedFieldsArray.length == 0)
 		return '';
-	returnValue = '';
+	var returnValue = '';
 	jQuery.each(serializedFieldsArray, function(i, field){
 		// checking for the "adults" field and it's value in the serialized array
-		if(field.name == 'tgsbAdults') {
+		if(!returnValue && field.name == 'tgsbAdults') {
 			if(field.value != TG_Searchboxes_Variables.tgsbDefaultSettings.adults) {
 				// if it's value it's not equal to the default value set it as a return value
 				returnValue = '"adults":"'+field.value+'"';
@@ -108,10 +127,10 @@ function tgsbKids(serializedFieldsArray) {
 	// if the serialized array is not defined or it's length is 0 the return an empty string
 	if(typeof(serializedFieldsArray) == 'undefined' || serializedFieldsArray.length == 0)
 		return '';
-	returnValue = '';
+	var returnValue = '';
 	jQuery.each(serializedFieldsArray, function(i, field){
 		// checking for the "kids" field and it's value in the serialized array
-		if(field.name == 'tgsbKids') {
+		if(!returnValue && field.name == 'tgsbKids') {
 			if(field.value != TG_Searchboxes_Variables.tgsbDefaultSettings.kids) {
 				// if it's value it's not equal to the default value set it as a return value
 				returnValue = '"kids":"'+field.value+'"';
@@ -127,10 +146,10 @@ function tgsbSeniors(serializedFieldsArray) {
 	// if the serialized array is not defined or it's length is 0 the return an empty string
 	if(typeof(serializedFieldsArray) == 'undefined' || serializedFieldsArray.length == 0)
 		return '';
-	returnValue = '';
+	var returnValue = '';
 	jQuery.each(serializedFieldsArray, function(i, field){
 		// checking for the "seniors" field and it's value in the serialized array
-		if(field.name == 'tgsbSeniors') {
+		if(!returnValue && field.name == 'tgsbSeniors') {
 			if(field.value != TG_Searchboxes_Variables.tgsbDefaultSettings.seniors) {
 				// if it's value it's not equal to the default value set it as a return value
 				returnValue = '"seniors":"'+field.value+'"';
@@ -146,10 +165,10 @@ function tgsbRooms(serializedFieldsArray) {
 	// if the serialized array is not defined or it's length is 0 the return an empty string
 	if(typeof(serializedFieldsArray) == 'undefined' || serializedFieldsArray.length == 0)
 		return '';
-	returnValue = '';
+	var returnValue = '';
 	jQuery.each(serializedFieldsArray, function(i, field){
 		// checking for the "rooms" field and it's value in the serialized array
-		if(field.name == 'tgsbRooms') {
+		if(!returnValue && field.name == 'tgsbRooms') {
 			if(field.value != TG_Searchboxes_Variables.tgsbDefaultSettings.rooms) {
 				// if it's value it's not equal to the default value set it as a return value
 				returnValue = '"rooms":"'+field.value+'"';
@@ -165,10 +184,10 @@ function tgsbRTOW(serializedFieldsArray) {
 	// if the serialized array is not defined or it's length is 0 the return an empty string
 	if(typeof(serializedFieldsArray) == 'undefined' || serializedFieldsArray.length == 0)
 		return '';
-	returnValue = '';
+	var returnValue = '';
 	jQuery.each(serializedFieldsArray, function(i, field){
 		// checking for the "rooms" field and it's value in the serialized array
-		if(field.name == 'oneway') {
+		if(!returnValue && field.name == 'oneway') {
 			field.value = (field.value == 'on') ? true : false;
 			if(field.value != TG_Searchboxes_Variables.tgsbDefaultSettings.rtow) {
 				// if it's value it's not equal to the default value set it as a return value
@@ -404,47 +423,57 @@ function tg_searchboxes_tinymce_button_click(tinyMCE_obj){
 			var tgSearchboxMeasures = jQuery('ul.measuresChooser li a.current').text();
 			tgSearchboxMeasures = (tgSearchboxMeasures.length == 0) ? '300x250' : tgSearchboxMeasures;
 			var selectedTab = jQuery('.sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container').find('form.sel').attr('class').match(/^(flights|hotels|cars|packages|cruises)/);
-		
-			var fields = jQuery('.sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container form').serializeArray();
+            var fields = [];
+            jQuery('.sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container form').find("input, select, textarea").each(function(){
+                fields.push({
+                    name: this.name,
+                    value: this.value,
+                    obj: this
+                });
+            });
 			// marks if searchbox should be loaded with JS file or not | Tibi | 2013.04.23
 			var loadFromJS	= jQuery('#travelSearchUseJavaScript').attr('checked');
 			var optionsString = '';
 			// getting the "from" value
-			tgsb_fromAir = tgsbFromAir(fields);
+			var tgsb_fromAir = tgsbFromAir(fields);
 			// adding the "from" value to the options string
-			optionsString += (tgsb_fromAir.length) ? tgsb_fromAir+',' : tgsb_fromAir;
-			// getting the "to" value
-			tgsb_toAir = tgsbToAir(fields);
-			// adding the "to" value to the options string
-			optionsString += (tgsb_toAir.length) ? tgsb_toAir+',' : tgsb_toAir;
+			optionsString += (tgsb_fromAir.length) ? tgsb_fromAir+',' : '';
+            // getting the "to" value
+            var tgsb_toAir = tgsbToAir(fields);
+            // adding the "to" value to the options string
+            optionsString += (tgsb_toAir.length) ? tgsb_toAir+',' : '';
+            // getting the "to" value
+            var tgsb_hotelCity = tgsbHotelCity(fields);
+            // adding the "to" value to the options string
+            optionsString += (tgsb_hotelCity.length) ? tgsb_hotelCity+',' : '';
 			// getting the "departure date" value
-			tgsb_departureDate = tgsbDepartureDate(fields);
+			var tgsb_departureDate = tgsbDepartureDate(fields);
 			// adding the "departure date" value to the options string
-			optionsString += (tgsb_departureDate.length) ? tgsb_departureDate+',' : tgsb_departureDate;
+			optionsString += (tgsb_departureDate.length) ? tgsb_departureDate+',' : '';
 			// getting the "return date" value
-			tgsb_returnDate = tgsbReturnDate(fields);
+			var tgsb_returnDate = tgsbReturnDate(fields);
 			// adding the "return date" value to the options string
-			optionsString += (tgsb_returnDate.length) ? tgsb_returnDate+',' : tgsb_returnDate;
+			optionsString += (tgsb_returnDate.length) ? tgsb_returnDate+',' : '';
 			// getting the "adults" value
-			tgsb_adults = tgsbAdults(fields);
+			var tgsb_adults = tgsbAdults(fields);
 			// adding the "adults" value to the options string
-			optionsString += (tgsb_adults.length) ? tgsb_adults+',' : tgsb_adults;
+			optionsString += (tgsb_adults.length) ? tgsb_adults+',' : '';
 			// getting the "kids" value
-			tgsb_kids = tgsbKids(fields);
+			var tgsb_kids = tgsbKids(fields);
 			// adding the "kids" value to the options string
-			optionsString += (tgsb_kids.length) ? tgsb_kids+',' : tgsb_kids;
+			optionsString += (tgsb_kids.length) ? tgsb_kids+',' : '';
 			// getting the "seniors" value
-			tgsb_seniors = tgsbSeniors(fields);
+			var tgsb_seniors = tgsbSeniors(fields);
 			// adding the "seniors" value to the options string
-			optionsString += (tgsb_seniors.length) ? tgsb_seniors+',' : tgsb_seniors;
+			optionsString += (tgsb_seniors.length) ? tgsb_seniors+',' : '';
 			// getting the "rooms" value
-			tgsb_rooms = tgsbRooms(fields);
+			var tgsb_rooms = tgsbRooms(fields);
 			// adding the "seniors" value to the options string
-			optionsString += (tgsb_rooms.length) ? tgsb_rooms+',' : tgsb_rooms;
+			optionsString += (tgsb_rooms.length) ? tgsb_rooms+',' : '';
 			// getting the "roundtrip/oneway" value
-			tgsb_rtow = tgsbRTOW(fields);
+			var tgsb_rtow = tgsbRTOW(fields);
             // adding the "roundtrip/oneway" value to the options string
-            optionsString += (tgsb_rtow.length) ? tgsb_rtow+',' : tgsb_rtow;
+            optionsString += (tgsb_rtow.length) ? tgsb_rtow+',' : '';
             // adding the cruises parameters to the options string
             optionsString += tgsbCruises(fields);
 			

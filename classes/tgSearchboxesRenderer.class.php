@@ -253,54 +253,45 @@ class tgSearchboxesRenderer {
 				$returnDate	= $this->atts['return_date'];
 			}
 		}
-		$this->valuesToBeSet = array(
-			'from_air'	=> (empty($this->atts['from_air']) ? 
-						$this->controller->options['from_air'] : 
-						$this->atts['from_air']
-					), 
-			'to_air'	=> (empty($this->atts['to_air']) ?
-						$this->controller->options['to_air'] : 
-						$this->atts['to_air']
-					), 
-			'departure_date'=> $departureDate, 
-			'return_date'	=> $returnDate, 
-			'adults'	=> (empty($this->atts['adults']) ?
-						$this->controller->options['adults'] : 
-						$this->atts['adults']
-					), 
-			'kids'		=> (!isset($this->atts['kids']) ?
-						$this->controller->options['kids'] : 
-						$this->atts['kids']
-					), 
-			'seniors'	=> (!isset($this->atts['seniors']) ?
-						$this->controller->options['seniors'] : 
-						$this->atts['seniors']
-					), 
-			'rooms'		=> (empty($this->atts['rooms']) ?
-						$this->controller->options['rooms'] : 
-						$this->atts['rooms']
-					), 
-			'rtow'		=> (!isset($this->atts['rtow']) ?
-						$this->controller->options['rtow'] : 			
-						$this->atts['rtow']
-					),
-			'cruiseline' => (!isset($this->atts['cruiseline']) ?
-                            $this->controller->options['cruiseline'] :
-                            $this->atts['cruiseline']
-                    ),
-			'destination' => (!isset($this->atts['destination']) ?
-                            $this->controller->options['destination'] :
-                            $this->atts['destination']
-                    ),
-			'length_of_stay' => (!isset($this->atts['length_of_stay']) ?
-                            $this->controller->options['length_of_stay'] :
-                            $this->atts['length_of_stay']
-                    ),
-			'month_year' => (!isset($this->atts['month_year']) ?
-                            $this->controller->options['month_year'] :
-                            $this->atts['month_year']
-                    ),
-		);
+        $this->valuesToBeSet = array();
+        $this->valuesToBeSet['from_air'] = empty($this->atts['from_air'])
+            ? $this->controller->options['from_air']
+			: $this->atts['from_air'];
+        $this->valuesToBeSet['to_air'] = empty($this->atts['to_air'])
+            ? $this->controller->options['to_air']
+			: $this->atts['to_air'];
+        $this->valuesToBeSet['hotel_city'] = empty($this->atts['hotel_city'])
+            ? (empty($this->controller->options['hotel_city']) ? $this->valuesToBeSet['to_air'] : $this->controller->options['hotel_city'])
+            : $this->atts['hotel_city'];
+        $this->valuesToBeSet['departure_date'] = $departureDate;
+        $this->valuesToBeSet['return_date'] = $returnDate;
+        $this->valuesToBeSet['adults'] = empty($this->atts['adults'])
+			? $this->controller->options['adults']
+			: $this->atts['adults'];
+        $this->valuesToBeSet['kids'] = !isset($this->atts['kids'])
+			? $this->controller->options['kids']
+            : $this->atts['kids'];
+        $this->valuesToBeSet['seniors'] = !isset($this->atts['seniors'])
+            ? $this->controller->options['seniors']
+            : $this->atts['seniors'];
+        $this->valuesToBeSet['rooms'] = empty($this->atts['rooms'])
+            ? $this->controller->options['rooms']
+            : $this->atts['rooms'];
+        $this->valuesToBeSet['rtow'] = !isset($this->atts['rtow'])
+            ? $this->controller->options['rtow']
+            : $this->atts['rtow'];
+        $this->valuesToBeSet['cruiseline'] = !isset($this->atts['cruiseline'])
+            ? $this->controller->options['cruiseline']
+            : $this->atts['cruiseline'];
+        $this->valuesToBeSet['destination'] = !isset($this->atts['destination'])
+            ? $this->controller->options['destination']
+            : $this->atts['destination'];
+        $this->valuesToBeSet['length_of_stay'] = !isset($this->atts['length_of_stay'])
+            ? $this->controller->options['length_of_stay']
+            : $this->atts['length_of_stay'];
+		$this->valuesToBeSet['month_year'] = !isset($this->atts['month_year'])
+            ? $this->controller->options['month_year']
+            : $this->atts['month_year'];
 		
 		if (!isset($output)) {
 			$output = '';
@@ -667,7 +658,7 @@ private function renderFlightsSearchbox160x600() {
 private function renderHotelsSearchbox160x600() {
 		$output =
 		'<label for="tgsb_'.self::$nrOfBoxes.'_city_h">City:</label>
-		<input type="text" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[hotels_to_air]' : (($this->atts['ajaxSettings']) ? 'tgsbToAir' : 'airport')).'" id="tgsb_'.self::$nrOfBoxes.'_city_h" value="'.esc_attr($this->valuesToBeSet['to_air']).'" class="tgsb_addASH asTo" />
+		<input type="text" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[hotels_to_air]' : (($this->atts['ajaxSettings']) ? 'tgsbToAir' : 'airport')).'" id="tgsb_'.self::$nrOfBoxes.'_city_h" value="'.esc_attr($this->valuesToBeSet['hotel_city']).'" class="tgsb_addASH asTo" />
 		<label for="tgsb_'.self::$nrOfBoxes.'_dep_cal_h">Check-In:</label>';
 		$output .= (($this->atts['defaultSettings']) ? $this->date_input('hotels_departure_date', 'tgsb_'.self::$nrOfBoxes.'_dep_cal_h') : 
 		'<input type="text" readonly="readonly" name="'.(($this->atts['ajaxSettings']) ? 'tgsbDepartureDate' : 'start_date').'" id="tgsb_'.self::$nrOfBoxes.'_dep_cal_h" value="'.esc_attr($this->valuesToBeSet['departure_date']).'" class="tgsb_addDP depDate" />');
@@ -698,7 +689,7 @@ private function renderHotelsSearchbox160x600() {
 		$output = '<div class="formContent">';
 		$output .='<span>
 				<label for="tgsb_'.self::$nrOfBoxes.'_city_h">City:</label>
-				<input type="text" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[hotels_to_air]' : (($this->atts['ajaxSettings']) ? 'tgsbToAir' : 'airport')).'" id="tgsb_'.self::$nrOfBoxes.'_city_h" value="'.esc_attr($this->valuesToBeSet['to_air']).'" class="tgsb_addASH asTo" />
+				<input type="text" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[hotels_to_air]' : (($this->atts['ajaxSettings']) ? 'tgsbToAir' : 'airport')).'" id="tgsb_'.self::$nrOfBoxes.'_city_h" value="'.esc_attr($this->valuesToBeSet['hotel_city']).'" class="tgsb_addASH asTo" />
 			</span>
 			<span>
 				<label for="tgsb_'.self::$nrOfBoxes.'_dep_cal_h">Check-In:</label>';
@@ -736,7 +727,7 @@ private function renderHotelsSearchbox160x600() {
 		$output =
 		'<span>
 				<label for="tgsb_'.self::$nrOfBoxes.'_city_h">City:</label>
-				<input type="text" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[hotels_to_air]' : (($this->atts['ajaxSettings']) ? 'tgsbToAir' : 'airport')).'" id="tgsb_'.self::$nrOfBoxes.'_city_h" value="'.esc_attr($this->valuesToBeSet['to_air']).'" class="tgsb_addASH asTo" />
+				<input type="text" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[hotels_to_air]' : (($this->atts['ajaxSettings']) ? 'tgsbToAir' : 'airport')).'" id="tgsb_'.self::$nrOfBoxes.'_city_h" value="'.esc_attr($this->valuesToBeSet['hotel_city']).'" class="tgsb_addASH asTo" />
 			</span>
 			<span>
 				<label for="tgsb_'.self::$nrOfBoxes.'_dep_cal_h">Check-In:</label>';
@@ -778,7 +769,7 @@ private function renderHotelsSearchbox160x600() {
 		$output .= '<div class="formContent">';
 		$output .= '<div>
 				<label for="tgsb_'.self::$nrOfBoxes.'_city_h">City:</label>
-				<input type="text" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[hotels_to_air]' : (($this->atts['ajaxSettings']) ? 'tgsbToAir' : 'airport')).'" id="tgsb_'.self::$nrOfBoxes.'_city_h" value="'.esc_attr($this->valuesToBeSet['to_air']).'" class="tgsb_addASH asTo" /><br />
+				<input type="text" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[hotels_to_air]' : (($this->atts['ajaxSettings']) ? 'tgsbToAir' : 'airport')).'" id="tgsb_'.self::$nrOfBoxes.'_city_h" value="'.esc_attr($this->valuesToBeSet['hotel_city']).'" class="tgsb_addASH asTo" /><br />
 				<span>
 					<label for="tgsb_'.self::$nrOfBoxes.'_dep_cal_h">Check-In:</label>';
 				$output .= (($this->atts['defaultSettings']) ? $this->date_input('hotels_departure_date', 'tgsb_'.self::$nrOfBoxes.'_dep_cal_h') : 
@@ -821,7 +812,7 @@ private function renderHotelsSearchbox160x600() {
 		$output = '<div class="formContent">';
 		$output .='
 				<label for="tgsb_'.self::$nrOfBoxes.'_city_h">City:</label>
-				<input type="text" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[hotels_to_air]' : (($this->atts['ajaxSettings']) ? 'tgsbToAir' : 'airport')).'" id="tgsb_'.self::$nrOfBoxes.'_city_h" value="'.esc_attr($this->valuesToBeSet['to_air']).'" class="tgsb_addASH asTo" />
+				<input type="text" name="'.(($this->atts['defaultSettings']) ? 'tg_searchboxes_options[hotels_to_air]' : (($this->atts['ajaxSettings']) ? 'tgsbToAir' : 'airport')).'" id="tgsb_'.self::$nrOfBoxes.'_city_h" value="'.esc_attr($this->valuesToBeSet['hotel_city']).'" class="tgsb_addASH asTo" />
 			<span>
 				<label for="tgsb_'.self::$nrOfBoxes.'_dep_cal_h">Check-In:</label>';
 		$output .= '<input type="text" readonly="readonly" name="'.(($this->atts['ajaxSettings'] || $this->atts['defaultSettings']) ? 'tgsbDepartureDate' : 'start_date').'" id="tgsb_'.self::$nrOfBoxes.'_dep_cal_h" value="'.esc_attr($this->valuesToBeSet['departure_date']).'" class="tgsb_addDP depDate" />';

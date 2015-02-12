@@ -9,7 +9,7 @@
 .tg_searchbox .tg_tabs{list-style-position:inside;margin:0 !important;padding:0 !important;text-indent:0}
 .tg_searchbox .tg_tabs li:before{content:""}
 .tg_searchbox .tg_tabs li {padding:0 !important;display:block;float:left}
-.tg_searchbox .tg_tabs li span{text-decoration:underline;cursor:pointer}
+.tg_searchbox .tg_tabs li span{text-decoration:underline;cursor:pointer;}
 .tg_searchbox .tg_tabs li span.sel, .tg_searchbox .tg_tabs li span:hover{text-decoration:none}
 .tg_searchbox .tg_container form{display:none;padding:0 13px;text-align:left}
 .tg_searchbox .tg_container form.sel{display:block;}
@@ -44,6 +44,7 @@
 .tg_searchbox .tg_container form div.mrcList span.mSel{background-position: 0 -24px !important;border:1px solid #000 !important}
 .tg_searchbox .tg_container form div.mrcList a.tgBackToSearchbox{display:block;position:absolute;bottom:0}
 .tg_searchbox .ppupHandlerCont iframe {background: transparent;}
+.tg_searchbox *, .tg_searchbox *:before, .tg_searchbox *:after {box-sizing:content-box;}
 
 /* CSS rules for the 160x600 searchbox */
 .m160x600{width:160px;height:600px}

@@ -78,7 +78,11 @@ function setParamsToBoxes(obj) {
 			if(currentForm.hasClass('cars'))
 				// find the input with the class asFrom and set it's value to obj.to_air
 				currentForm.find('input.asFrom').val(obj.to_air);
-		};
+		}
+        if(typeof(obj.hotel_city) != 'undefined' && obj.hotel_city && currentForm.hasClass('hotels')) {
+            // find the input with the class asFrom and set it's value to obj.to_air
+            currentForm.find('input.asTo').val(obj.hotel_city);
+        }
 		// if on the object we got the departure_date variable is set
 		if(typeof(obj.departure_date) != 'undefined' && obj.departure_date)
 			// find the input with the class depDate and set it's value to obj.departure_date
@@ -188,14 +192,62 @@ var ASoptions = {
 		if(inp.hasClass("asFrom")) {
 			jQuery(".asFrom").val(inp.val());
 			inp.parents('#TB_ajaxContent').find('.tg_container > form.cars').find('.asFrom').val('');
-		};
+		}
 		
 		if(inp.hasClass("asTo")) {
 			jQuery(".asTo").val(inp.val());
 			inp.parents('#TB_ajaxContent').find('.tg_container > form.cars').find('.asFrom').val(inp.val());
-		};
+		}
 	}
 };
+var hotelASoptions = {
+    delay: 175,
+    timeout: 5000,
+    script: TG_Searchboxes_Variables.str_ASAjaxURL,
+    loadingClass: 'tgsb_as_load',
+    className: 'tgsb_as tgsb_asMargin',
+    json: true,
+    frameForIE: true,
+    ajaxParams: {
+        action:		'',
+        json:		true,
+        lng:		'def',
+        dsgn:		'flg',
+        addtag:		'em',
+        citytype:	'cities',
+        maxResults:	10,
+        domainPrefix:	true,
+        nearestAirport:	true
+
+    },
+    autoSelect:true,
+    offsety:0,
+    format: function(selLiObj) {
+        return selLiObj.innerHTML.replace(/<\/?[^>]+>/gi,'').replace(/(.*),(.*) \((.*)\)/,'$1,$2');
+    },
+    callback:function(asElem,asObj){
+        var inp = jQuery(asObj.fld);
+        if(inp.hasClass("asTo")) {
+            var airport = inp.val();
+            for(var i=0; i<asElem.attributes.length; i++) {
+                if (asElem.attributes[i].nodeName == 'airport') {
+                    var val = asElem.attributes[i].value ? asElem.attributes[i].value : asElem.attributes[i].nodeValue;
+                    if (val) {
+                        try {
+                            var arp = eval('(' + val + ')');
+                            if (arp && arp.city && arp.iata) {
+                                airport = arp.city + ' (' + arp.iata + ')';
+                            }
+                        } catch(e) {}
+                    }
+                }
+            }
+            jQuery(".asTo").not(inp).val(airport);
+            inp.parents('#TB_ajaxContent').find('.tg_container > form.cars').find('.asFrom').val(airport);
+        }
+    }
+};
+
 
 function inputFocus(ev){
 	if (this.value==this.defaultValue) this.value=''; // if default value present, removing it
@@ -284,9 +336,13 @@ jQuery('select.rooms').change(function() {
 
 try {
 
-    jQuery(".tgsb_addAS, .tgsb_addASH").each(function(){
+    jQuery(".tgsb_addAS").each(function(){
         jQuery(this).focus(inputFocus).blur(inputBlur);
         new AS(this.id,ASoptions);
+    });
+    jQuery(".tgsb_addASH").each(function(){
+        jQuery(this).focus(inputFocus).blur(inputBlur);
+        new AS(this.id,hotelASoptions);
     });
 
     jQuery('div.tg_searchbox ul.tg_tabs li span').click(function(){
