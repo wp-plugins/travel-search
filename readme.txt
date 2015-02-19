@@ -4,7 +4,7 @@ Donate link: http://www.travelgrove.com/
 Tags: travel, search, flights, airfares, hotel, hotel rooms, car rentals, vacations, holiday, vacation packages, deals, airfare tickets, plugin, affiliate, travel widget
 Requires at least: 3.1
 Tested up to: 4.1
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 
 Search and Compare major travel websites for cheapest flights, hotels, car rentals and vacation packages in this one-step travel search engine.
 
