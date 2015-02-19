@@ -336,15 +336,14 @@ class tgSearchboxesRenderer {
         }
 
 		// the "get this widget" link will be present only on the Dynamic Sized Box 
-		$output .=			'<div class="pwr">'.
-						($this->controller->options['links'] ?
-							'<a href="http://www.travelgrove.com/">travel search</a>' :
-							'travel search').
-						' by Travelgrove';
+		$output .=			'<div class="pwr">travel search by '.
+						($this->controller->options['links']
+                            ? '<a href="http://www.travelgrove.com/">Travelgrove</a>'
+                            : 'Travelgrove'
+                        );
 		if($this->atts['size'] == 'dynamic' && $this->controller->options['links'])
 			$output .=		' (<a class="wdg" href="http://labs.travelgrove.com/wordpress-plugins/travel-search/">get this widget</a>)';
 		$output .=			'</div>';
-		'</div>';
 		$output .=		'</div>';
 		$output .=	'</div>';
 		return $output;
