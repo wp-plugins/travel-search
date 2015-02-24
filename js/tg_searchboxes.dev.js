@@ -81,7 +81,7 @@ function initWindowOpener(){
 			initialized on document.ready | declared in global scope
 		@date	2013-JUL-03
 		@author	Tibi	*/
-	onClickPopupHandling	= jQuery.browser.msie || windowOpenerObj.isChromeMinVer(30);
+	onClickPopupHandling	= (jQuery.browser && jQuery.browser.msie) || windowOpenerObj.isChromeMinVer(30);
 }
 
 // WHAT & WHY: function used to remove the error class from an input

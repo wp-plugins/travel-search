@@ -129,7 +129,7 @@ parentObject.AutoSuggest = function(fldID, pObj) {
 	this.coords.y += this.fld.offsetHeight + this.opt.offsety;
 	// coords.w = pointer.fld.offsetWidth;
 	//calculating the position of the input field: x,y + the height of the input field  + the offset y setted in the params
-	if(this.opt.frameForIE && jQuery.browser.msie && parseInt(jQuery.browser.version)<7) {
+	if(this.opt.frameForIE && jQuery.browser && jQuery.browser.msie && parseInt(jQuery.browser.version)<7) {
 		this.iframe = jQuery('<iframe src="about:blank" frameborder="0" marginheight="0" marginwidth="0" scrolling="no" style="position:absolute;background:#fff;z-index:399;">');
 	} else {
 		this.opt.frameForIE = false;
