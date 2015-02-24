@@ -253,6 +253,9 @@ jQuery(document).ready(function(jQuery){
 				var selectedTab = jQuery('.sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container').find('form.sel').attr('class').match(/^(flights|hotels|cars|packages|cruises)/);
 				var fields = [];
                 jQuery('.sb'+tgSearchboxMeasures+' .tg_searchbox .tg_container form').find("input, select, textarea").each(function(){
+                    if ((this.type == 'radio' || this.type == 'checkbox') && !this.checked) {
+                        return;
+                    }
                     fields.push({
                         name: this.name,
                         value: this.value,
