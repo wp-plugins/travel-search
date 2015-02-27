@@ -17,7 +17,7 @@
  */
 (function($, undefined) {
     function isArray(a) {
-        return a && ($.browser.safari && typeof a == "object" && a.length || a.constructor && a.constructor.toString().match(/\Array\(\)/))
+        return a && ($.browser && $.browser.safari && typeof a == "object" && a.length || a.constructor && a.constructor.toString().match(/\Array\(\)/))
     }
 
     function extendRemove(a, b) {
@@ -394,7 +394,7 @@
                 $(a).parents().each(function() {
                     e |= $(this).css("position") == "fixed";
                     return !e
-                }), e && $.browser.opera && ($.datepicker._pos[0] -= document.documentElement.scrollLeft, $.datepicker._pos[1] -= document.documentElement.scrollTop);
+                }), e && $.browser && $.browser.opera && ($.datepicker._pos[0] -= document.documentElement.scrollLeft, $.datepicker._pos[1] -= document.documentElement.scrollTop);
                 var f = {
                     left: $.datepicker._pos[0],
                     top: $.datepicker._pos[1]
@@ -945,7 +945,7 @@
                 }
                 K += M
             }
-            K += x + ($.browser.msie && parseInt($.browser.version, 10) < 7 && !a.inline ? '<iframe src="javascript:false;" class="ui-datepicker-cover" frameborder="0"></iframe>' : ""), a._keyEvent = !1;
+            K += x + ($.browser && $.browser.msie && parseInt($.browser.version, 10) < 7 && !a.inline ? '<iframe src="javascript:false;" class="ui-datepicker-cover" frameborder="0"></iframe>' : ""), a._keyEvent = !1;
             return K
         },
         _generateMonthYearHeader: function(a, b, c, d, e, f, g, h) {
