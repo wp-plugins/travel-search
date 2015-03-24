@@ -166,10 +166,11 @@ function enqueue_tg_searchboxes_css() {
 
 /**	enque the required JS files	*/
 function enqueue_tg_searchboxes_js() {
+
 	/**	AutoSuggestion drop-down for aiports+cities; (name, path, dependencies) - dependent on jQuery	*/
-	wp_enqueue_script('tgsb_autosuggestion', plugins_url('/js/autosuggestion' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__), array('jquery'));
+	wp_enqueue_script('tgsb_autosuggestion', plugins_url('/js/autosuggestion' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__), array('jquery', 'jquery-core', 'jquery-migrate'));
 	/**	jQuery DatePicker; dependent on jQuery and jQuery UI	*/
-	wp_enqueue_script('tgsb_datepicker_script', plugins_url('/js/jquery-ui-datepicker' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__), array('jquery', 'jquery-ui-core'));
+	wp_enqueue_script('tgsb_datepicker_script', plugins_url('/js/jquery-ui-datepicker' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__), array('jquery', 'jquery-core', 'jquery-migrate', 'jquery-ui-core'));
 
 	/**	@note	JS file holding the class that handles popups
 		@date	2013-JUN-4
@@ -185,7 +186,7 @@ function enqueue_tg_searchboxes_js() {
 	/**	dynamic functionalities of the searchboxes; main JS file	*/
 	wp_enqueue_script('tgsb_main_script',
 			plugins_url( '/js/tg_searchboxes' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__ ),
-			array('tgsb_datepicker_script', 'tgsb_autosuggestion', 'jquery', 'tgsb_popup_handler_script'),
+			array('tgsb_datepicker_script', 'tgsb_autosuggestion', 'jquery', 'jquery-core', 'jquery-migrate', 'tgsb_popup_handler_script'),
 			// version number
 			'',
 			// adding it to footer to make sure it will appear AFTER inline variables are set

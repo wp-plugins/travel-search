@@ -244,7 +244,7 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		add_action('wp_print_scripts', array($this, 'tg_searchboxes_admin_scripts'));
 
 		// HTML editor integration
-		wp_register_script( 'tg_searchboxes-editor-button-js', plugins_url( $jsfile, TG_SEARCHBOXES__FILE__ ), array( 'jquery', 'thickbox'/*, 'media-upload', 'quicktags'*/), '1.0', true );
+		wp_register_script( 'tg_searchboxes-editor-button-js', plugins_url( $jsfile, TG_SEARCHBOXES__FILE__ ), array( 'jquery', 'jquery-core', 'jquery-migrate', 'thickbox'/*, 'media-upload', 'quicktags'*/), '1.0', true );
 		wp_localize_script( 'tg_searchboxes-editor-button-js', 'TG_Searchboxes_Editor_Button', 
 			array(
 				'str_EditorButtonCaption'	=> __( 'Travelgrove Searchboxes'),
@@ -326,11 +326,11 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		/**	auto-suggestion drop-down for city/airport inputs	*/
 		wp_enqueue_script(	'tgsb_autosuggestion',
 					plugins_url('/js/autosuggestion' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__),
-					array('jquery'));
+					array('jquery', 'jquery-core', 'jquery-migrate'));
 		/**	jQuery DatePicker calendar for date inputs	*/
 		wp_enqueue_script(	'tgsb_datepicker_script',
 					plugins_url('/js/jquery-ui-datepicker' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__),
-					array('jquery', 'jquery-ui-core'));
+					array('jquery', 'jquery-core', 'jquery-migrate', 'jquery-ui-core'));
 		return true;
 	}
 
@@ -339,14 +339,14 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		// autosuggestion for airports / cities inputs
 		wp_enqueue_script(	'tgsb_autosuggestion',
 					plugins_url('/js/autosuggestion' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__),
-					array('jquery'));
+					array('jquery', 'jquery-core', 'jquery-migrate'));
 
 		// adding CSS for the datepicker (for depart, return, check-in, check-out, pick-up, drop-off dates)
 		wp_enqueue_style('tgsb_datepicker_style',	plugins_url('/css/ui-lightness/datepicker' . TGSB_PACK . '.css?' . TGSB_VER, TG_SEARCHBOXES__FILE__));
 		// adding JS for the datepicker (for depart, return, check-in, check-out, pick-up, drop-off dates)
 		wp_enqueue_script(	'tgsb_datepicker_script',
 					plugins_url('/js/jquery-ui-datepicker' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__),
-					array('jquery', 'jquery-ui-core'));
+					array('jquery', 'jquery-core', 'jquery-migrate', 'jquery-ui-core'));
 		// enqueuing the farbtastic color-picker css file
 		wp_enqueue_style( 'farbtastic' );
 		// enqueuing the farbtastic color-picker js file
@@ -368,7 +368,7 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 				// path
 				plugins_url('/js/tg_searchboxes_settings' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__),
 				// dependencies
-				array('tgsb_datepicker_script', 'farbtastic', 'jquery'),
+				array('tgsb_datepicker_script', 'farbtastic', 'jquery', 'jquery-core', 'jquery-migrate'),
 				'',
 				// add script to footer because on it are attached some js variables
 				true);
@@ -393,7 +393,7 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 				// path
 				plugins_url('/js/tg_searchboxes_shortcodes' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__),
 				// dependencies
-				array('tgsb_datepicker_script', 'jquery'),
+				array('tgsb_datepicker_script', 'jquery', 'jquery-core', 'jquery-migrate'),
 				'1.2',
 				// add script to footer because on it are attached some js variables
 				true);
@@ -433,11 +433,11 @@ class Tg_Searchboxes_Controller_Admin extends Tg_Searchboxes_Controller_Base {
 		/**	autosuggestion JS for city/airport inputs	*/
 		wp_enqueue_script(	'tgsb_autosuggestion',
 					plugins_url('/js/autosuggestion' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__),
-					array('jquery'));
+					array('jquery', 'jquery-core', 'jquery-migrate'));
 		/**	jQuery DatePicker calendar for date inputs	*/
 		wp_enqueue_script(	'tgsb_datepicker_script',
 					plugins_url('/js/jquery-ui-datepicker' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__),
-					array('jquery', 'jquery-ui-core'));
+					array('jquery', 'jquery-core', 'jquery-migrate', 'jquery-ui-core'));
 		/**	main JS for dynamic functionalities of the searchboxes	*/
 		wp_enqueue_script(	'tgsb_main_script',
 					plugins_url( '/js/tg_searchboxes' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__ ),
