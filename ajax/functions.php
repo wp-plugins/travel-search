@@ -28,7 +28,7 @@ function setHeaders($headers) {
 	foreach($headers as $header) {
 		// WHAT & WHY: the Content-Length should not be set because it is changed in the file merchants.php the content is manipulated by the function merchantsJSONToHTML() which can generate a bigger Content-Length
 		// WHO & WHEN: Cipri on the 24th of April 2012
-		if (preg_match('/^Content-Length:/',$header))
+		if (preg_match('/^Content-Length:/i',$header) || preg_match('/^Transfer-Encoding:/i',$header))
 			continue;
 		header($header);
 	}
