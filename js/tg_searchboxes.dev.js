@@ -6,17 +6,6 @@ var hotelASoptions;
 // object containing the query string with the searchboxes params used when merchant request should be made, if the query string for a searchbox an a search form is the same then the merchant request is not made and the div having the merchants into it is showed
 var tgsb_searchboxesParams = {};
 
-/*	@note	this object will be used to open up the popups from each form
-	@date	2013 JUN 06
-	@author	Tibi	*/
-var windowOpenerObj;
-
-/*	@note	config variable for the IE popup blocker handling: if true, when a merchant is checked, a blank window will open and when merchants are compared. the compare window will load into this blank window
-	@date	2013 JUN 3
-	@author	Tibi
-*/
-var onClickPopupHandling;
-
 
 /*
 	WHAT & WHY: TGSearchboxes object
@@ -32,6 +21,7 @@ function TGSearchboxes() {
 };
 // calling the TGSearchboxes object
 TGSB = new TGSearchboxes();
+TGSB.$ = jQuery;
 
 /**
 	@note	Initializes the window opener object that will be used to open windows
@@ -42,46 +32,46 @@ function initWindowOpener(){
 	/*	@note	initializing windowOpener object - this is used to open popup windows when a search is performed
 		@date	2013 JUN 03
 		@author	Tibi	*/
-	windowOpenerObj = new TGSB_WindowOpener({
-		chromePPBmode		: window.chrome ? true : false,
-		popUnder		: false,
-		style			: 'cascade',
-		position		: {left:0, top:0, width:460, height:485},
-		buildPlaceHolderUrl	: function(bttn){},
-		buildPlaceHolderHtml	: function(bttn){
-						bttn	= jQuery(bttn);
-						var sb	= bttn.parents('.tg_searchbox:eq(0)').attr('id');
-						/*	id="m1234"	=>	1234	*/
-						var mId		= bttn.attr('rel').replace(/[^0-9]+/g,'');
-						var mName	= bttn.attr('title');
-						/*	/images/merchants/bookingbuddy.gif	=>	bookingbuddy.gif	*/
-						var mLogo	= bttn.children('img').attr('src').replace(/^.*\/([^\/]+)$/,'$1');
-						var redirectLink= validateSearchbox(bttn, false, false) ? '' : getJumpLink(bttn, mName, mId);
-						var inlineScript= "<script type='text/javascript'>"+
-									"var mName='"+mName+"';"+
-									"var mId="+parseInt(mId)+";"+
-									"var mLogo='"+mLogo+"';"+
-									"var sb='"+sb+"';"+
-									"var redirectLink='"+redirectLink+"'"+
-								"</script>";
-						var script	= "<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>"+
-								"<script type='text/javascript' src='"+TG_Searchboxes_Variables.plugin_url+"/js/placeholder.min.js'></script>";
-						return "<html><head><title>Opening "+mName+"</title>"+
-									inlineScript+script+
-								"</head><body></body></html>";
-					},
-		buildWindowName		: function(bttn){
-						bttn		= jQuery(bttn);
-						var id	 	= bttn.attr('rel').replace(/[^0-9]+/g,'');
-						var merchant	= bttn.attr('title');
-						return merchant + '_' + id;
-					}
-	});
-	/*	@note	marks if a window should be opened or not when a merchant is checked (IE popoup handling)
-			initialized on document.ready | declared in global scope
-		@date	2013-JUL-03
-		@author	Tibi	*/
-	onClickPopupHandling	= (jQuery.browser && jQuery.browser.msie) || windowOpenerObj.isChromeMinVer(30);
+    TGSB.pph = new PPH({
+        def: {
+            afterTrigger: function(windows){
+                this.windows = {};
+                jQuery(".mrcList .mSel").trigger('uncheck');
+            }
+        },
+        /*
+        ie: {
+            placeholder: function(url){
+                var intitem = url.match(/\bintitem=([0-9]+)/);
+                intitem = intitem && intitem[1] ? parseInt(intitem[1]) : 0;
+                if (!intitem) {
+                    return false;
+                }
+                var box = url.match(/\bsbox=([a-z0-9\_]+)/);
+                box = box && box[1] ? box[1] : 0;
+                if (!box) {
+                    return false;
+                }
+
+                var w = Math.round(screen.width * 0.7);
+                var h = Math.round(screen.height * 0.7);
+                var l = screen.width - w - 40;
+
+                var url = TG_Searchboxes_Variables.plugin_url + '/placeholder.dev.html#'+ intitem + "|" + box;
+
+                return {
+                    url: url,
+                    params: 'toolbar=0,scrollbars=1,location=1,statusbar=1,menubar=0,resizable=1,top=40,left='+l+',width='+w+',height='+h
+                };
+            }
+        }
+        */
+        ie: {
+            type: 'popunderwindow',
+            when: 'trigger',
+            onTrigger: function(){}
+        }
+    });
 }
 
 // WHAT & WHY: function used to remove the error class from an input
@@ -244,6 +234,7 @@ function validateSearchbox(obj, onsbmt, addErrorClass) {
 			};
 		};
 	};
+
 	// if the error message is not empty add a string at the begining of the error message else return false
 	return errMsg.length ? "Please enter:\n"+errMsg : false;
 };
@@ -329,9 +320,11 @@ function getJumpLink(obj, mName, mId){
 		'&dateFormat=mm/dd/yyyy' +
 		'&trafficSource=wpplugin' + 
 		'&searchsystem=us' +
-		'&querycode=' + tgsb_querycode + '&merchant=' + mName + '&intitem=' + mId;
+		'&querycode=' + tgsb_querycode + '&merchant=' + mName + '&intitem=' + mId +
+        '&sbox=' + jQuery(obj).parents('.tg_searchbox:eq(0)').attr('id');
 	return url;
 };
+TGSB.getJumpLink = getJumpLink;
 
 /*
 	WHAT & WHY: function used to create the url needed for the merchants popups on classic search
@@ -341,19 +334,18 @@ function getJumpLink(obj, mName, mId){
 function ppups(obj) {
 	if (!obj)
 		return false;
-	var currentWindowIdx	= 0;
-	var merchantSet	 	= jQuery(obj).parents('form:eq(0)').find(".mrcList .mSel");
-	merchantSet.each(function(){
-		var t		= jQuery(this);
-		var mName	= t.attr('title');
-		var mId		= t.attr('rel');
-		var wName	= mName + '_' + mId;
-		var url		= getJumpLink(obj, mName, mId);
-		/*	@note	method how we open up the popups were changed | implemented the chrome popup handling solution
-			@date	2013 JUN 06
-			@author	Tibi	*/
-		windowOpenerObj.open(url, this, currentWindowIdx++, merchantSet.length);
-	});
+
+    var merchantSet	 	= jQuery(obj).parents('form:eq(0)').find(".mrcList .mSel");
+    merchantSet.each(function(){
+        var t = jQuery(this);
+        var mName = t.attr('title');
+        var mId = t.attr('rel');
+        var url = getJumpLink(obj, mName, mId);
+        var woid = t.data('woid');
+        TGSB.pph.update(woid, url);
+    });
+
+    TGSB.pph.trigger();
 	 
 	return true;
 };
@@ -537,19 +529,37 @@ function makeMerchantsRequest(obj, showErrorMessages, addErrorClass) {
 					});
 				};
 				// iterating the merchants
-				merchants.click(function(){
+				merchants.bind('check', function(){
+                    var t	= jQuery(this);
+                    if (t.hasClass('mSel')){
+                        return true;
+                    }
+                    t.addClass('mSel');
+                    var url		= getJumpLink(t, t.attr('title'), t.attr('rel'));
+                    var woid = TGSB.pph.add(url);
+                    t.data('woid', woid);
+                    if (!woid)
+                        t.removeClass('mSel');
+                }).bind('uncheck', function(){
+                    var t	= jQuery(this);
+                    if (!t.hasClass('mSel')){
+                        return true;
+                    }
+                    t.removeClass('mSel');
+                    var woid = t.data('woid');
+                    TGSB.pph.remove(woid);
+                    t.data('woid', '');
+                }).click(function(){
 					var t	= jQuery(this);
-					t.toggleClass('mSel');
-					/*	@note	in case IE popup handling solution will be activated, we have to open up blank windows if a merchant is checked
-						@date	2013 JUN 06
-						@author	Tibi	*/
-					if (!onClickPopupHandling)
-						return true;
-					if (t.hasClass('mSel')) {
-						windowOpenerObj.openPlaceholder(t);
-					} else	windowOpenerObj.closePlaceholder(t);
+					if (t.hasClass('mSel')){
+                        t.trigger('uncheck');
+                    } else {
+                        t.trigger('check');
+                    }
 				});
-				merchants.filter('[rel="5760"]').not('.mSel').click();
+                if (TGSB.pph.browser.mozilla()) {
+                    merchants.filter('[rel="5760"]').not('.mSel').click();
+                }
 				// removing the submited class from the submit button
 				jQuery(submitButton).removeClass('submited');
 			}			

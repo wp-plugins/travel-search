@@ -176,7 +176,7 @@ function enqueue_tg_searchboxes_js() {
 		@date	2013-JUN-4
 		@author	Tibi	*/
 	wp_enqueue_script('tgsb_popup_handler_script',
-			plugins_url( '/js/windowOpener.class' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__ ),
+			plugins_url( '/js/popupHandler' . TGSB_PACK . '.js?' . TGSB_VER, TG_SEARCHBOXES__FILE__ ),
 			false,
 			// version number
 			'',
