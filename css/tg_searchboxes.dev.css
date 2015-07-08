@@ -196,6 +196,9 @@ input.tgsb_as_load{background-image:url(../images/tg_searchboxes/ajax-loader.gif
 /*autosuggestion css rules end*/
 
 .tg_searchbox .tg_container form input[type=text].err, .tg_searchbox .tg_container form input[type=text][readonly=readonly].err{border:1px solid #f00;background-color:#ffe5e5}
+.tg_searchbox.tg-metasearch form.hotels .mrcList {
+    display:none;
+}
 
 @media screen and (max-width:767px), screen and (-webkit-min-device-pixel-ratio:0) {
     div.tg_searchbox div.tg_container form div.mrcList span {

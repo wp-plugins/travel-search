@@ -126,6 +126,7 @@ function validateSearchbox(obj, onsbmt, addErrorClass) {
 		// the departure location is not set on the hotels searchbox
 		departure = currentForm.find('input.asFrom');
 	};
+    var isMetasearch = currentForm.filter('.hotels').length > 0 && currentForm.parents('.tg_searchbox.tg-metasearch').length > 0;
 	// setting the arrival input jquery object	
 	var arrival = currentForm.find('input.asTo');
 	// setting the departure date input jquery object
@@ -219,7 +220,7 @@ function validateSearchbox(obj, onsbmt, addErrorClass) {
 		jQuery(errClass).addClass("err").focus(remErr);
 	};
 	// if this variable is set to true
-	if(onsbmt) {
+	if(onsbmt && !isMetasearch) {
 		// get the selected merchants from the current form merchants container
 		var selectedMerchants = currentForm.find('div.mrcList span.mSel');
 		// if there is no merchant selected
@@ -253,9 +254,12 @@ function makeClassicSearchRequest(obj) {
 		return false;
 	};
 	// opening the popups with the search request
-	ppups(obj);
-	// remove the submit class from the submit button
-	jQuery(obj).removeClass('submited');
+    var isMetasearch = jQuery(obj).parents('div.tg_searchbox.tg-metasearch').length > 0;
+    if (!isMetasearch || !jumpMetasearchUrl(jQuery(obj).parents('form'))) {
+        ppups(obj);
+        // remove the submit class from the submit button
+        jQuery(obj).removeClass('submited');
+    }
 	return true;
 };
 
@@ -348,6 +352,35 @@ function ppups(obj) {
     TGSB.pph.trigger();
 	 
 	return true;
+};
+
+var jumpMetasearchUrl = function(frm){
+    frm = jQuery(frm);
+
+    if (frm.filter('.hotels').length > 0) {
+        var id = 'TgForm' + Math.round((Math.random() * 10000));
+        var myForm = jQuery('<form action="http://www.travelgrove.com/hotel-search/" target="_blank" method="POST" name="' + id + '" id="' + id + '">' +
+            '<input type="hidden" name="destination_id" value="">' +
+            '<input type="hidden" name="airport" value="' + frm.find('input[name=airport]').val() + '">' +
+            '<input type="hidden" name="phpscript" value="hotel">' +
+            '<input type="hidden" name="start_date" value="' + frm.find('input[name=start_date]').val() + '">' +
+            '<input type="hidden" name="end_date" value="' + frm.find('input[name=end_date]').val() + '">' +
+            '<input type="hidden" name="no_room" value="' + frm.find('select[name=no_room]').val() + '">' +
+            '<input type="hidden" name="inp_adult_pax_cnt" value="' + frm.find('select[name=inp_adult_pax_cnt]').val() + '">' +
+            '<input type="hidden" name="no_child" value="' + frm.find('select[name=no_child]').val() + '">' +
+            '<input type="hidden" name="idReferral" value="' + frm.find('input[name=idReferral]').val() + '">' +
+            '<input type="hidden" name="adid" value="">' +
+            '<input type="hidden" name="lang" value="def">' +
+            '<input type="hidden" name="subID" value="' + frm.find('input[name=subID]').val() + '">' +
+        '</form>');
+        myForm.appendTo('body');
+        document[id].submit();
+        setTimeout(function(){
+            //myForm.remove();
+        }, 100);
+        return true;
+    }
+    return false;
 };
 
 /*

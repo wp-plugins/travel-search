@@ -122,6 +122,11 @@ class tgSearchboxesRenderer {
         }
 		return;
 	}
+
+    private function isMetasearch()
+    {
+        return true;
+    }
 	
 	/**	@note	method that's used to generate the <script> tag for the JS file that creates the searchbox
 			used if `usejavascript` option is true
@@ -301,7 +306,7 @@ class tgSearchboxesRenderer {
 			$this->atts['defaultSettings'] = false;
 		}
 		
-		$output .=	'<div class="tg_searchbox '.$this->atts['alignment'].' m'.$this->atts['size'].'" id="tgsb_'.self::$nrOfBoxes.'">';
+		$output .=	'<div class="tg_searchbox '.$this->atts['alignment'].' m'.$this->atts['size'] . ($this->isMetasearch() ? ' tg-metasearch' : '') . '" id="tgsb_'.self::$nrOfBoxes.'">';
 		$output .=		'<ul class="tg_tabs">';
 		$output .=			'<li><span class="flights'.(($this->atts['selectedTab'] == 'flights') ? ' sel' : '').'">'.(($this->atts['size']=='160x600') ? 'Air' : 'Flights').'</span></li>';
 		$output .=			'<li><span class="hotels'.(($this->atts['selectedTab'] == 'hotels') ? ' sel' : '').'">'.(($this->atts['size']=='160x600') ? 'Hotel' : 'Hotels').'</span></li>';

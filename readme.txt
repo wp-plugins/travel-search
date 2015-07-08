@@ -108,6 +108,9 @@ The commission earned by an affiliate in a month varies from one affiliate to th
 
 == Changelog ==
 
+= 1.4.4 =
+ * Metasearch for hotels added
+
 = 1.4.3 =
  * Window opener class updated | chrome popup handling changed
 
